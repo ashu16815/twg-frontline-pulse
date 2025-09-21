@@ -8,7 +8,7 @@ export default async function WeeklyCards() {
     sbAdmin.from('store_feedback').select('*').eq('iso_week', thisWeek)
   ]);
 
-  const regions = [...new Set((rows || []).map((r: any) => r.region))];
+  const regions = Array.from(new Set((rows || []).map((r: any) => r.region)));
 
   return (
     <section className="grid md:grid-cols-3 gap-4">
