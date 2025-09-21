@@ -1,3 +1,13 @@
+-- STORES MASTER
+create table if not exists stores (
+  id uuid primary key default gen_random_uuid(),
+  brand text not null check (brand in ('TWL','WSL')),
+  brand_color text not null, -- 'Red Store' or 'Blue Store'
+  code text not null,        -- numeric code as text (e.g., '209')
+  store_name text not null,
+  display_name text generated always as ((brand||' '||store_name)) stored
+);
+
 -- Tables (weekly cadence)
 create table if not exists store_feedback (
   id uuid primary key default gen_random_uuid(),
@@ -45,9 +55,11 @@ create table if not exists audit_log (
 );
 
 -- RLS (demo: open read; tighten later)
-alter table store_feedback enable row level security; 
-alter table weekly_summary enable row level security; 
+alter table stores enable row level security;
+alter table store_feedback enable row level security;
+alter table weekly_summary enable row level security;
 alter table audit_log enable row level security;
+create policy read_all_stores on stores for select using (true);
 create policy read_all_sf on store_feedback for select using (true);
 create policy read_all_ws on weekly_summary for select using (true);
 create policy read_all_audit on audit_log for select using (true);

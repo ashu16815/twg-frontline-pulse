@@ -9,7 +9,10 @@
     "start": "next start",
     "lint": "next lint",
     "db:push": "node scripts/supabase-init.js",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "seed:stores": "node scripts/seed-stores.js",
+    "seed:feedback": "node scripts/seed-feedback.js",
+    "seed:all": "npm run seed:stores && npm run seed:feedback"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",
