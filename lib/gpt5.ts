@@ -1,27 +1,20 @@
 export async function callJSON(messages: any[]) {
-  const baseUrl = process.env.AZURE_OPENAI_BASE_URL;
-  const key = process.env.AZURE_OPENAI_API_KEY;
-  const deployment = process.env.AZURE_OPENAI_DEPLOYMENT;
-  const version = process.env.AZURE_OPENAI_API_VERSION || '2024-02-15-preview';
-
-  if (!baseUrl || !key || !deployment) throw new Error('Missing Azure OpenAI env');
-
-  const r = await fetch(`${baseUrl}/deployments/${deployment}/chat/completions?api-version=${version}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'api-key': key
-    },
-    body: JSON.stringify({
+  try {
+    const { getAzureOpenAI, getChatModel } = await import('./azure');
+    const openai = getAzureOpenAI();
+    const model = getChatModel();
+    
+    const response = await openai.chat.completions.create({
+      model,
       messages,
       response_format: { type: 'json_object' }
-    })
-  });
+    });
 
-  if (!r.ok) throw new Error(await r.text());
-  const j = await r.json();
-  const text = j.choices?.[0]?.message?.content || '';
-  return JSON.parse(text || '{}');
+    const text = response.choices?.[0]?.message?.content || '';
+    return JSON.parse(text || '{}');
+  } catch (error) {
+    throw new Error(`Azure OpenAI call failed: ${error.message}`);
+  }
 }
 
 export async function analyzeIssues(payload: {
