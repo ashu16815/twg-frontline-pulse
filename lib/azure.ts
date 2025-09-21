@@ -3,11 +3,16 @@ import OpenAI from "openai";
 export function getAzureOpenAI() {
   const baseURL = process.env.AZURE_OPENAI_BASE_URL!;
   const apiKey  = process.env.AZURE_OPENAI_API_KEY!;
-  if (!baseURL || !apiKey) throw new Error("Azure OpenAI env not set");
+  const apiVersion = process.env.AZURE_OPENAI_API_VERSION!;
+  
+  if (!baseURL || !apiKey || !apiVersion) {
+    throw new Error("Azure OpenAI environment variables not set");
+  }
+  
   return new OpenAI({ 
-    baseURL: `${baseURL}/deployments/${process.env.AZURE_OPENAI_DEPLOYMENT}`,
+    baseURL: `${baseURL}/openai/deployments/${process.env.AZURE_OPENAI_DEPLOYMENT}`,
     apiKey,
-    defaultQuery: { 'api-version': process.env.AZURE_OPENAI_API_VERSION }
+    defaultQuery: { 'api-version': apiVersion }
   });
 }
 
