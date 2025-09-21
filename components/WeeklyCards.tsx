@@ -15,8 +15,8 @@ export default async function WeeklyCards() {
       {regions.map(r => {
         const s = (summary || []).find((x: any) => x.region === r);
         return (
-          <div key={r} className="card p-5 rounded-xl space-y-2">
-            <div className="text-xs text-slate-500">{thisWeek} • {r}</div>
+          <div key={r as string} className="card p-5 rounded-xl space-y-2">
+            <div className="text-xs text-slate-500">{thisWeek} • {r as string}</div>
             <div className="font-medium">{s?.summary || 'No summary yet.'}</div>
             <div className="text-sm text-slate-600">
               Themes: {(s?.top_themes || []).join(', ') || '—'}
