@@ -1,6 +1,7 @@
 import { sbAdmin } from '@/lib/supabase-admin';
 import { weekKey } from '@/lib/gpt5';
 import ReportsDashboard from '@/components/ReportsDashboard';
+import AIReportGenerator from '@/components/AIReportGenerator';
 
 export default async function Reports() {
   const wk = weekKey(new Date());
@@ -18,9 +19,7 @@ export default async function Reports() {
             Week {wk} • Comprehensive analysis of frontline feedback and performance metrics
           </p>
         </div>
-        <form action='/api/reports/generate' method='post'>
-          <button className='btn-primary sheen'>Generate AI Report</button>
-        </form>
+        <AIReportGenerator />
       </div>
       
       <ReportsDashboard rows={rows || []} summaries={summ || []} currentWeek={wk} />

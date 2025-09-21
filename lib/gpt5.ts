@@ -44,11 +44,41 @@ export async function summariseWeekly(region: string, isoWeek: string, rows: any
 export async function generateExecutiveReport(isoWeek: string, allRows: any[], allSummaries: any[]) {
   const system = {
     role: 'system',
-    content: `You produce an exec report based ONLY on provided data. Return JSON with keys: {highlights:string[],themes:{name:string,count:number,regions:string[]}[],risks:string[],actions:{owner:string,action:string,due:string}[],narrative:string}. Keep it concise and board-ready.`
+    content: `You are a retail executive analyst creating a comprehensive weekly report. Analyze the data and return JSON with these keys:
+    {
+      "highlights": ["key insight 1", "key insight 2", "key insight 3"],
+      "themes": [{"name": "theme name", "count": number, "regions": ["region1", "region2"], "sentiment": "pos|neg|neu", "impact": "high|medium|low"}],
+      "sentimentAnalysis": {
+        "overall": "pos|neg|neu",
+        "score": -1.0 to 1.0,
+        "byRegion": {"North": "pos|neg|neu", "Central": "pos|neg|neu", "South": "pos|neg|neu"},
+        "trends": ["trending positive", "concerning negative"]
+      },
+      "risks": ["risk 1", "risk 2", "risk 3"],
+      "opportunities": ["opportunity 1", "opportunity 2"],
+      "actions": [{"owner": "role", "action": "specific action", "due": "timeline", "priority": "high|medium|low"}],
+      "narrative": "executive summary paragraph",
+      "metrics": {
+        "totalSubmissions": number,
+        "avgMoodScore": number,
+        "topCategory": "category name",
+        "criticalIssues": number
+      }
+    }
+    
+    Focus on actionable insights, sentiment trends, and business impact.`
   };
   const user = {
     role: 'user',
-    content: JSON.stringify({ isoWeek, rows: allRows, summaries: allSummaries })
+    content: JSON.stringify({ 
+      isoWeek, 
+      rows: allRows, 
+      summaries: allSummaries,
+      totalSubmissions: allRows.length,
+      regions: Array.from(new Set(allRows.map(r => r.region))),
+      categories: Array.from(new Set(allRows.flatMap(r => [r.issue1_cat, r.issue2_cat, r.issue3_cat]))),
+      moods: allRows.map(r => r.overall_mood).filter(Boolean)
+    })
   };
   return callAzureJSON([system, user]);
 }
