@@ -2,12 +2,14 @@ import CEOChat from '@/components/CEOChat';
 import WeeklyCards from '@/components/WeeklyCards';
 
 export default async function Page() {
-  const health = await fetch(
-    process.env.NEXT_PUBLIC_BASE_URL 
-      ? process.env.NEXT_PUBLIC_BASE_URL + '/api/health/db' 
-      : '/api/health/db',
-    { cache: 'no-store' }
-  ).then(r => r.json()).catch(() => ({ ok: false }));
+  // For server-side rendering, we need to check if we're in production
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://twg-frontline-pulse.vercel.app'
+    : 'http://localhost:3000';
+    
+  const health = await fetch(`${baseUrl}/api/health/db`, { 
+    cache: 'no-store' 
+  }).then(r => r.json()).catch(() => ({ ok: false }));
 
   return (
     <main className='max-w-6xl mx-auto p-8 space-y-8'>
