@@ -120,7 +120,7 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
                       style={{ width: `${((count as number) / Math.max(...Object.values(themeCounts).map(v => v as number))) * 100}%` }}
                     />
                   </div>
-                  <span className='text-sm text-gray-600'>{count}</span>
+                  <span className='text-sm text-gray-600'>{count as number}</span>
                 </div>
               </div>
             ))}
@@ -168,7 +168,7 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
                         style={{ width: `${((count as number) / Math.max(...Object.values(categoryCounts).map(v => v as number))) * 100}%` }}
                       />
                     </div>
-                    <span className='text-sm text-gray-600'>{count}</span>
+                    <span className='text-sm text-gray-600'>{count as number}</span>
                   </div>
                 </div>
               ))}
@@ -191,7 +191,7 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
                         style={{ width: `${((count as number) / Math.max(...Object.values(impactCounts).map(v => v as number))) * 100}%` }}
                       />
                     </div>
-                    <span className='text-sm text-gray-600'>{count}</span>
+                    <span className='text-sm text-gray-600'>{count as number}</span>
                   </div>
                 </div>
               ))}
