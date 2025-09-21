@@ -37,7 +37,7 @@ export function mockAnalyzeIssues(payload: {
   
   const overallScore = issues.reduce((sum, issue) => sum + issue.score, 0) / issues.length;
   const overallMood = overallScore > 0.3 ? 'pos' : overallScore < -0.3 ? 'neg' : 'neu';
-  const allThemes = [...new Set(issues.flatMap(issue => issue.themes))];
+  const allThemes = Array.from(new Set(issues.flatMap(issue => issue.themes)));
   
   return {
     issues,
@@ -48,7 +48,7 @@ export function mockAnalyzeIssues(payload: {
 }
 
 export function mockSummariseWeekly(region: string, isoWeek: string, rows: any[]) {
-  const themes = [...new Set(rows.flatMap((r: any) => r.themes || []))];
+  const themes = Array.from(new Set(rows.flatMap((r: any) => r.themes || [])));
   const storeCount = rows.length;
   
   let summary = `Week ${isoWeek} - ${region} Region: `;
@@ -78,8 +78,8 @@ export function mockAskCEO(question: string, isoWeek: string, rows: any[], summa
   console.log('Mock AI - rows:', rows.length, 'summaries:', summaries.length);
   console.log('Mock AI - sample row:', rows[0]);
   
-  const themes = [...new Set(rows.flatMap((r: any) => r.themes || []))];
-  const regions = [...new Set(rows.map((r: any) => r.region))];
+  const themes = Array.from(new Set(rows.flatMap((r: any) => r.themes || [])));
+  const regions = Array.from(new Set(rows.map((r: any) => r.region)));
   
   console.log('Mock AI - themes:', themes, 'regions:', regions);
   
