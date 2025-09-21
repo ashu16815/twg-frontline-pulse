@@ -1,6 +1,8 @@
 import './globals.css';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata = {
   title: 'TWG Frontline Pulse',
@@ -14,6 +16,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <NavBar />
         {children}
         <Footer />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
