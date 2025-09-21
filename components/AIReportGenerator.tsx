@@ -100,73 +100,73 @@ export default function AIReportGenerator() {
       </button>
 
       {error && (
-        <div className='card p-4 rounded-xl bg-red-50 border-red-200'>
-          <h3 className='text-red-800 font-medium'>Error</h3>
-          <p className='text-red-600 text-sm mt-1'>{error}</p>
+        <div className='card p-4 rounded-xl bg-red-50 border border-red-200'>
+          <h3 className='text-red-800 font-semibold text-base'>Error</h3>
+          <p className='text-red-700 text-sm mt-2 leading-relaxed'>{error}</p>
         </div>
       )}
 
       {report && (
         <div className='space-y-6'>
           {/* Executive Summary */}
-          <section className='card p-6 rounded-xl'>
-            <h2 className='text-xl font-semibold mb-4'>Executive Summary</h2>
-            <p className='text-gray-700 leading-relaxed'>{report.narrative}</p>
+          <section className='card p-6 rounded-xl bg-white border border-gray-200'>
+            <h2 className='text-xl font-semibold mb-4 text-gray-900'>Executive Summary</h2>
+            <p className='text-gray-800 leading-relaxed text-base'>{report.narrative}</p>
           </section>
 
           {/* Key Metrics */}
           <section className='grid md:grid-cols-4 gap-4'>
-            <div className='card p-4 rounded-xl text-center'>
+            <div className='card p-4 rounded-xl text-center bg-white border border-gray-200'>
               <div className='text-2xl font-bold text-blue-600'>{report.metrics.totalSubmissions}</div>
-              <div className='text-sm text-gray-600'>Total Submissions</div>
+              <div className='text-sm text-gray-700 font-medium'>Total Submissions</div>
             </div>
-            <div className='card p-4 rounded-xl text-center'>
+            <div className='card p-4 rounded-xl text-center bg-white border border-gray-200'>
               <div className='text-2xl font-bold text-purple-600'>{report.metrics.avgMoodScore.toFixed(1)}</div>
-              <div className='text-sm text-gray-600'>Avg Mood Score</div>
+              <div className='text-sm text-gray-700 font-medium'>Avg Mood Score</div>
             </div>
-            <div className='card p-4 rounded-xl text-center'>
+            <div className='card p-4 rounded-xl text-center bg-white border border-gray-200'>
               <div className='text-2xl font-bold text-green-600'>{report.metrics.topCategory}</div>
-              <div className='text-sm text-gray-600'>Top Category</div>
+              <div className='text-sm text-gray-700 font-medium'>Top Category</div>
             </div>
-            <div className='card p-4 rounded-xl text-center'>
+            <div className='card p-4 rounded-xl text-center bg-white border border-gray-200'>
               <div className='text-2xl font-bold text-red-600'>{report.metrics.criticalIssues}</div>
-              <div className='text-sm text-gray-600'>Critical Issues</div>
+              <div className='text-sm text-gray-700 font-medium'>Critical Issues</div>
             </div>
           </section>
 
           {/* Highlights */}
-          <section className='card p-6 rounded-xl'>
-            <h2 className='text-xl font-semibold mb-4'>Key Highlights</h2>
-            <ul className='space-y-2'>
+          <section className='card p-6 rounded-xl bg-white border border-gray-200'>
+            <h2 className='text-xl font-semibold mb-4 text-gray-900'>Key Highlights</h2>
+            <ul className='space-y-3'>
               {report.highlights.map((highlight, index) => (
-                <li key={index} className='flex items-start gap-2'>
-                  <span className='text-blue-500 mt-1'>•</span>
-                  <span className='text-gray-700'>{highlight}</span>
+                <li key={index} className='flex items-start gap-3'>
+                  <span className='text-blue-500 mt-1 text-lg font-bold'>•</span>
+                  <span className='text-gray-800 text-base leading-relaxed'>{highlight}</span>
                 </li>
               ))}
             </ul>
           </section>
 
           {/* Sentiment Analysis */}
-          <section className='card p-6 rounded-xl'>
-            <h2 className='text-xl font-semibold mb-4'>Sentiment Analysis</h2>
+          <section className='card p-6 rounded-xl bg-white border border-gray-200'>
+            <h2 className='text-xl font-semibold mb-4 text-gray-900'>Sentiment Analysis</h2>
             <div className='grid md:grid-cols-2 gap-6'>
               <div>
-                <h3 className='font-medium mb-2'>Overall Sentiment</h3>
-                <div className='flex items-center gap-2'>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getSentimentColor(report.sentimentAnalysis.overall)}`}>
+                <h3 className='font-semibold mb-3 text-gray-800'>Overall Sentiment</h3>
+                <div className='flex items-center gap-3'>
+                  <span className={`px-4 py-2 rounded-full text-sm font-bold ${getSentimentColor(report.sentimentAnalysis.overall)}`}>
                     {report.sentimentAnalysis.overall.toUpperCase()}
                   </span>
-                  <span className='text-sm text-gray-600'>Score: {report.sentimentAnalysis.score.toFixed(2)}</span>
+                  <span className='text-sm text-gray-700 font-medium'>Score: {report.sentimentAnalysis.score.toFixed(2)}</span>
                 </div>
               </div>
               <div>
-                <h3 className='font-medium mb-2'>By Region</h3>
-                <div className='space-y-1'>
+                <h3 className='font-semibold mb-3 text-gray-800'>By Region</h3>
+                <div className='space-y-2'>
                   {Object.entries(report.sentimentAnalysis.byRegion).map(([region, sentiment]) => (
                     <div key={region} className='flex items-center justify-between'>
-                      <span className='text-sm'>{region}</span>
-                      <span className={`px-2 py-1 rounded text-xs ${getSentimentColor(sentiment)}`}>
+                      <span className='text-sm font-medium text-gray-700'>{region}</span>
+                      <span className={`px-3 py-1 rounded text-xs font-bold ${getSentimentColor(sentiment)}`}>
                         {sentiment.toUpperCase()}
                       </span>
                     </div>
@@ -175,11 +175,14 @@ export default function AIReportGenerator() {
               </div>
             </div>
             {report.sentimentAnalysis.trends.length > 0 && (
-              <div className='mt-4'>
-                <h3 className='font-medium mb-2'>Trends</h3>
-                <ul className='space-y-1'>
+              <div className='mt-6'>
+                <h3 className='font-semibold mb-3 text-gray-800'>Trends</h3>
+                <ul className='space-y-2'>
                   {report.sentimentAnalysis.trends.map((trend, index) => (
-                    <li key={index} className='text-sm text-gray-600'>• {trend}</li>
+                    <li key={index} className='text-sm text-gray-700 flex items-start gap-2'>
+                      <span className='text-gray-500 mt-1'>•</span>
+                      <span>{trend}</span>
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -187,22 +190,22 @@ export default function AIReportGenerator() {
           </section>
 
           {/* Themes Analysis */}
-          <section className='card p-6 rounded-xl'>
-            <h2 className='text-xl font-semibold mb-4'>Theme Analysis</h2>
-            <div className='space-y-3'>
+          <section className='card p-6 rounded-xl bg-white border border-gray-200'>
+            <h2 className='text-xl font-semibold mb-4 text-gray-900'>Theme Analysis</h2>
+            <div className='space-y-4'>
               {report.themes.map((theme, index) => (
-                <div key={index} className='flex items-center justify-between p-3 bg-gray-50 rounded-lg'>
+                <div key={index} className='flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200'>
                   <div className='flex-1'>
-                    <div className='font-medium'>{theme.name}</div>
-                    <div className='text-sm text-gray-600'>
+                    <div className='font-semibold text-gray-900 text-base'>{theme.name}</div>
+                    <div className='text-sm text-gray-600 mt-1'>
                       {theme.regions.join(', ')} • {theme.count} mentions
                     </div>
                   </div>
                   <div className='flex gap-2'>
-                    <span className={`px-2 py-1 rounded text-xs ${getSentimentColor(theme.sentiment)}`}>
+                    <span className={`px-3 py-1 rounded text-xs font-bold ${getSentimentColor(theme.sentiment)}`}>
                       {theme.sentiment.toUpperCase()}
                     </span>
-                    <span className={`px-2 py-1 rounded text-xs ${getImpactColor(theme.impact)}`}>
+                    <span className={`px-3 py-1 rounded text-xs font-bold ${getImpactColor(theme.impact)}`}>
                       {theme.impact.toUpperCase()}
                     </span>
                   </div>
@@ -213,25 +216,25 @@ export default function AIReportGenerator() {
 
           {/* Risks and Opportunities */}
           <div className='grid md:grid-cols-2 gap-6'>
-            <section className='card p-6 rounded-xl'>
+            <section className='card p-6 rounded-xl bg-white border border-gray-200'>
               <h2 className='text-xl font-semibold mb-4 text-red-600'>Risks</h2>
-              <ul className='space-y-2'>
+              <ul className='space-y-3'>
                 {report.risks.map((risk, index) => (
-                  <li key={index} className='flex items-start gap-2'>
-                    <span className='text-red-500 mt-1'>⚠</span>
-                    <span className='text-gray-700 text-sm'>{risk}</span>
+                  <li key={index} className='flex items-start gap-3'>
+                    <span className='text-red-500 mt-1 text-lg'>⚠</span>
+                    <span className='text-gray-800 text-base leading-relaxed'>{risk}</span>
                   </li>
                 ))}
               </ul>
             </section>
 
-            <section className='card p-6 rounded-xl'>
+            <section className='card p-6 rounded-xl bg-white border border-gray-200'>
               <h2 className='text-xl font-semibold mb-4 text-green-600'>Opportunities</h2>
-              <ul className='space-y-2'>
+              <ul className='space-y-3'>
                 {report.opportunities.map((opportunity, index) => (
-                  <li key={index} className='flex items-start gap-2'>
-                    <span className='text-green-500 mt-1'>💡</span>
-                    <span className='text-gray-700 text-sm'>{opportunity}</span>
+                  <li key={index} className='flex items-start gap-3'>
+                    <span className='text-green-500 mt-1 text-lg'>💡</span>
+                    <span className='text-gray-800 text-base leading-relaxed'>{opportunity}</span>
                   </li>
                 ))}
               </ul>
@@ -239,18 +242,18 @@ export default function AIReportGenerator() {
           </div>
 
           {/* Action Items */}
-          <section className='card p-6 rounded-xl'>
-            <h2 className='text-xl font-semibold mb-4'>Action Items</h2>
-            <div className='space-y-3'>
+          <section className='card p-6 rounded-xl bg-white border border-gray-200'>
+            <h2 className='text-xl font-semibold mb-4 text-gray-900'>Action Items</h2>
+            <div className='space-y-4'>
               {report.actions.map((action, index) => (
-                <div key={index} className='flex items-start justify-between p-4 bg-gray-50 rounded-lg'>
+                <div key={index} className='flex items-start justify-between p-4 bg-gray-50 rounded-lg border border-gray-200'>
                   <div className='flex-1'>
-                    <div className='font-medium'>{action.action}</div>
+                    <div className='font-semibold text-gray-900 text-base'>{action.action}</div>
                     <div className='text-sm text-gray-600 mt-1'>
                       Owner: {action.owner} • Due: {action.due}
                     </div>
                   </div>
-                  <span className={`px-3 py-1 rounded text-xs font-medium ${getPriorityColor(action.priority)}`}>
+                  <span className={`px-3 py-1 rounded text-xs font-bold ${getPriorityColor(action.priority)}`}>
                     {action.priority.toUpperCase()}
                   </span>
                 </div>
