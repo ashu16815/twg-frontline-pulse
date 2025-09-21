@@ -35,7 +35,7 @@ export default async function Page({ searchParams }: { searchParams: { message?:
         {regions.map((r)=>{
           const s = (summ||[]).find((x:any)=>x.region===r);
           return (
-            <div key={r} className='card rounded-3xl hover:scale-[1.01] transition will-change-transform'>
+            <div key={r as string} className='card rounded-3xl hover:scale-[1.01] transition will-change-transform'>
               <div className='text-xs opacity-60'>{isoWeek} • {r}</div>
               <div className='mt-2 whitespace-pre-wrap'>{s?.summary || 'No summary yet.'}</div>
               <div className='mt-3 text-sm opacity-80'>Themes: {(s?.top_themes || []).join(', ') || '—'}</div>
