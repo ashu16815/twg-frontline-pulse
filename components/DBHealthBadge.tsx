@@ -11,11 +11,34 @@ export default function DBHealthBadge() {
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        const response = await fetch('/api/health/db');
+        const response = await fetch('/api/health/db', { 
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
         const data = await response.json();
+        console.log('DB Health check result:', data);
         setHealth({ ok: data.ok, loading: false });
       } catch (error) {
-        setHealth({ ok: false, loading: false });
+        console.error('DB Health check error:', error);
+        // Retry once after a short delay
+        setTimeout(async () => {
+          try {
+            const retryResponse = await fetch('/api/health/db', { 
+              cache: 'no-cache',
+              headers: {
+                'Cache-Control': 'no-cache'
+              }
+            });
+            const retryData = await retryResponse.json();
+            console.log('DB Health check retry result:', retryData);
+            setHealth({ ok: retryData.ok, loading: false });
+          } catch (retryError) {
+            console.error('DB Health check retry error:', retryError);
+            setHealth({ ok: false, loading: false });
+          }
+        }, 1000);
       }
     };
 
