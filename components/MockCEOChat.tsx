@@ -25,7 +25,7 @@ export default function MockCEOChat() {
     const response = mockResponses[q] || 
       mockResponses[Object.keys(mockResponses).find(key => 
         q.toLowerCase().includes(key.toLowerCase().split(' ')[0])
-      )] || 
+      ) || ''] || 
       'I need more specific information about the data you\'re asking about. Try asking about specific regions, stores, themes, or performance metrics.';
     
     setA(response);
