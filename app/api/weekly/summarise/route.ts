@@ -10,10 +10,10 @@ export async function POST() {
 
   for (const region of regions) {
     const regionRows = (rows || []).filter((r: any) => r.region === region);
-    const ai = await summariseWeekly(region, isoWeek, regionRows);
+    const ai = await summariseWeekly(region as string, isoWeek, regionRows);
     const ins = await sbAdmin.from('weekly_summary').insert({
       iso_week: isoWeek,
-      region,
+      region: region as string,
       summary: ai.summary,
       top_themes: ai.topThemes
     });
