@@ -8,7 +8,6 @@ async function chatJSON(messages: {role:"system"|"developer"|"user"; content:str
 
   const res = await client.chat.completions.create({
     model,
-    temperature: 0.2,
     response_format: { type: "json_object" } as any, // supported on Azure recent builds
     messages
   });
