@@ -29,12 +29,19 @@ export default function VoiceRecorder({ onText }: { onText: (t: string) => void 
       fd.append('file', blob, 'audio.webm');
       fd.append('mime', mr.mimeType);
       
-      const r = await fetch('/api/transcribe', { method: 'POST', body: fd });
-      if (r.ok) {
-        const { text } = await r.json();
-        onText(text);
-      } else {
-        alert('Transcription failed');
+      try {
+        const r = await fetch('/api/transcribe', { method: 'POST', body: fd });
+        if (r.ok) {
+          const { text } = await r.json();
+          onText(text);
+        } else {
+          const error = await r.json();
+          console.error('Transcription error:', error);
+          alert(`Transcription failed: ${error.error || 'Unknown error'}`);
+        }
+      } catch (error) {
+        console.error('Transcription request failed:', error);
+        alert('Transcription service unavailable. Please type your feedback instead.');
       }
     };
     
@@ -66,6 +73,9 @@ export default function VoiceRecorder({ onText }: { onText: (t: string) => void 
       </div>
       <p className='text-xs text-slate-500'>
         Tip: speak in order: "Apparel…; Home…; Toys…" You can edit text afterward.
+      </p>
+      <p className='text-xs text-amber-600'>
+        Note: Voice transcription requires Azure OpenAI configuration. If unavailable, please type your feedback.
       </p>
     </div>
   );
