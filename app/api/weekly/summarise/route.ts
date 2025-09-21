@@ -15,16 +15,16 @@ export async function POST() {
       
       let ai;
       try {
-        ai = await summariseWeeklyChat({ region, isoWeek, rows: regionRows });
+        ai = await summariseWeeklyChat({ region: region as string, isoWeek, rows: regionRows });
       } catch (error) {
         console.log('Azure OpenAI not available, using mock AI summary');
         const { mockSummariseWeekly } = await import('@/lib/mock-ai');
-        ai = mockSummariseWeekly(region, isoWeek, regionRows);
+        ai = mockSummariseWeekly(region as string, isoWeek, regionRows);
       }
       
       const { error } = await sbAdmin.from("weekly_summary").insert({
         iso_week: isoWeek, 
-        region, 
+        region: region as string, 
         summary: ai.summary, 
         top_themes: ai.topThemes
       });
