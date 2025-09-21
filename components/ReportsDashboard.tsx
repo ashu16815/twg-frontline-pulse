@@ -23,7 +23,7 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
     return acc;
   }, {});
   const topThemes = Object.entries(themeCounts)
-    .sort(([,a], [,b]) => b - a)
+    .sort(([,a], [,b]) => (b as number) - (a as number))
     .slice(0, 5);
   
   // Mood analysis
@@ -157,7 +157,7 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
           <h2 className='text-lg font-semibold mb-4'>Issue Categories</h2>
           <div className='space-y-3'>
             {Object.entries(categoryCounts)
-              .sort(([,a], [,b]) => b - a)
+              .sort(([,a], [,b]) => (b as number) - (a as number))
               .map(([category, count]) => (
                 <div key={category} className='flex items-center justify-between'>
                   <span className='text-sm font-medium'>{category}</span>
@@ -180,7 +180,7 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
           <h2 className='text-lg font-semibold mb-4'>Impact Types</h2>
           <div className='space-y-3'>
             {Object.entries(impactCounts)
-              .sort(([,a], [,b]) => b - a)
+              .sort(([,a], [,b]) => (b as number) - (a as number))
               .map(([impact, count]) => (
                 <div key={impact} className='flex items-center justify-between'>
                   <span className='text-sm font-medium'>{impact}</span>
