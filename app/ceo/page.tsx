@@ -1,13 +1,34 @@
 import { sbAdmin } from '@/lib/supabase-admin';
 import { weekKey } from '@/lib/gpt5';
 import Image from 'next/image';
+import CEOChat from '@/components/CEOChat';
+import demoData from '@/scripts/demo-data';
 
 export default async function Page({ searchParams }: { searchParams: { message?: string; store?: string; region?: string } }){
   const isoWeek = weekKey(new Date());
-  const [{data:rows},{data:summ}] = await Promise.all([
-    sbAdmin.from('store_feedback').select('*').eq('iso_week',isoWeek),
-    sbAdmin.from('weekly_summary').select('*').eq('iso_week',isoWeek)
-  ]);
+  
+  let rows, summ;
+  try {
+    const [{data:rowsData},{data:summData}] = await Promise.all([
+      sbAdmin.from('store_feedback').select('*').eq('iso_week',isoWeek),
+      sbAdmin.from('weekly_summary').select('*').eq('iso_week',isoWeek)
+    ]);
+    
+    // Check if we have data, if not use demo data
+    if (!rowsData || rowsData.length === 0 || !summData || summData.length === 0) {
+      console.log('No database data found, using demo data');
+      rows = demoData.feedback;
+      summ = demoData.summaries;
+    } else {
+      rows = rowsData;
+      summ = summData;
+    }
+  } catch (error) {
+    console.log('Database not available, using demo data');
+    rows = demoData.feedback;
+    summ = demoData.summaries;
+  }
+  
   const regions = Array.from(new Set((rows||[]).map((r:any)=>r.region)));
   
   return (
@@ -44,28 +65,34 @@ export default async function Page({ searchParams }: { searchParams: { message?:
         })}
       </section>
       
-      <section className='card rounded-3xl'>
-        <h2 className='text-lg font-semibold mb-3'>This Week — Submissions</h2>
-        <div className='overflow-x-auto'>
-          <table className='table'>
-            <thead><tr><th>When</th><th>Store</th><th>Region</th><th>Issue 1</th><th>Issue 2</th><th>Issue 3</th><th>Overall</th><th>Themes</th></tr></thead>
-            <tbody>
-              {(rows||[]).map((r:any)=> (
-                <tr key={r.id}>
-                  <td>{new Date(r.created_at).toLocaleString()}</td>
-                  <td>{r.store_id} — {r.store_name}</td>
-                  <td>{r.region}</td>
-                  <td>{r.issue1_cat}: {r.issue1_text} ({r.issue1_mood||'-'})</td>
-                  <td>{r.issue2_cat}: {r.issue2_text} ({r.issue2_mood||'-'})</td>
-                  <td>{r.issue3_cat}: {r.issue3_text} ({r.issue3_mood||'-'})</td>
-                  <td>{r.overall_mood||'-'}</td>
-                  <td>{(r.themes||[]).join(', ')}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+          <section className='card rounded-3xl'>
+            <h2 className='text-lg font-semibold mb-3'>This Week — Submissions</h2>
+            <div className='overflow-x-auto'>
+              <table className='table'>
+                <thead><tr><th>When</th><th>Store</th><th>Region</th><th>Issue 1</th><th>Issue 2</th><th>Issue 3</th><th>Overall</th><th>Themes</th></tr></thead>
+                <tbody>
+                  {(rows||[]).map((r:any)=> (
+                    <tr key={r.id}>
+                      <td>{new Date(r.created_at).toLocaleString()}</td>
+                      <td>{r.store_id} — {r.store_name}</td>
+                      <td>{r.region}</td>
+                      <td>{r.issue1_cat}: {r.issue1_text} ({r.issue1_mood||'-'})</td>
+                      <td>{r.issue2_cat}: {r.issue2_text} ({r.issue2_mood||'-'})</td>
+                      <td>{r.issue3_cat}: {r.issue3_text} ({r.issue3_mood||'-'})</td>
+                      <td>{r.overall_mood||'-'}</td>
+                      <td>{(r.themes||[]).join(', ')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+          
+          <section className='card rounded-3xl'>
+            <h2 className='text-lg font-semibold mb-3'>Ask the Data</h2>
+            <p className='opacity-70 mb-4'>Ask questions about this week's themes, risks, regions, or stores.</p>
+            <CEOChat />
+          </section>
     </main>
   );
 }
