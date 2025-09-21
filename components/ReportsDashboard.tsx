@@ -117,7 +117,7 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
                   <div className='w-32 bg-gray-200 rounded-full h-2'>
                     <div 
                       className='bg-blue-500 h-2 rounded-full' 
-                      style={{ width: `${(count / Math.max(...Object.values(themeCounts))) * 100}%` }}
+                      style={{ width: `${((count as number) / Math.max(...Object.values(themeCounts))) * 100}%` }}
                     />
                   </div>
                   <span className='text-sm text-gray-600'>{count}</span>
@@ -132,7 +132,7 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
           <h2 className='text-lg font-semibold mb-4'>Mood Distribution</h2>
           <div className='space-y-3'>
             {Object.entries(moodCounts).map(([mood, count]) => {
-              const percentage = (count / filteredRows.length) * 100;
+              const percentage = ((count as number) / filteredRows.length) * 100;
               const color = mood === 'pos' ? 'bg-green-500' : mood === 'neg' ? 'bg-red-500' : 'bg-yellow-500';
               return (
                 <div key={mood} className='flex items-center justify-between'>
@@ -165,7 +165,7 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
                     <div className='w-32 bg-gray-200 rounded-full h-2'>
                       <div 
                         className='bg-purple-500 h-2 rounded-full'
-                        style={{ width: `${(count / Math.max(...Object.values(categoryCounts))) * 100}%` }}
+                        style={{ width: `${((count as number) / Math.max(...Object.values(categoryCounts))) * 100}%` }}
                       />
                     </div>
                     <span className='text-sm text-gray-600'>{count}</span>
@@ -188,7 +188,7 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
                     <div className='w-32 bg-gray-200 rounded-full h-2'>
                       <div 
                         className='bg-orange-500 h-2 rounded-full'
-                        style={{ width: `${(count / Math.max(...Object.values(impactCounts))) * 100}%` }}
+                        style={{ width: `${((count as number) / Math.max(...Object.values(impactCounts))) * 100}%` }}
                       />
                     </div>
                     <span className='text-sm text-gray-600'>{count}</span>
