@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
-import { sbAdmin } from '@/lib/supabase-admin';
-import { weekKey, askCEO } from '@/lib/gpt5';
+import { NextResponse } from "next/server";
+import { sbAdmin } from "@/lib/supabase-admin";
+import { weekKey } from "@/lib/gpt5";
+import { askCEOChat } from "@/lib/ai-chat";
 import demoData from '@/scripts/demo-data';
 
 export async function POST(req: Request) {
@@ -11,8 +12,8 @@ export async function POST(req: Request) {
     let rows, summ;
     try {
       const [{ data: rowsData }, { data: summData }] = await Promise.all([
-        sbAdmin.from('store_feedback').select('*').eq('iso_week', isoWeek),
-        sbAdmin.from('weekly_summary').select('*').eq('iso_week', isoWeek)
+        sbAdmin.from("store_feedback").select("*").eq("iso_week", isoWeek),
+        sbAdmin.from("weekly_summary").select("*").eq("iso_week", isoWeek)
       ]);
       
       // Check if we have data, if not use demo data
@@ -30,8 +31,16 @@ export async function POST(req: Request) {
       summ = demoData.summaries;
     }
 
-    const answer = await askCEO(question, isoWeek, rows || [], summ || []);
-    return NextResponse.json({ answer });
+    let ai;
+    try {
+      ai = await askCEOChat({ question, isoWeek, rows: rows || [], summaries: summ || [] });
+    } catch (error) {
+      console.log('Azure OpenAI not available, using mock AI Q&A');
+      const { mockAskCEO } = await import('@/lib/mock-ai');
+      ai = mockAskCEO(question, isoWeek, rows || [], summ || []);
+    }
+
+    return NextResponse.json({ answer: ai.answer });
   } catch (error) {
     console.error('CEO ask API error:', error);
     return NextResponse.json({ 

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { sbAdmin } from '@/lib/supabase-admin';
-import { analyzeIssues, weekKey } from '@/lib/gpt5';
+import { analyzeIssuesChat } from '@/lib/ai-chat';
+import { weekKey } from '@/lib/gpt5';
 
 const schema = z.object({
   storeId: z.string(),
@@ -32,10 +33,24 @@ export async function POST(req: Request) {
     const p: any = pRes.data;
     const isoWeek = weekKey(new Date());
 
-    // Try to analyze issues with AI
+    // Call YOUR Azure OpenAI (chat.completions)
     let ai;
     try {
-      ai = await analyzeIssues({
+      ai = await analyzeIssuesChat({
+        region: p.region,
+        isoWeek,
+        storeId: p.storeId,
+        storeName: p.storeName,
+        issues: [
+          { rank: 1, category: p.issue1Cat, text: p.issue1Text, impact: p.issue1Impact || '' },
+          { rank: 2, category: p.issue2Cat, text: p.issue2Text, impact: p.issue2Impact || '' },
+          { rank: 3, category: p.issue3Cat, text: p.issue3Text, impact: p.issue3Impact || '' }
+        ]
+      });
+    } catch (aiError) {
+      console.log('Azure OpenAI not available, using mock AI analysis');
+      const { mockAnalyzeIssues } = await import('@/lib/mock-ai');
+      ai = mockAnalyzeIssues({
         region: p.region,
         isoWeek,
         issues: [
@@ -44,19 +59,6 @@ export async function POST(req: Request) {
           { rank: 3, category: p.issue3Cat, text: p.issue3Text, impact: p.issue3Impact || '' }
         ]
       });
-    } catch (aiError) {
-      console.error('AI analysis failed:', aiError);
-      // Fallback to basic analysis
-      ai = {
-        issues: [
-          { rank: 1, score: 0, mood: 'neu' },
-          { rank: 2, score: 0, mood: 'neu' },
-          { rank: 3, score: 0, mood: 'neu' }
-        ],
-        overallScore: 0,
-        overallMood: 'neu',
-        themes: [p.issue1Cat, p.issue2Cat, p.issue3Cat].filter(Boolean)
-      };
     }
 
     // Try to insert into database
