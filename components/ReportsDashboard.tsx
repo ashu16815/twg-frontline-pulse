@@ -117,7 +117,7 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
                   <div className='w-32 bg-gray-200 rounded-full h-2'>
                     <div 
                       className='bg-blue-500 h-2 rounded-full' 
-                      style={{ width: `${((count as number) / Math.max(...Object.values(themeCounts))) * 100}%` }}
+                      style={{ width: `${((count as number) / Math.max(...Object.values(themeCounts).map(v => v as number))) * 100}%` }}
                     />
                   </div>
                   <span className='text-sm text-gray-600'>{count}</span>
@@ -165,7 +165,7 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
                     <div className='w-32 bg-gray-200 rounded-full h-2'>
                       <div 
                         className='bg-purple-500 h-2 rounded-full'
-                        style={{ width: `${((count as number) / Math.max(...Object.values(categoryCounts))) * 100}%` }}
+                        style={{ width: `${((count as number) / Math.max(...Object.values(categoryCounts).map(v => v as number))) * 100}%` }}
                       />
                     </div>
                     <span className='text-sm text-gray-600'>{count}</span>
@@ -188,7 +188,7 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
                     <div className='w-32 bg-gray-200 rounded-full h-2'>
                       <div 
                         className='bg-orange-500 h-2 rounded-full'
-                        style={{ width: `${((count as number) / Math.max(...Object.values(impactCounts))) * 100}%` }}
+                        style={{ width: `${((count as number) / Math.max(...Object.values(impactCounts).map(v => v as number))) * 100}%` }}
                       />
                     </div>
                     <span className='text-sm text-gray-600'>{count}</span>
