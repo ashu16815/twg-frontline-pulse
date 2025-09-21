@@ -1,24 +1,50 @@
-import OpenAI from "openai";
-
-export function getAzureOpenAI() {
-  const baseURL = process.env.AZURE_OPENAI_BASE_URL?.trim();
-  const apiKey  = process.env.AZURE_OPENAI_API_KEY?.trim();
-  const apiVersion = process.env.AZURE_OPENAI_API_VERSION?.trim();
-  const deployment = process.env.AZURE_OPENAI_DEPLOYMENT?.trim();
+export async function callAzureJSON(messages: any[]) {
+  const ep = process.env.AZURE_OPENAI_BASE_URL?.trim();
+  const key = process.env.AZURE_OPENAI_API_KEY?.trim();
+  const dep = process.env.AZURE_OPENAI_DEPLOYMENT?.trim();
+  const v = process.env.AZURE_OPENAI_API_VERSION?.trim() || '2024-12-01-preview';
   
-  if (!baseURL || !apiKey || !apiVersion || !deployment) {
-    throw new Error("Azure OpenAI environment variables not set");
-  }
+  if (!ep || !key || !dep) throw new Error('Missing Azure OpenAI env');
   
-  return new OpenAI({ 
-    baseURL: `${baseURL}/openai/deployments/${deployment}`,
-    apiKey,
-    defaultQuery: { 'api-version': apiVersion }
+  const r = await fetch(`${ep}/openai/deployments/${dep}/chat/completions?api-version=${v}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api-key': key
+    },
+    body: JSON.stringify({
+      messages,
+      response_format: { type: 'json_object' }
+    })
   });
+  
+  if (!r.ok) throw new Error(await r.text());
+  const j = await r.json();
+  const text = j.choices?.[0]?.message?.content || '';
+  return text ? JSON.parse(text) : {};
 }
 
-// For chat.completions (your deployment name is the model id)
-export function getChatModel() {
-  const m = process.env.AZURE_OPENAI_DEPLOYMENT?.trim() || "gpt-5-mini";
-  return m;
+export async function transcribeAudioWebm(buf: Buffer, mime: string) {
+  const ep = process.env.AZURE_OPENAI_BASE_URL?.trim();
+  const key = process.env.AZURE_OPENAI_API_KEY?.trim();
+  const dep = process.env.AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE?.trim() || 'gpt-4o-transcribe';
+  const v = process.env.AZURE_OPENAI_API_VERSION?.trim() || '2024-12-01-preview';
+  
+  if (!ep || !key || !dep) throw new Error('Missing Azure OpenAI env');
+  
+  const fd = new FormData();
+  fd.append('file', new Blob([buf], { type: mime }), 'audio.webm');
+  fd.append('response_format', 'json');
+  
+  const r = await fetch(`${ep}/openai/deployments/${dep}/audio/transcriptions?api-version=${v}`, {
+    method: 'POST',
+    headers: {
+      'api-key': key
+    },
+    body: fd
+  });
+  
+  if (!r.ok) throw new Error(await r.text());
+  const j = await r.json();
+  return j.text as string;
 }

@@ -1,6 +1,6 @@
 {
   "name": "twg-frontline-pulse",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,8 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:push": "node scripts/supabase-init.js",
+    "db:apply": "node scripts/db-apply.js",
     "seed": "node scripts/seed.js",
+    "db:push": "node scripts/supabase-init.js",
     "seed:stores": "node scripts/seed-stores.js",
     "seed:feedback": "node scripts/seed-feedback.js",
     "seed:all": "npm run seed:stores && npm run seed:feedback"
@@ -28,7 +29,8 @@
     "react-dom": "^18.3.1",
     "tailwindcss": "3.4.12",
     "uuid": "9.0.1",
-    "zod": "3.23.8"
+    "zod": "3.23.8",
+    "wavesurfer.js": "7.7.12"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",
