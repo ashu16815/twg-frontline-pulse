@@ -13,7 +13,7 @@ export async function callJSON(messages: any[]) {
     const text = response.choices?.[0]?.message?.content || '';
     return JSON.parse(text || '{}');
   } catch (error) {
-    throw new Error(`Azure OpenAI call failed: ${error.message}`);
+    throw new Error(`Azure OpenAI call failed: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
