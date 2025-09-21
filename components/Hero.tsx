@@ -25,6 +25,9 @@ export default function Hero() {
             <a className="btn" href="/weekly/submit">
               Give Weekly Feedback
             </a>
+            <a className="btn" href="/reports">
+              View Reports
+            </a>
             <SheenButton>
               <a href="/ceo">CEO Office</a>
             </SheenButton>

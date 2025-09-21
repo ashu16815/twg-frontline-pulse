@@ -12,6 +12,9 @@ export default function NavBar() {
           <Link href="/weekly/submit" className="btn">
             Give Weekly Feedback
           </Link>
+          <Link href="/reports" className="btn">
+            Reports
+          </Link>
           <Link href="/ceo-demo" className="btn">
             CEO Demo
           </Link>

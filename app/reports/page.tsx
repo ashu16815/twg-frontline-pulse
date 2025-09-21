@@ -1,5 +1,6 @@
 import { sbAdmin } from '@/lib/supabase-admin';
 import { weekKey } from '@/lib/gpt5';
+import ReportsDashboard from '@/components/ReportsDashboard';
 
 export default async function Reports() {
   const wk = weekKey(new Date());
@@ -9,38 +10,20 @@ export default async function Reports() {
   ]);
 
   return (
-    <main className='max-w-5xl mx-auto p-8 space-y-6'>
-      <h1 className='text-2xl font-semibold'>Weekly Report</h1>
-      <p className='text-slate-600'>
-        Week {wk}. Generate an Azure OpenAI executive report grounded on current submissions and summaries.
-      </p>
-      <form action='/api/reports/generate' method='post'>
-        <button className='btn'>Generate report</button>
-      </form>
-      <ReportPreview rows={rows || []} summ={summ || []} />
+    <main className='max-w-7xl mx-auto p-8 space-y-8'>
+      <div className='flex items-center justify-between'>
+        <div>
+          <h1 className='text-3xl font-semibold'>Executive Reports</h1>
+          <p className='text-slate-600 mt-2'>
+            Week {wk} • Comprehensive analysis of frontline feedback and performance metrics
+          </p>
+        </div>
+        <form action='/api/reports/generate' method='post'>
+          <button className='btn-primary sheen'>Generate AI Report</button>
+        </form>
+      </div>
+      
+      <ReportsDashboard rows={rows || []} summaries={summ || []} currentWeek={wk} />
     </main>
-  );
-}
-
-function ReportPreview({ rows, summ }: { rows: any[]; summ: any[] }) {
-  return (
-    <section className='card p-6 rounded-xl space-y-4'>
-      <h2 className='text-lg font-semibold'>Data snapshot</h2>
-      <div className='grid md:grid-cols-3 gap-4'>
-        {['North', 'Central', 'South'].map(r => {
-          const c = rows.filter(x => x.region === r).length;
-          return (
-            <div key={r} className='border rounded-lg p-4 bg-white'>
-              <div className='text-sm text-slate-500'>{r}</div>
-              <div className='text-2xl font-semibold'>{c}</div>
-              <div className='text-xs text-slate-500'>submissions</div>
-            </div>
-          );
-        })}
-      </div>
-      <div className='text-sm text-slate-600'>
-        Latest summaries: {(summ || []).length || 0}
-      </div>
-    </section>
   );
 }
