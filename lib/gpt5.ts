@@ -63,6 +63,27 @@ export async function generateExecutiveReport(isoWeek: string, allRows: any[], a
   return callAzureJSON([system, user]);
 }
 
+export async function analyzeIssues(payload: {
+  region: string;
+  isoWeek: string;
+  issues: {
+    rank: number;
+    category: string;
+    text: string;
+    impact?: string;
+  }[];
+}) {
+  const system = {
+    role: 'system',
+    content: `You are a retail ops analyst. Return JSON: {issues:[{rank,score(-1..1),mood:'neg|neu|pos',themes:string[]}], overallScore, overallMood:'neg|neu|pos', themes:string[]}. Use stable tags like 'Apparel Stockouts','Late Delivery','Planogram Compliance','Replen Backlog','Staffing Shortfall'.`
+  };
+  const user = {
+    role: 'user',
+    content: JSON.stringify(payload)
+  };
+  return callAzureJSON([system, user]);
+}
+
 export async function askCEO(question: string, isoWeek: string, rows: any[], summaries: any[]) {
   const system = {
     role: 'system',
