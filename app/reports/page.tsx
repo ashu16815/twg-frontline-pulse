@@ -12,7 +12,7 @@ export default async function Reports() {
     <main className='max-w-6xl mx-auto p-8 space-y-6'>
       <h1 className='text-2xl font-semibold'>Weekly Report — {wk}</h1>
       <div className='grid md:grid-cols-3 gap-4'>
-        <Card title='Total reported impact' value={`$${(rows || []).reduce((a, r) => a + (r.r1_dollar_impact || 0) + (r.r2_dollar_impact || 0) + (r.r3_dollar_impact || 0), 0).toLocaleString()}`} />
+        <Card title='Total reported impact' value={`$${(rows || []).reduce((a: number, r: any) => a + (r.r1_dollar_impact || 0) + (r.r2_dollar_impact || 0) + (r.r3_dollar_impact || 0), 0).toLocaleString()}`} />
         <Card title='Stores submitted' value={(rows || []).length} />
         <Card title='Regions summarised' value={Array.from(new Set((summ || []).map((s: any) => s.region))).length} />
       </div>
