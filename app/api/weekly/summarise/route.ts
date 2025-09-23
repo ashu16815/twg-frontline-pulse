@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { sbAdmin } from '@/lib/supabase-admin';
-import { summariseWeekly, weekKey } from '@/lib/gpt5';
+import { summariseWeeklyFinance, weekKey } from '@/lib/gpt5';
 
 export async function POST() {
   const isoWeek = weekKey(new Date());
@@ -10,12 +10,14 @@ export async function POST() {
 
   for (const region of regions) {
     const regionRows = (rows || []).filter((r: any) => r.region === region);
-    const ai = await summariseWeekly(region as string, isoWeek, regionRows);
+    const ai = await summariseWeeklyFinance(isoWeek, region as string, regionRows);
     const ins = await sbAdmin.from('weekly_summary').insert({
       iso_week: isoWeek,
       region: region as string,
       summary: ai.summary,
-      top_themes: ai.topThemes
+      top_themes: ai.topThemes,
+      total_reported_impact: ai.totalImpact,
+      top_drivers: ai.topDrivers
     });
     if (!ins.error) created++;
   }

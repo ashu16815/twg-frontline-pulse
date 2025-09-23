@@ -8,19 +8,29 @@ export function weekKey(d: Date) {
   return `${t.getFullYear()}-W${week}`;
 }
 
-export async function analyzeIssues(payload: {
-  region: string;
+export async function analyzePerformance(payload: {
   isoWeek: string;
-  issues: {
+  region: string;
+  hitTarget: boolean;
+  variancePct?: number;
+  varianceDollars?: number;
+  reasons: {
     rank: number;
-    category: string;
+    dept: string;
+    subcat: string;
+    driver: string;
     text: string;
-    impact?: string;
+    dollarImpact: number;
+  }[];
+  priorities: {
+    rank: number;
+    text: string;
+    horizon: string;
   }[];
 }) {
   const system = {
     role: 'system',
-    content: `You are a retail ops analyst. Return JSON: {issues:[{rank,score(-1..1),mood:'neg|neu|pos',themes:string[]}], overallScore, overallMood:'neg|neu|pos', themes:string[]}. Use stable tags like 'Apparel Stockouts','Late Delivery','Planogram Compliance','Replen Backlog','Staffing Shortfall'.`
+    content: `You are a retail ops & finance analyst. Return strict JSON: {overall:{hitTarget:boolean,variancePct:number,varianceDollars:number}, reasons:[{rank,dept,subcat,driver,text,dollarImpact,score(-1..1),mood:'neg|neu|pos'}], themes:string[], priorities:[{rank,text,horizon}], overallMood:'neg|neu|pos'}. Normalise 'driver' to a stable set (Availability, Late Delivery, Roster/Sickness, Space/Planogram, Fitting Rooms, Promo On-Shelf, Replen Backlog, POS Stability, Bulky Stock).`
   };
   const user = {
     role: 'user',
@@ -29,14 +39,14 @@ export async function analyzeIssues(payload: {
   return callAzureJSON([system, user]);
 }
 
-export async function summariseWeekly(region: string, isoWeek: string, rows: any[]) {
+export async function summariseWeeklyFinance(isoWeek: string, region: string, rows: any[]) {
   const system = {
     role: 'system',
-    content: `Create an executive WEEKLY narrative. Return JSON: {summary:string, topThemes:string[]}. Max 200 words. Include theme counts, 2 store examples, and 5 actions with owner placeholders.`
+    content: `Create a WEEKLY regional finance-aware summary. Return JSON: {summary:string, topThemes:string[], totalImpact:number, topDrivers:[{driver:string,dollars:number,count:number}]}. Sum dollarImpact across stores by driver.`
   };
   const user = {
     role: 'user',
-    content: JSON.stringify({ region, isoWeek, rows })
+    content: JSON.stringify({ isoWeek, region, rows })
   };
   return callAzureJSON([system, user]);
 }
@@ -44,41 +54,11 @@ export async function summariseWeekly(region: string, isoWeek: string, rows: any
 export async function generateExecutiveReport(isoWeek: string, allRows: any[], allSummaries: any[]) {
   const system = {
     role: 'system',
-    content: `You are a retail executive analyst creating a comprehensive weekly report. Analyze the data and return JSON with these keys:
-    {
-      "highlights": ["key insight 1", "key insight 2", "key insight 3"],
-      "themes": [{"name": "theme name", "count": number, "regions": ["region1", "region2"], "sentiment": "pos|neg|neu", "impact": "high|medium|low"}],
-      "sentimentAnalysis": {
-        "overall": "pos|neg|neu",
-        "score": -1.0 to 1.0,
-        "byRegion": {"North": "pos|neg|neu", "Central": "pos|neg|neu", "South": "pos|neg|neu"},
-        "trends": ["trending positive", "concerning negative"]
-      },
-      "risks": ["risk 1", "risk 2", "risk 3"],
-      "opportunities": ["opportunity 1", "opportunity 2"],
-      "actions": [{"owner": "role", "action": "specific action", "due": "timeline", "priority": "high|medium|low"}],
-      "narrative": "executive summary paragraph",
-      "metrics": {
-        "totalSubmissions": number,
-        "avgMoodScore": number,
-        "topCategory": "category name",
-        "criticalIssues": number
-      }
-    }
-    
-    Focus on actionable insights, sentiment trends, and business impact.`
+    content: `Produce an exec report grounded only in provided data. Return JSON: {narrative:string, highlights:string[], themes:{name:string,count:number,impact:number}[], risks:string[], actions:{owner:string,action:string,due:string}[]}. Aggregate theme counts and total $ impact across regions.`
   };
   const user = {
     role: 'user',
-    content: JSON.stringify({ 
-      isoWeek, 
-      rows: allRows, 
-      summaries: allSummaries,
-      totalSubmissions: allRows.length,
-      regions: Array.from(new Set(allRows.map(r => r.region))),
-      categories: Array.from(new Set(allRows.flatMap(r => [r.issue1_cat, r.issue2_cat, r.issue3_cat]))),
-      moods: allRows.map(r => r.overall_mood).filter(Boolean)
-    })
+    content: JSON.stringify({ isoWeek, rows: allRows, summaries: allSummaries })
   };
   return callAzureJSON([system, user]);
 }
@@ -86,11 +66,11 @@ export async function generateExecutiveReport(isoWeek: string, allRows: any[], a
 export async function askCEO(question: string, isoWeek: string, rows: any[], summaries: any[]) {
   const system = {
     role: 'system',
-    content: `Answer CEO questions strictly from data. Be concise (<=120 words). If unknown, say so. Return JSON: {answer:string}.`
+    content: `Answer CEO questions with crisp facts <=120 words, from supplied weekly data only. Return JSON: {answer:string}. Include numbers ($, counts) if present.`
   };
   const user = {
     role: 'user',
-    content: JSON.stringify({ isoWeek, rows: summaries.length ? summaries : [], details: rows, question })
+    content: JSON.stringify({ isoWeek, rows, summaries, question })
   };
   return callAzureJSON([system, user]);
 }

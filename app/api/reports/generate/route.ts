@@ -11,6 +11,15 @@ export async function POST() {
 
   try {
     const rep = await generateExecutiveReport(wk, rows || [], summ || []);
+    const ins = await sbAdmin.from('executive_report').insert({
+      iso_week: wk,
+      narrative: rep.narrative,
+      highlights: rep.highlights,
+      themes: rep.themes,
+      risks: rep.risks,
+      actions: rep.actions
+    });
+    if (ins.error) return NextResponse.json({ ok: false, error: ins.error.message }, { status: 500 });
     return NextResponse.json({ ok: true, report: rep });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
