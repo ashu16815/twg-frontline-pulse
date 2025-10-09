@@ -23,6 +23,22 @@ export default async function Header() {
           />
           <span className='text-white/90 text-sm font-medium'>Win In Store</span>
         </Link>
+        
+        {/* Navigation Links */}
+        <nav className='flex items-center gap-1 ml-4'>
+          <Link href='/reports' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
+            Reports
+          </Link>
+          <Link href='/ceo' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
+            Ask Questions
+          </Link>
+          {session?.role?.toLowerCase() === 'admin' && (
+            <Link href='/admin/users' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
+              Admin
+            </Link>
+          )}
+        </nav>
+        
         <div className='ml-auto flex items-center gap-3'>
           {session ? (
             <>
