@@ -14,25 +14,10 @@ export default function LoginPage() {
       ? new URLSearchParams(window.location.search).get('next') || '/'
       : '/';
 
-  // Check if already logged in and redirect
+  // Simple mount effect to avoid hydration issues
   useEffect(() => {
     setMounted(true);
-    
-    // Quick check: if we can access /api/auth/me successfully, redirect
-    async function checkSession() {
-      try {
-        const res = await fetch('/api/auth/me', { credentials: 'include' });
-        if (res.ok) {
-          // Already logged in, redirect immediately
-          window.location.href = next;
-        }
-      } catch (e) {
-        // Not logged in, stay on page
-      }
-    }
-    
-    checkSession();
-  }, [next]);
+  }, []);
 
   async function submit() {
     setError('');
