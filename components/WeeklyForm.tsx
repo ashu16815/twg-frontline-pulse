@@ -4,6 +4,7 @@ import { useState } from 'react';
 import VoiceRecorder from '@/components/VoiceRecorder';
 import WebSpeechRecorder from '@/components/WebSpeechRecorder';
 import StoreTypeahead from '@/components/StoreTypeahead';
+import LoadingButton from '@/components/LoadingButton';
 
 export default function WeeklyForm() {
   const [feedbackItems, setFeedbackItems] = useState([{ id: 1, type: 'positive' }]);
@@ -159,7 +160,9 @@ export default function WeeklyForm() {
         />
       </div>
       
-      <button className='btn btn-primary'>Submit Store Feedback</button>
+      <LoadingButton type="submit" busyText="Submitting..." className='btn-primary'>
+        Submit Store Feedback
+      </LoadingButton>
       <div id='submitMsg' className='text-sm text-slate-600'></div>
     </form>
   );

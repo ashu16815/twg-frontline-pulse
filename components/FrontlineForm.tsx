@@ -4,6 +4,7 @@ import { useState } from 'react';
 import VoiceRecorder from '@/components/VoiceRecorder';
 import WebSpeechRecorder from '@/components/WebSpeechRecorder';
 import StoreTypeahead from '@/components/StoreTypeahead';
+import LoadingButton from '@/components/LoadingButton';
 
 export default function FrontlineForm() {
   const [positiveItems, setPositiveItems] = useState([{ id: 1 }]);
@@ -250,12 +251,13 @@ export default function FrontlineForm() {
 
           {/* Submit Button */}
           <div className="text-center">
-            <button 
+            <LoadingButton
               type="submit"
+              busyText="Submitting..."
               className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
               Submit My Store Report
-            </button>
+            </LoadingButton>
             <p className="text-sm text-gray-400 mt-3">Your feedback helps us improve store performance</p>
           </div>
         </form>
