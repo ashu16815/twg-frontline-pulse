@@ -49,10 +49,9 @@ export async function POST(req: Request) {
     });
 
     console.log('🔑 Setting session cookie for:', user_id);
-    setSessionCookie(token);
-    console.log('✅ Session cookie set');
-
-    return NextResponse.json({
+    
+    // Create response with cookie
+    const response = NextResponse.json({
       ok: true,
       user: {
         user_id: u.user_id,
@@ -60,6 +59,22 @@ export async function POST(req: Request) {
         role: u.role
       }
     });
+
+    // Set cookie directly in response headers
+    const isProduction = process.env.NODE_ENV === 'production';
+    const MAX_DAYS = 14;
+    const COOKIE = process.env.SESSION_COOKIE_NAME || 'wis_session';
+    
+    response.cookies.set(COOKIE, token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: MAX_DAYS * 24 * 60 * 60
+    });
+
+    console.log('✅ Session cookie set in response');
+    return response;
   } catch (e: any) {
     console.error('Login error:', e);
     return NextResponse.json({ error: e.message }, { status: 500 });
