@@ -50,7 +50,7 @@ export async function POST(req: Request) {
 
     console.log('🔑 Setting session cookie for:', user_id);
     
-    // Create response with cookie
+    // Create response
     const response = NextResponse.json({
       ok: true,
       user: {
@@ -60,20 +60,16 @@ export async function POST(req: Request) {
       }
     });
 
-    // Set cookie directly in response headers
-    const isProduction = process.env.NODE_ENV === 'production';
-    const MAX_DAYS = 14;
+    // Set cookie using Set-Cookie header directly
     const COOKIE = process.env.SESSION_COOKIE_NAME || 'wis_session';
+    const MAX_AGE = 14 * 24 * 60 * 60; // 14 days in seconds
     
-    response.cookies.set(COOKIE, token, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: MAX_DAYS * 24 * 60 * 60
-    });
+    // Build cookie string manually to ensure it works
+    const cookieValue = `${COOKIE}=${token}; Path=/; Max-Age=${MAX_AGE}; HttpOnly; SameSite=Lax`;
+    
+    response.headers.set('Set-Cookie', cookieValue);
 
-    console.log('✅ Session cookie set in response');
+    console.log('✅ Session cookie set:', cookieValue);
     return response;
   } catch (e: any) {
     console.error('Login error:', e);
