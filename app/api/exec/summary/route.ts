@@ -64,7 +64,7 @@ export async function GET(req: Request) {
     };
 
     // Get unique regions
-    const regions = [...new Set(rows.map((r: any) => r.region_code).filter(Boolean))];
+    const regions = Array.from(new Set(rows.map((r: any) => r.region_code).filter(Boolean)));
 
     // Parse AI report data
     const parseJSON = (str: string) => {

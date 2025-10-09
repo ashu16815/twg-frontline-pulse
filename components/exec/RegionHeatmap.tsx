@@ -14,7 +14,7 @@ export default function RegionHeatmap({ data }: { data: { region: string; impact
   const router = useRouter();
   const sp = useSearchParams();
   const week = sp.get('week') || '';
-  const regions = [...new Set(data.map(d => d.region))];
+  const regions = Array.from(new Set(data.map(d => d.region)));
 
   return (
     <div className='grid grid-cols-2 md:grid-cols-4 gap-2'>
