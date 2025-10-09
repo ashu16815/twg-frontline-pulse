@@ -19,7 +19,8 @@
     "test:complete": "node scripts/test-complete-system.mjs",
     "setup": "npm run db:setup && npm run test:e2e",
     "setup:full": "node scripts/db-apply-azure.mjs && npm run db:seed-stores",
-    "setup:auth": "npm run db:apply:auth && npm run seed:users"
+    "setup:auth": "npm run db:apply:auth && npm run seed:users",
+    "timezone:auckland": "node scripts/apply-auckland-timezone.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",
