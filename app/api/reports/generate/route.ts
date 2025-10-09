@@ -42,7 +42,8 @@ export async function POST() {
     // Generate executive report using AI
     console.log('🤖 Calling AI to generate report...');
     const rep = await generateExecutiveReport(wk, rows || [], summ || []);
-    console.log('✅ AI response received:', JSON.stringify(rep).substring(0, 200));
+    console.log('✅ AI response received:');
+    console.log('   Full response:', JSON.stringify(rep, null, 2));
     
     // Ensure all required fields have defaults
     const narrative = rep.narrative || `Executive Summary for Week ${wk}`;
