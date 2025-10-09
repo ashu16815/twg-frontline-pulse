@@ -7,31 +7,17 @@ export default function LoginPage() {
   const [user_id, setUid] = useState('');
   const [password, setPw] = useState('');
   const [error, setError] = useState('');
-  const [checking, setChecking] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   const next =
     typeof window !== 'undefined'
       ? new URLSearchParams(window.location.search).get('next') || '/'
       : '/';
 
-  // Check if already logged in
+  // Simple mount effect to avoid hydration issues
   useEffect(() => {
-    async function checkAuth() {
-      try {
-        // Try to access a protected API to check session
-        const res = await fetch('/api/health/db');
-        if (res.ok) {
-          // Already logged in, redirect
-          window.location.href = next;
-          return;
-        }
-      } catch (e) {
-        // Not logged in, show login form
-      }
-      setChecking(false);
-    }
-    checkAuth();
-  }, [next]);
+    setMounted(true);
+  }, []);
 
   async function submit() {
     setError('');
@@ -49,14 +35,6 @@ export default function LoginPage() {
     }
 
     window.location.href = next;
-  }
-
-  if (checking) {
-    return (
-      <main className='min-h-[70vh] flex items-center justify-center p-6'>
-        <div className='text-white/60'>Checking authentication...</div>
-      </main>
-    );
   }
 
   return (
