@@ -10,7 +10,7 @@ const SECRET = process.env.AUTH_JWT_SECRET || 'dev_secret_change_me';
 // Public routes that don't require authentication
 const PUBLIC_ROUTES = ['/login'];
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Skip API routes, static files, and favicon
