@@ -26,9 +26,10 @@ export function verifySessionToken(t: string): Session | null {
 }
 
 export function setSessionCookie(token: string) {
+  const isProduction = process.env.NODE_ENV === 'production';
   cookies().set(COOKIE, token, {
     httpOnly: true,
-    secure: false, // Allow cookies in development (localhost)
+    secure: isProduction,
     sameSite: 'lax',
     path: '/',
     maxAge: MAX_DAYS * 24 * 60 * 60
@@ -36,9 +37,10 @@ export function setSessionCookie(token: string) {
 }
 
 export function clearSessionCookie() {
+  const isProduction = process.env.NODE_ENV === 'production';
   cookies().set(COOKIE, '', {
     httpOnly: true,
-    secure: false, // Allow cookies in development (localhost)
+    secure: isProduction,
     sameSite: 'lax',
     path: '/',
     maxAge: 0
