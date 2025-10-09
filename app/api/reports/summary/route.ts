@@ -1,0 +1,150 @@
+import { NextResponse } from 'next/server';
+import { getDb } from '@/lib/db';
+import { callAzureJSON } from '@/lib/azure';
+
+function isoWeekKey(d = new Date()) {
+  const t = new Date(d.getTime());
+  t.setHours(0, 0, 0, 0);
+  const onejan = new Date(t.getFullYear(), 0, 1);
+  const week = Math.ceil((((t.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
+  return `${t.getFullYear()}-W${String(week).padStart(2, '0')}`;
+}
+
+function monthKey(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+const SYS = {
+  role: 'system',
+  content: `You are an enterprise retail analyst. Return STRICT JSON matching the schema below. Use the input rows (store manager weekly submissions) to:
+
+1) Identify Top 3 Opportunities for the period (network-wide), selecting items that are both HIGH MATERIALITY (by $ impact or prevalence) and ACTIONABLE.
+2) Suggest Top 3 Actions for the period (network-wide). Actions must be concrete, owner-suggested (function/team), and include expected $ impact and rationale.
+3) Provide very brief narrative.
+
+If coverage < 70%, mark outputs as DIRECTIONAL. DO NOT hallucinate $ amounts; if unknown, estimate conservatively using available fields.
+
+JSON Schema:
+{
+  "kpis": { "coveragePct": number, "stores": number, "responded": number, "regions": number, "totalImpact": number },
+  "narrative": string,
+  "topOpportunities": { 
+    "week": [{"text": string, "impact": number, "theme": string}], 
+    "month": [{"text": string, "impact": number, "theme": string}] 
+  },
+  "topActions": { 
+    "week": [{"action": string, "owner": string, "expectedImpact": number}], 
+    "month": [{"action": string, "owner": string, "expectedImpact": number}] 
+  }
+}`
+};
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const period = (searchParams.get('period') || 'week').toLowerCase(); // 'week' | 'month'
+  const week = searchParams.get('week') || isoWeekKey();
+  const month = searchParams.get('month') || monthKey();
+  const region = searchParams.get('region') || '';
+  const storeId = searchParams.get('storeId') || '';
+
+  try {
+    const pool = await getDb();
+    
+    // Total active stores for coverage
+    const totalStoresResult = await pool.request().query`
+      select count(*) as c from dbo.store_master where active=1
+    `;
+    const totalStores = totalStoresResult.recordset?.[0]?.c || 0;
+
+    // Build filters
+    const whereWeek = ['iso_week = @w'];
+    const whereMonth = ['month_key = @m'];
+    
+    if (region) {
+      whereWeek.push('region_code = @r');
+      whereMonth.push('region_code = @r');
+    }
+    
+    if (storeId) {
+      whereWeek.push('store_id = @s');
+      whereMonth.push('store_id = @s');
+    }
+
+    // Fetch rows for this week and this month
+    const qWeek = `select * from dbo.store_feedback where ${whereWeek.join(' and ')}`;
+    const qMonth = `select * from dbo.store_feedback where ${whereMonth.join(' and ')}`;
+    
+    const request = pool.request()
+      .input('w', week)
+      .input('m', month);
+    
+    if (region) request.input('r', region);
+    if (storeId) request.input('s', storeId);
+    
+    const rq = await request.query(`${qWeek}; ${qMonth}`);
+    
+    const weekRows = rq.recordsets?.[0] || [];
+    const monthRows = rq.recordsets?.[1] || [];
+
+    const responded = period === 'week' ? weekRows.length : monthRows.length;
+    const coveragePct = totalStores ? Math.round((responded / totalStores) * 100) : 0;
+    const regions = new Set((period === 'week' ? weekRows : monthRows).map((r: any) => r.region_code)).size;
+    const totalImpact = (period === 'week' ? weekRows : monthRows).reduce(
+      (a: any, r: any) => a + (r.miss1_dollars || 0) + (r.miss2_dollars || 0) + (r.miss3_dollars || 0),
+      0
+    );
+
+    // Compose AI prompt input (compact)
+    const pack = (rows: any[]) =>
+      rows.map((r: any) => ({
+        region: r.region_code,
+        store: r.store_id,
+        pos: r.top_positive,
+        miss1: r.miss1,
+        miss1_dollars: r.miss1_dollars,
+        miss2: r.miss2,
+        miss2_dollars: r.miss2_dollars,
+        miss3: r.miss3,
+        miss3_dollars: r.miss3_dollars,
+        mood: r.overall_mood,
+        comments: r.freeform_comments
+      }));
+
+    const user = {
+      role: 'user',
+      content: JSON.stringify({
+        period,
+        filters: { week, month, region, storeId },
+        coveragePct,
+        totalStores,
+        week: pack(weekRows),
+        month: pack(monthRows)
+      })
+    } as any;
+
+    console.log('🤖 Calling Azure OpenAI for reports summary...');
+    const ai = await callAzureJSON([SYS, user]);
+    console.log('✅ AI response received:', JSON.stringify(ai, null, 2));
+
+    return NextResponse.json({
+      ok: true,
+      period,
+      week,
+      month,
+      region,
+      storeId,
+      base: {
+        coveragePct,
+        stores: totalStores,
+        responded,
+        regions,
+        totalImpact
+      },
+      ai
+    });
+  } catch (e: any) {
+    console.error('❌ Reports summary error:', e);
+    return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
+  }
+}
+
