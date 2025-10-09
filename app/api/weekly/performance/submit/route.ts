@@ -63,41 +63,11 @@ export async function POST(req: Request) {
       reasons,
       priorities
     });
-    const ins = await sbAdmin.from('store_feedback').insert({
-      iso_week: isoWeek,
-      store_id: p.storeId,
-      store_name: p.storeName,
-      region: p.region,
-      manager_email: p.managerEmail || null,
-      hit_target: ai.overall?.hitTarget ?? (p.hitTarget === 'hit'),
-      target_variance_pct: ai.overall?.variancePct ?? toNum(p.variancePct),
-      variance_dollars: ai.overall?.varianceDollars ?? toNum(p.varianceDollars),
-      r1_dept: reasons[0].dept,
-      r1_subcat: reasons[0].subcat,
-      r1_driver: reasons[0].driver,
-      r1_text: reasons[0].text,
-      r1_dollar_impact: reasons[0].dollarImpact,
-      r2_dept: reasons[1].dept,
-      r2_subcat: reasons[1].subcat,
-      r2_driver: reasons[1].driver,
-      r2_text: reasons[1].text,
-      r2_dollar_impact: reasons[1].dollarImpact,
-      r3_dept: reasons[2].dept,
-      r3_subcat: reasons[2].subcat,
-      r3_driver: reasons[2].driver,
-      r3_text: reasons[2].text,
-      r3_dollar_impact: reasons[2].dollarImpact,
-      priority1: priorities[0].text,
-      priority1_horizon: priorities[0].horizon,
-      priority2: priorities[1].text,
-      priority2_horizon: priorities[1].horizon,
-      priority3: priorities[2].text,
-      priority3_horizon: priorities[2].horizon,
-      overall_mood: ai.overallMood ?? null,
-      themes: ai.themes || []
-    });
-    if (ins.error) return NextResponse.json({ error: 'DB insert failed: ' + ins.error.message }, { status: 500 });
-    return NextResponse.redirect(new URL('/my/performance', req.url));
+    // TODO: Migrate to Azure SQL - this route is not currently used
+    // Using frontline/submit instead
+    return NextResponse.json({ 
+      error: 'This route is deprecated. Please use /api/frontline/submit instead.' 
+    }, { status: 410 });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

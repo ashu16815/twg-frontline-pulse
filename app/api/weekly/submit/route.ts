@@ -32,41 +32,11 @@ export async function POST(req: Request) {
       ]
     });
 
-    const ins = await sbAdmin.from('store_feedback').insert({
-      iso_week: isoWeek,
-      store_id: p.storeId,
-      store_name: p.storeName,
-      region: p.region,
-      manager_email: p.managerEmail || null,
-      issue1_cat: p.issue1Cat,
-      issue1_text: p.issue1Text,
-      issue1_impact: p.issue1Impact || null,
-      issue1_score: ai.issues?.[0]?.score,
-      issue1_mood: ai.issues?.[0]?.mood,
-      issue2_cat: p.issue2Cat,
-      issue2_text: p.issue2Text,
-      issue2_impact: p.issue2Impact || null,
-      issue2_score: ai.issues?.[1]?.score,
-      issue2_mood: ai.issues?.[1]?.mood,
-      issue3_cat: p.issue3Cat,
-      issue3_text: p.issue3Text,
-      issue3_impact: p.issue3Impact || null,
-      issue3_score: ai.issues?.[2]?.score,
-      issue3_mood: ai.issues?.[2]?.mood,
-      overall_score: ai.overallScore,
-      overall_mood: ai.overallMood,
-      themes: ai.themes || []
-    });
-
-    if (ins.error) return NextResponse.json({ error: 'DB insert failed: ' + ins.error.message }, { status: 500 });
-
-    await sbAdmin.from('audit_log').insert({
-      actor: 'store-manager',
-      action: 'weekly-submit',
-      meta: { store: p.storeId, isoWeek }
-    });
-
-    return NextResponse.redirect(new URL('/reports', req.url));
+    // TODO: Migrate to Azure SQL - this route is not currently used
+    // Using frontline/submit instead
+    return NextResponse.json({ 
+      error: 'This route is deprecated. Please use /api/frontline/submit instead.' 
+    }, { status: 410 });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
