@@ -28,7 +28,7 @@ export function verifySessionToken(t: string): Session | null {
 export function setSessionCookie(token: string) {
   cookies().set(COOKIE, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // Allow cookies in development (localhost)
     sameSite: 'lax',
     path: '/',
     maxAge: MAX_DAYS * 24 * 60 * 60
@@ -38,7 +38,7 @@ export function setSessionCookie(token: string) {
 export function clearSessionCookie() {
   cookies().set(COOKIE, '', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // Allow cookies in development (localhost)
     sameSite: 'lax',
     path: '/',
     maxAge: 0

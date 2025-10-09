@@ -38,9 +38,9 @@ export default function LoginPage() {
     // Show success message with button
     setSuccess(true);
     
-    // Also try automatic redirect after short delay
+    // Force a full page reload to ensure cookies are loaded
     setTimeout(() => {
-      window.location.href = next;
+      window.location.replace(next);
     }, 500);
   }
 
@@ -93,7 +93,7 @@ export default function LoginPage() {
           {success ? (
             <button 
               className='btn-liquid w-full py-3' 
-              onClick={() => window.location.href = next}
+              onClick={() => window.location.replace(next)}
             >
               Go to Home Page →
             </button>
