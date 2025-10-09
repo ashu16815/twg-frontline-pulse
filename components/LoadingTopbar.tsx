@@ -43,14 +43,14 @@ export default function LoadingTopbar() {
 
     // Router transitions - intercept history API
     const origPushState = history.pushState;
-    history.pushState = function (...args) {
+    history.pushState = function (...args: any[]) {
       onStart();
       origPushState.apply(history, args as any);
       setTimeout(onEnd, 400);
     } as any;
 
     const origReplaceState = history.replaceState;
-    history.replaceState = function (...args) {
+    history.replaceState = function (...args: any[]) {
       onStart();
       origReplaceState.apply(history, args as any);
       setTimeout(onEnd, 300);
