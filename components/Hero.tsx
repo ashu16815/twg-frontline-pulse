@@ -16,14 +16,17 @@ export default function Hero() {
       <div className="relative max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-10 items-center">
         <div>
           <h1 className="display font-semibold">
-            Weekly frontline signals, distilled for action.
+            Frontline Feedback: Your Store's Voice
           </h1>
           <p className="subtitle mt-4">
-            Tap to speak your Top-3. We transcribe, tag themes, and brief the CEO Office — consistently and clearly.
+            Share what's working and what needs attention. Simple, fast, and designed to drive real change across TWG stores.
           </p>
           <div className="mt-8 flex gap-3">
+            <a className="btn bg-red-600 hover:bg-red-700 text-white" href="/frontline/submit">
+              Submit Store Report
+            </a>
             <a className="btn" href="/weekly/submit">
-              Give Weekly Feedback
+              Performance Check-in
             </a>
             <a className="btn" href="/reports">
               View Reports

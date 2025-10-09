@@ -1,6 +1,6 @@
 {
-  "name": "twg-frontline-pulse",
-  "version": "0.2.0",
+  "name": "win-in-store",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,12 +8,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:apply": "node scripts/db-apply.js",
-    "seed": "node scripts/seed.js",
-    "db:push": "node scripts/supabase-init.js",
-    "seed:stores": "node scripts/seed-stores.js",
-    "seed:feedback": "node scripts/seed-feedback.js",
-    "seed:all": "npm run seed:stores && npm run seed:feedback"
+    "db:apply": "node scripts/db-apply.mjs",
+    "seed": "node scripts/seed.mjs",
+    "db:setup": "node scripts/setup-database-complete.mjs",
+    "db:seed-stores": "node scripts/seed-stores.mjs",
+    "test:azure": "node scripts/test-azure-openai.mjs",
+    "test:e2e": "node scripts/test-end-to-end.mjs",
+    "test:complete": "node scripts/test-complete-system.mjs",
+    "setup": "npm run db:setup && npm run test:e2e",
+    "setup:full": "node scripts/db-apply-azure.mjs && npm run db:seed-stores"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",
@@ -24,6 +27,7 @@
     "dotenv": "^17.2.2",
     "framer-motion": "11.2.10",
     "lucide-react": "0.454.0",
+    "mssql": "^12.0.0",
     "next": "14.2.5",
     "node-fetch": "^3.3.2",
     "openai": "^5.22.0",

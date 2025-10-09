@@ -1,9 +1,9 @@
-import { sbAdmin } from '@/lib/supabase-admin';
+import { getDb } from '@/lib/db';
 
 export async function GET() {
   try {
-    const { error } = await sbAdmin.from('store_feedback').select('id').limit(1);
-    if (error) return Response.json({ ok: false, error: error.message }, { status: 200 });
+    const pool = await getDb();
+    await pool.request().query('SELECT TOP 1 store_id FROM dbo.store_master');
     return Response.json({ ok: true });
   } catch (e: any) {
     return Response.json({ ok: false, error: e.message }, { status: 200 });

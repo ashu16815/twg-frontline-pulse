@@ -10,13 +10,72 @@ interface ReportsDashboardProps {
 
 export default function ReportsDashboard({ rows, summaries, currentWeek }: ReportsDashboardProps) {
   const [selectedRegion, setSelectedRegion] = useState<string>('All');
+  const [viewType, setViewType] = useState<'company' | 'regional'>('company');
   
   // Calculate metrics
   const totalSubmissions = rows.length;
   const regions = Array.from(new Set(rows.map(r => r.region))).filter(Boolean);
   const filteredRows = selectedRegion === 'All' ? rows : rows.filter(r => r.region === selectedRegion);
   
-  // Theme analysis
+  // Enhanced feedback analysis for new Frontline Feedback structure
+  const feedbackAnalysis = filteredRows.reduce((acc, row) => {
+    // Handle new Frontline Feedback structure
+    if (row.top_positive) {
+      if (!acc.positive) {
+        acc.positive = { count: 0, totalDollarImpact: 0, items: [] };
+      }
+      acc.positive.count++;
+      acc.positive.totalDollarImpact += row.top_positive_impact || 0;
+      acc.positive.items.push({
+        text: row.top_positive,
+        impact: row.top_positive_impact || 0,
+        store: row.store_name
+      });
+    }
+
+    // Handle negative feedback (up to 3 items)
+    [row.top_negative_1, row.top_negative_2, row.top_negative_3].forEach((negative, index) => {
+      if (negative) {
+        if (!acc.negative) {
+          acc.negative = { count: 0, totalDollarImpact: 0, items: [] };
+        }
+        acc.negative.count++;
+        const impactField = `top_negative_${index + 1}_impact`;
+        const impact = row[impactField] || 0;
+        acc.negative.totalDollarImpact += impact;
+        acc.negative.items.push({
+          text: negative,
+          impact: impact,
+          store: row.store_name
+        });
+      }
+    });
+
+    // Legacy feedback structure (for backward compatibility)
+    for (let i = 1; i <= 3; i++) {
+      const type = row[`feedback${i}Type`];
+      const category = row[`feedback${i}Category`];
+      const impact = row[`feedback${i}Impact`];
+      const dollarImpact = row[`feedback${i}DollarImpact`];
+      
+      if (type && category) {
+        if (!acc[type]) {
+          acc[type] = { count: 0, categories: {}, impacts: {}, totalDollarImpact: 0 };
+        }
+        acc[type].count++;
+        acc[type].categories[category] = (acc[type].categories[category] || 0) + 1;
+        if (impact) {
+          acc[type].impacts[impact] = (acc[type].impacts[impact] || 0) + 1;
+        }
+        if (dollarImpact && !isNaN(parseFloat(dollarImpact))) {
+          acc[type].totalDollarImpact += parseFloat(dollarImpact);
+        }
+      }
+    }
+    return acc;
+  }, {} as Record<string, any>);
+  
+  // Legacy theme analysis (for backward compatibility)
   const allThemes = filteredRows.flatMap(r => r.themes || []).filter(Boolean);
   const themeCounts = allThemes.reduce((acc: Record<string, number>, theme: string) => {
     acc[theme] = (acc[theme] || 0) + 1;
@@ -51,6 +110,33 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
 
   return (
     <div className='space-y-8'>
+      {/* View Type Toggle */}
+      <section className='card p-6 rounded-xl'>
+        <div className='flex items-center justify-between mb-4'>
+          <h2 className='text-lg font-semibold'>Report View</h2>
+          <div className='flex gap-2'>
+            <button
+              onClick={() => setViewType('company')}
+              className={`btn ${viewType === 'company' ? 'btn-primary' : ''}`}
+            >
+              Company-Wide
+            </button>
+            <button
+              onClick={() => setViewType('regional')}
+              className={`btn ${viewType === 'regional' ? 'btn-primary' : ''}`}
+            >
+              Regional Focus
+            </button>
+          </div>
+        </div>
+        <p className='text-sm opacity-70'>
+          {viewType === 'company' 
+            ? 'Overview of all feedback across TWG stores' 
+            : 'Detailed view of selected region performance'
+          }
+        </p>
+      </section>
+
       {/* Key Metrics */}
       <section className='grid md:grid-cols-4 gap-6'>
         <MetricCard
@@ -66,16 +152,28 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
           trend="stable"
         />
         <MetricCard
-          title="AI Summaries"
-          value={summaries.length}
-          subtitle="Generated"
+          title="Positive Feedback"
+          value={feedbackAnalysis.positive?.count || 0}
+          subtitle={`${Math.round(((feedbackAnalysis.positive?.count || 0) / Math.max(1, (feedbackAnalysis.positive?.count || 0) + (feedbackAnalysis.negative?.count || 0))) * 100)}% of total`}
           trend="up"
         />
         <MetricCard
-          title="Top Theme"
-          value={topThemes[0]?.[0] || 'N/A'}
-          subtitle={`${topThemes[0]?.[1] || 0} mentions`}
+          title="Challenges Identified"
+          value={feedbackAnalysis.negative?.count || 0}
+          subtitle={`${Math.round(((feedbackAnalysis.negative?.count || 0) / Math.max(1, (feedbackAnalysis.positive?.count || 0) + (feedbackAnalysis.negative?.count || 0))) * 100)}% of total`}
           trend="stable"
+        />
+        <MetricCard
+          title="Total Positive Impact"
+          value={`$${(feedbackAnalysis.positive?.totalDollarImpact || 0).toLocaleString()}`}
+          subtitle="Estimated value created"
+          trend="up"
+        />
+        <MetricCard
+          title="Total Challenge Impact"
+          value={`$${(feedbackAnalysis.negative?.totalDollarImpact || 0).toLocaleString()}`}
+          subtitle="Estimated value at risk"
+          trend="down"
         />
       </section>
 
@@ -101,6 +199,66 @@ export default function ReportsDashboard({ rows, summaries, currentWeek }: Repor
               </button>
             );
           })}
+        </div>
+      </section>
+
+      {/* Positive vs Negative Balance */}
+      <section className='card p-6 rounded-xl'>
+        <h2 className='text-lg font-semibold mb-4'>Frontline Feedback Balance</h2>
+        <div className='grid md:grid-cols-2 gap-6'>
+          <div className='space-y-4'>
+            <h3 className='text-md font-medium text-green-400'>✓ Positive Performance</h3>
+            <div className='space-y-3'>
+              {feedbackAnalysis.positive?.items?.slice(0, 5).map((item: any, index: number) => (
+                <div key={index} className='bg-green-50 p-3 rounded-lg border border-green-200'>
+                  <div className='flex items-start justify-between mb-1'>
+                    <span className='text-sm font-medium text-green-800'>{item.store}</span>
+                    {item.impact > 0 && (
+                      <span className='text-xs text-green-600 font-medium'>+${item.impact.toLocaleString()}</span>
+                    )}
+                  </div>
+                  <p className='text-sm text-green-700'>{item.text}</p>
+                </div>
+              ))}
+              {(!feedbackAnalysis.positive?.items || feedbackAnalysis.positive.items.length === 0) && (
+                <p className='text-sm text-gray-500 italic'>No positive feedback recorded</p>
+              )}
+            </div>
+            {feedbackAnalysis.positive?.totalDollarImpact > 0 && (
+              <div className='mt-4 p-3 bg-green-500/10 rounded-lg border border-green-500/20'>
+                <span className='text-sm text-green-400 font-medium'>
+                  Total Positive Impact: ${feedbackAnalysis.positive.totalDollarImpact.toLocaleString()}
+                </span>
+              </div>
+            )}
+          </div>
+          
+          <div className='space-y-4'>
+            <h3 className='text-md font-medium text-red-400'>✗ Performance Challenges</h3>
+            <div className='space-y-3'>
+              {feedbackAnalysis.negative?.items?.slice(0, 5).map((item: any, index: number) => (
+                <div key={index} className='bg-red-50 p-3 rounded-lg border border-red-200'>
+                  <div className='flex items-start justify-between mb-1'>
+                    <span className='text-sm font-medium text-red-800'>{item.store}</span>
+                    {item.impact > 0 && (
+                      <span className='text-xs text-red-600 font-medium'>-${item.impact.toLocaleString()}</span>
+                    )}
+                  </div>
+                  <p className='text-sm text-red-700'>{item.text}</p>
+                </div>
+              ))}
+              {(!feedbackAnalysis.negative?.items || feedbackAnalysis.negative.items.length === 0) && (
+                <p className='text-sm text-gray-500 italic'>No challenges recorded</p>
+              )}
+            </div>
+            {feedbackAnalysis.negative?.totalDollarImpact > 0 && (
+              <div className='mt-4 p-3 bg-red-500/10 rounded-lg border border-red-500/20'>
+                <span className='text-sm text-red-400 font-medium'>
+                  Total Challenge Impact: ${feedbackAnalysis.negative.totalDollarImpact.toLocaleString()}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 

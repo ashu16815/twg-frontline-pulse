@@ -54,12 +54,53 @@ export async function summariseWeeklyFinance(isoWeek: string, region: string, ro
 export async function generateExecutiveReport(isoWeek: string, allRows: any[], allSummaries: any[]) {
   const system = {
     role: 'system',
-    content: `Produce an exec report grounded only in provided data. Return JSON: {narrative:string, highlights:string[], themes:{name:string,count:number,impact:number}[], risks:string[], actions:{owner:string,action:string,due:string}[]}. Aggregate theme counts and total $ impact across regions.`
+    content: `You are a Retail Operations Executive producing an actionable weekly report for the leadership team.
+
+Analyze the store feedback data and create a comprehensive executive summary.
+
+Return ONLY valid JSON with this EXACT structure:
+{
+  "narrative": "2-3 paragraph executive summary covering: overall performance, key wins, major challenges, and strategic implications",
+  "highlights": ["3-5 bullet points of major wins and positive performance drivers"],
+  "whatWorking": ["3-5 specific things that are working well across stores with evidence"],
+  "whatNotWorking": ["3-5 specific problems/challenges across stores with evidence"],
+  "themes": [
+    {"name": "Theme name", "count": number of stores mentioning, "impact": total dollar impact, "type": "positive" or "negative"}
+  ],
+  "risks": ["3-5 specific risks to business performance with potential impact"],
+  "actions": [
+    {"owner": "Ops Team/Store Ops/Supply Chain/etc", "action": "Specific actionable task", "due": "This Week/Next Week/Next Month", "priority": "High/Medium/Low"}
+  ],
+  "metrics": {
+    "totalStores": number,
+    "positiveImpact": total positive dollar impact,
+    "negativeImpact": total negative dollar impact,
+    "netImpact": net impact,
+    "topRegion": "best performing region",
+    "concernRegion": "region needing attention"
+  }
+}
+
+Guidelines:
+- Be specific and data-driven
+- Include dollar amounts where available
+- Prioritize actionable insights
+- Identify patterns across stores/regions
+- Suggest concrete next steps with owners
+- Highlight both successes AND problems
+- Use professional executive language`
   };
+  
   const user = {
     role: 'user',
-    content: JSON.stringify({ isoWeek, rows: allRows, summaries: allSummaries })
+    content: JSON.stringify({ 
+      isoWeek, 
+      rows: allRows, 
+      summaries: allSummaries,
+      instruction: `Analyze ${allRows.length} store feedback submissions for week ${isoWeek}. Create an executive report that the ops team can use to take immediate action.`
+    })
   };
+  
   return callAzureJSON([system, user]);
 }
 
@@ -92,6 +133,26 @@ export async function askCEO(question: string, isoWeek: string, rows: any[], sum
   const user = {
     role: 'user',
     content: JSON.stringify({ isoWeek, rows, summaries, question })
+  };
+  return callAzureJSON([system, user]);
+}
+
+export async function analyzeFrontlineFeedback(payload: {
+  region: string;
+  isoWeek: string;
+  positive: { text: string; impact: number } | null;
+  negatives: { text: string; impact: number }[];
+  nextActions: string;
+  freeformComments: string;
+  estimatedDollarImpact: number;
+}) {
+  const system = {
+    role: 'system',
+    content: `You are a retail operations analyst analyzing frontline store feedback. Return JSON: {overallScore:number(-1..1), overallMood:'neg|neu|pos', themes:string[]}. Focus on themes like 'Staffing', 'Inventory', 'Customer Experience', 'Operations', 'Competition', 'Local Market', 'Technology', 'Training'. Consider both positive and negative feedback for balanced analysis.`
+  };
+  const user = {
+    role: 'user',
+    content: JSON.stringify(payload)
   };
   return callAzureJSON([system, user]);
 }

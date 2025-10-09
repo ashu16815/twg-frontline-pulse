@@ -1,0 +1,42 @@
+store_id,store_code,store_name,banner,region,region_code,manager_email,active
+ST-001,362,Albany,TWL,Auckland,AUK,,1
+ST-014,383,Manukau,TWL,Auckland,AUK,,1
+ST-021,305,East Tamaki,TWL,Auckland,AUK,,1
+ST-022,192,Mt Roskill,TWL,Auckland,AUK,,1
+ST-023,353,Henderson,TWL,Auckland,AUK,,1
+ST-024,114,Pukekohe,TWL,Auckland,AUK,,1
+ST-025,335,Sylvia Park,TWL,Auckland,AUK,,1
+ST-026,205,Clendon,TWL,Auckland,AUK,,1
+ST-027,115,St Lukes Built-in Cooking Centre,TWL,Auckland,AUK,,1
+ST-101,341,Fraser Cove,TWL,Bay of Plenty,BOP,,1
+ST-102,156,Papamoa,TWL,Bay of Plenty,BOP,,1
+ST-103,359,Mount Maunganui,TWL,Bay of Plenty,BOP,,1
+ST-104,142,Rotorua,TWL,Bay of Plenty,BOP,,1
+ST-105,328,Taupo,TWL,Bay of Plenty,BOP,,1
+ST-106,392,Tauranga Crossing,TWL,Bay of Plenty,BOP,,1
+ST-201,176,Ashburton,TWL,Canterbury - Westcoast,CAN-WTC,,1
+ST-202,178,Barrington,TWL,Canterbury - Westcoast,CAN-WTC,,1
+ST-203,371,Rangiora,TWL,Canterbury - Westcoast,CAN-WTC,,1
+ST-204,366,Riccarton,TWL,Canterbury - Westcoast,CAN-WTC,,1
+ST-205,120,Northlands,TWL,Canterbury - Westcoast,CAN-WTC,,1
+ST-206,329,Timaru,TWL,Canterbury - Westcoast,CAN-WTC,,1
+ST-301,135,Paraparaumu,TWL,Wellington - Wairarapa,WGN-WPA,,1
+ST-302,133,Johnsonville,TWL,Wellington - Wairarapa,WGN-WPA,,1
+ST-303,139,Lower Hutt,TWL,Wellington - Wairarapa,WGN-WPA,,1
+ST-304,131,Petone,TWL,Wellington - Wairarapa,WGN-WPA,,1
+ST-305,132,Porirua,TWL,Wellington - Wairarapa,WGN-WPA,,1
+ST-306,138,Upper Hutt,TWL,Wellington - Wairarapa,WGN-WPA,,1
+ST-307,170,Lyall Bay,TWL,Wellington - Wairarapa,WGN-WPA,,1
+ST-401,153,Gisborne,TWL,Gisborne - Hawke's Bay,GIS-HKB,,1
+ST-402,151,Hastings,TWL,Gisborne - Hawke's Bay,GIS-HKB,,1
+ST-403,152,Napier,TWL,Gisborne - Hawke's Bay,GIS-HKB,,1
+ST-501,165,Dargaville,TWL,Northland,NTL,,1
+ST-502,364,Kerikeri,TWL,Northland,NTL,,1
+ST-503,117,Kaitaia,TWL,Northland,NTL,,1
+ST-504,116,Whangarei,TWL,Northland,NTL,,1
+ST-505,169,Waipapa,TWL,Northland,NTL,,1
+ST-601,129,Dunedin,TWL,Otago - Southland,OTA-STL,,1
+ST-602,339,South Dunedin,TWL,Otago - Southland,OTA-STL,,1
+ST-603,171,Invercargill,TWL,Otago - Southland,OTA-STL,,1
+ST-604,183,Queenstown Remarkables Park,TWL,Otago - Southland,OTA-STL,,1
+ST-605,179,Oamaru,TWL,Otago - Southland,OTA-STL,,1

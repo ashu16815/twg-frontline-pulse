@@ -8,7 +8,7 @@ create table if not exists stores (
   display_name text generated always as ((brand||' '||store_name)) stored
 );
 
--- Store feedback (existing) + new performance columns
+-- Store feedback (existing) + new performance columns + Frontline Feedback
 create table if not exists store_feedback (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz default now(),
@@ -27,6 +27,20 @@ create table if not exists store_feedback (
   r1_dept text, r1_subcat text, r1_driver text, r1_text text, r1_dollar_impact numeric,
   r2_dept text, r2_subcat text, r2_driver text, r2_text text, r2_dollar_impact numeric,
   r3_dept text, r3_subcat text, r3_driver text, r3_text text, r3_dollar_impact numeric,
+
+  -- Frontline Feedback (NEW) - Positive feedback
+  top_positive text,                       -- Top performing category/area
+  top_positive_impact numeric,             -- Dollar impact of positive
+
+  -- Frontline Feedback (NEW) - Negative feedback (up to 3)
+  top_negative_1 text, top_negative_1_impact numeric,
+  top_negative_2 text, top_negative_2_impact numeric,
+  top_negative_3 text, top_negative_3_impact numeric,
+
+  -- Frontline Feedback (NEW) - Additional fields
+  next_actions text,                       -- What I need to win next month/quarter
+  freeform_comments text,                  -- Additional insights (competitors, local context)
+  estimated_dollar_impact numeric,         -- Overall estimated dollar impact
 
   -- Existing issue fields kept for compatibility
   issue1_cat text, issue1_text text, issue1_impact text, issue1_score float8, issue1_mood text,

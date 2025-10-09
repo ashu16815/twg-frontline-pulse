@@ -1,0 +1,84 @@
+[dotenv@17.2.2] injecting env (13) from .env.local -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+🧪 Testing Azure OpenAI Connection...
+
+📋 Configuration Check:
+─────────────────────────────────────────────────────────
+Endpoint:              ✅ Set
+API Key:               ✅ Set (BQmx3SaS...)
+GPT-5 Deployment:      gpt-5-mini
+Transcribe Deployment: gpt-4o-transcribe
+API Version:           2024-10-01-preview
+─────────────────────────────────────────────────────────
+
+🚀 Starting Azure OpenAI Tests
+
+═════════════════════════════════════════════════════════
+
+🔄 Test 1: GPT-5 Chat Completion (JSON mode)
+───────────────────────────────────────────
+Endpoint: https://twg-test-ai1.openai.azure.com/openai/deployments/gpt-5-mini/chat/completions?api-version=2024-10-01-preview
+⏳ Sending request...
+✅ Success! (3129ms)
+
+📄 Response:
+─────────────────────────────────────────────────────────
+{"themes":["Sales increase (10%)","Tight staffing on Saturday","Strong electronics performance"],"mood":"pos","score":80}
+─────────────────────────────────────────────────────────
+
+✅ Valid JSON response
+   Themes: Sales increase (10%), Tight staffing on Saturday, Strong electronics performance
+   Mood: pos
+   Score: 80
+
+✅ Test 1 PASSED
+
+🔄 Test 2: Store Feedback Analysis
+───────────────────────────────────────────
+⏳ Analyzing store feedback...
+✅ Success! (9372ms)
+
+📊 Analysis Results:
+─────────────────────────────────────────────────────────
+Overall Mood: neg
+Themes: Availability, Roster, Supplier, CategoryPerformance
+
+Reasons Analysis:
+  1. Apparel sizes missing in key categories (neg) - Score: 5.52
+  2. Saturday roster shortage (neg) - Score: 2.76
+  3. Toy promotion arrived late (neg) - Score: 1.72
+─────────────────────────────────────────────────────────
+
+✅ Test 2 PASSED
+
+🔄 Test 3: Model Capabilities Check
+───────────────────────────────────────────
+✅ Model Response: ""
+   Model: gpt-5-mini-2025-08-07
+   Usage: 34 tokens
+
+✅ Test 3 PASSED
+
+🔄 Test 4: Audio Transcription
+───────────────────────────────────────────
+⚠️  Note: This requires an actual audio file to test properly
+   Checking if endpoint is accessible...
+Endpoint: https://twg-test-ai1.openai.azure.com/openai/deployments/gpt-4o-transcribe/audio/transcriptions?api-version=2024-10-01-preview
+✅ Transcription endpoint configured
+   (Actual transcription would require audio file)
+
+✅ Test 4 PASSED
+
+═════════════════════════════════════════════════════════
+
+📊 Test Summary:
+─────────────────────────────────────────────────────────
+Test 1 (Chat Completion):    ✅ PASSED
+Test 2 (Feedback Analysis):  ✅ PASSED
+Test 3 (Model Info):         ✅ PASSED
+Test 4 (Transcription):      ✅ PASSED
+─────────────────────────────────────────────────────────
+
+Results: 4/4 tests passed
+
+🎉 All tests PASSED! Azure OpenAI is configured correctly.
+

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { sbAdmin } from '@/lib/supabase-admin';
+import { getDb } from '@/lib/db';
 import { analyzePerformance, weekKey } from '@/lib/gpt5';
+import sql from 'mssql';
 
 const schema = z.object({
   storeId: z.string(),
