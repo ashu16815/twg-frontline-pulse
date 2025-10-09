@@ -59,9 +59,15 @@ export async function GET() {
     const result = await pool.request().query('SELECT @@VERSION as version, DB_NAME() as database, GETUTCDATE() as server_time');
     
     dbCheck.duration = Date.now() - dbCheckStart;
+    
+    // Extract server name from connection string
+    const connStr = process.env.AZURE_SQL_CONNECTION_STRING || '';
+    const serverMatch = connStr.match(/Server=([^;,]+)/i);
+    const serverName = serverMatch ? serverMatch[1] : 'Azure SQL Database';
+    
     dbCheck.details = {
       connected: true,
-      server: pool.config.server,
+      server: serverName,
       database: result.recordset[0].database,
       version: result.recordset[0].version.split('\n')[0],
       server_time: result.recordset[0].server_time,
