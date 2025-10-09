@@ -10,8 +10,8 @@ export default function LoginPage() {
 
   const next =
     typeof window !== 'undefined'
-      ? new URLSearchParams(window.location.search).get('next') || '/exec'
-      : '/exec';
+      ? new URLSearchParams(window.location.search).get('next') || '/'
+      : '/';
 
   async function submit() {
     setError('');
