@@ -33,9 +33,14 @@ export default async function Header() {
             Ask Questions
           </Link>
           {session?.role?.toLowerCase() === 'admin' && (
-            <Link href='/admin/users' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
-              Admin
-            </Link>
+            <>
+              <Link href='/admin/users' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
+                Users
+              </Link>
+              <Link href='/admin/health' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
+                Health
+              </Link>
+            </>
           )}
         </nav>
         
