@@ -1,7 +1,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { getSession } from '@/lib/auth';
+import LogoutButton from './LogoutButton';
 
-export default function Header() {
+export default async function Header() {
+  const session = getSession();
+
   return (
     <header className='border-b border-white/10 bg-black/40 backdrop-blur'>
       <div className='max-w-6xl mx-auto px-4 py-3 flex items-center gap-3'>
@@ -19,7 +23,18 @@ export default function Header() {
           />
           <span className='text-white/90 text-sm font-medium'>Win In Store</span>
         </Link>
-        <div className='ml-auto text-xs text-white/60'>Frontline → Bottom line</div>
+        <div className='ml-auto flex items-center gap-3'>
+          {session ? (
+            <>
+              <div className='text-xs text-white/60'>
+                {session.name} ({session.role || 'User'})
+              </div>
+              <LogoutButton />
+            </>
+          ) : (
+            <div className='text-xs text-white/60'>Frontline → Bottom line</div>
+          )}
+        </div>
       </div>
     </header>
   );
