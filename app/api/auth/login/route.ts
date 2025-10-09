@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const user_id = (body.user_id || '').trim();
-    const password = body.password || '';
+    const password = (body.password || '').trim();
 
     if (!user_id || !password) {
       return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
@@ -22,13 +22,17 @@ export async function POST(req: Request) {
 
     const u = r.recordset[0];
     if (!u) {
+      console.log('❌ Login failed: User not found -', user_id);
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
     const ok = await bcrypt.compare(password, u.password_hash);
     if (!ok) {
+      console.log('❌ Login failed: Invalid password for user -', user_id);
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
+
+    console.log('✅ Login successful:', user_id, '-', u.full_name);
 
     // Update last login
     await pool
