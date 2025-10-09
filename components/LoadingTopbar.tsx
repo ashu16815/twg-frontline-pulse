@@ -58,7 +58,7 @@ export default function LoadingTopbar() {
 
     // Fetch interception (basic)
     const origFetch = window.fetch;
-    (window as any).fetch = async (...args: any[]) => {
+    (window as any).fetch = async (...args: Parameters<typeof fetch>) => {
       onStart();
       try {
         const res = await origFetch(...args);
