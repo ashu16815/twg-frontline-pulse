@@ -37,7 +37,14 @@ export function middleware(req: NextRequest) {
 
   // Verify token
   try {
-    verify(token, SECRET);
+    const session: any = verify(token, SECRET);
+    
+    // If admin area, enforce Admin role
+    if (pathname.startsWith('/admin') && String(session.role || '').toLowerCase() !== 'admin') {
+      const url = new URL('/exec', req.url);
+      return NextResponse.redirect(url);
+    }
+    
     return NextResponse.next();
   } catch {
     const url = new URL('/login', req.url);
