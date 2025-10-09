@@ -8,6 +8,7 @@ export default function LoginPage() {
   const [password, setPw] = useState('');
   const [error, setError] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const next =
     typeof window !== 'undefined'
@@ -34,7 +35,13 @@ export default function LoginPage() {
       return;
     }
 
-    window.location.href = next;
+    // Show success message with button
+    setSuccess(true);
+    
+    // Also try automatic redirect after short delay
+    setTimeout(() => {
+      window.location.href = next;
+    }, 500);
   }
 
   return (
@@ -77,9 +84,24 @@ export default function LoginPage() {
             </div>
           )}
 
-          <LoadingButton className='btn-liquid w-full py-3' busyText='Signing in…' onClick={submit}>
-            Sign in
-          </LoadingButton>
+          {success && (
+            <div className='text-sm text-green-400 bg-green-900/20 border border-green-500/30 rounded-lg p-3 text-center'>
+              ✅ Login successful! Redirecting...
+            </div>
+          )}
+
+          {success ? (
+            <button 
+              className='btn-liquid w-full py-3' 
+              onClick={() => window.location.href = next}
+            >
+              Go to Home Page →
+            </button>
+          ) : (
+            <LoadingButton className='btn-liquid w-full py-3' busyText='Signing in…' onClick={submit}>
+              Sign in
+            </LoadingButton>
+          )}
         </div>
 
         <div className='text-xs text-white/40 text-center pt-2'>
