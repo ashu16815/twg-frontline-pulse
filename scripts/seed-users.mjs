@@ -1,6 +1,14 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import sql from 'mssql';
 import bcrypt from 'bcryptjs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env.local
+dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
 
 const users = [
   { user_id: '323905', full_name: 'Ankit Gupta', password: 'Ankit@1993', email: null, role: 'Admin' },
