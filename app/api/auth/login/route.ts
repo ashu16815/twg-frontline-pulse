@@ -48,7 +48,9 @@ export async function POST(req: Request) {
       role: u.role || undefined
     });
 
+    console.log('🔑 Setting session cookie for:', user_id);
     setSessionCookie(token);
+    console.log('✅ Session cookie set');
 
     return NextResponse.json({
       ok: true,

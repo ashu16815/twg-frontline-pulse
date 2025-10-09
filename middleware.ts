@@ -29,7 +29,10 @@ export function middleware(req: NextRequest) {
   // All other routes require authentication
   const token = req.cookies.get(COOKIE)?.value;
   
+  console.log('🔍 Middleware check:', pathname, 'Token exists:', !!token);
+  
   if (!token) {
+    console.log('❌ No token, redirecting to login');
     const url = new URL('/login', req.url);
     url.searchParams.set('next', pathname);
     return NextResponse.redirect(url);
@@ -38,15 +41,18 @@ export function middleware(req: NextRequest) {
   // Verify token
   try {
     const session: any = verify(token, SECRET);
+    console.log('✅ Token verified for:', session.user_id);
     
     // If admin area, enforce Admin role
     if (pathname.startsWith('/admin') && String(session.role || '').toLowerCase() !== 'admin') {
+      console.log('❌ Non-admin accessing admin area, redirecting');
       const url = new URL('/exec', req.url);
       return NextResponse.redirect(url);
     }
     
     return NextResponse.next();
-  } catch {
+  } catch (e) {
+    console.log('❌ Token verification failed:', e);
     const url = new URL('/login', req.url);
     url.searchParams.set('next', pathname);
     return NextResponse.redirect(url);
