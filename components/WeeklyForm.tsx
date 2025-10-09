@@ -64,11 +64,12 @@ export default function WeeklyForm() {
         <input className='input' name='managerName' placeholder='Manager Name (optional)' />
       </div>
       
-      <div className='space-y-3'>
+      {/* Voice Input - Hidden for now, will be added later */}
+      {/* <div className='space-y-3'>
         <h3 className='text-sm font-medium text-slate-700'>Voice Input Options:</h3>
         <VoiceRecorder onText={handleText} />
         <WebSpeechRecorder onText={handleText} />
-      </div>
+      </div> */}
       
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>

@@ -1,0 +1,46 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  VERCEL ENVIRONMENT VARIABLES - WIN IN STORE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Copy and paste these into Vercel Dashboard:
+Settings → Environment Variables
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. AZURE_SQL_CONNECTION_STRING
+   Value: Server=tcp:redpulse.database.windows.net,1433;Database=redpulse;User Id=redpulseadmin;Password=7NdYYgj4EvilspLS;Encrypt=true;TrustServerCertificate=false;Connection Timeout=30;
+
+2. AZURE_OPENAI_ENDPOINT
+   Value: https://openai-euw-twg-apps-poc.openai.azure.com/
+
+3. AZURE_OPENAI_API_KEY
+   Value: <YOUR_AZURE_OPENAI_API_KEY_FROM_.env.local>
+
+4. AZURE_OPENAI_DEPLOYMENT_GPT5
+   Value: gpt-5-mini
+
+5. AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE
+   Value: gpt-4o-transcribe
+
+6. AZURE_OPENAI_API_VERSION
+   Value: 2024-10-01-preview
+
+7. APP_SHARED_PASSCODE
+   Value: twg2024
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+IMPORTANT: Make sure to select these environments for each variable:
+✅ Production
+✅ Preview
+✅ Development
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+AFTER ADDING ENV VARS:
+1. Trigger a new deployment (or it will auto-deploy from GitHub)
+2. Wait for deployment to complete
+3. Test: https://your-app.vercel.app/api/health/db
+4. Should see: {"ok":true}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

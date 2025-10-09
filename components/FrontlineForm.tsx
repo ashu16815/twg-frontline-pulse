@@ -98,15 +98,15 @@ export default function FrontlineForm() {
             </div>
           </div>
 
-          {/* Voice Input */}
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
+          {/* Voice Input - Hidden for now, will be added later */}
+          {/* <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
             <h3 className="text-lg font-semibold mb-4 text-white">Voice Input (Optional)</h3>
             <p className="text-sm text-gray-400 mb-4">Speak your feedback and we'll transcribe it for you</p>
             <div className="space-y-3">
               <VoiceRecorder onText={handleText} />
               <WebSpeechRecorder onText={handleText} />
             </div>
-          </div>
+          </div> */}
 
           {/* Positive Feedback - Multiple Items */}
           <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
