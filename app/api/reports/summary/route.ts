@@ -83,8 +83,8 @@ export async function GET(req: Request) {
     
     const rq = await request.query(`${qWeek}; ${qMonth}`);
     
-    const weekRows = rq.recordsets?.[0] || [];
-    const monthRows = rq.recordsets?.[1] || [];
+    const weekRows = (rq.recordsets && Array.isArray(rq.recordsets) && rq.recordsets[0]) || [];
+    const monthRows = (rq.recordsets && Array.isArray(rq.recordsets) && rq.recordsets[1]) || [];
 
     const responded = period === 'week' ? weekRows.length : monthRows.length;
     const coveragePct = totalStores ? Math.round((responded / totalStores) * 100) : 0;
