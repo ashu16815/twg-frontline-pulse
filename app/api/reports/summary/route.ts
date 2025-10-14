@@ -94,7 +94,7 @@ export async function GET(req: Request) {
       0
     );
 
-    // Compose AI prompt input (compact)
+    // Compose AI prompt input (compact and optimized)
     const pack = (rows: any[]) =>
       rows.map((r: any) => ({
         region: r.region_code,
@@ -110,6 +110,11 @@ export async function GET(req: Request) {
         comments: r.freeform_comments
       }));
 
+    // Limit data size to prevent timeout - sample if too large
+    const maxRows = 50; // Limit to prevent large payloads
+    const sampledWeekRows = weekRows.length > maxRows ? weekRows.slice(0, maxRows) : weekRows;
+    const sampledMonthRows = monthRows.length > maxRows ? monthRows.slice(0, maxRows) : monthRows;
+    
     const user = {
       role: 'user',
       content: JSON.stringify({
@@ -117,31 +122,91 @@ export async function GET(req: Request) {
         filters: { week, month, region, storeId },
         coveragePct,
         totalStores,
-        week: pack(weekRows),
-        month: pack(monthRows)
+        week: pack(sampledWeekRows),
+        month: pack(sampledMonthRows),
+        dataNote: weekRows.length > maxRows || monthRows.length > maxRows 
+          ? `Data sampled to ${maxRows} rows for performance. Full dataset: ${weekRows.length} week, ${monthRows.length} month rows.`
+          : undefined
       })
     } as any;
 
-    console.log('🤖 Calling Azure OpenAI for reports summary...');
-    const ai = await callAzureJSON([SYS, user]);
-    console.log('✅ AI response received:', JSON.stringify(ai, null, 2));
-
-    return NextResponse.json({
-      ok: true,
-      period,
-      week,
-      month,
-      region,
-      storeId,
-      base: {
-        coveragePct,
-        stores: totalStores,
-        responded,
-        regions,
-        totalImpact
-      },
-      ai
+    console.log('🤖 Calling Azure OpenAI for reports summary...', {
+      weekRows: sampledWeekRows.length,
+      monthRows: sampledMonthRows.length,
+      totalStores,
+      coveragePct
     });
+    
+    try {
+      const ai = await callAzureJSON([SYS, user], { 
+        timeout: 20000, // 20 seconds for this endpoint
+        maxRetries: 1   // Single retry for faster failure
+      });
+      console.log('✅ AI response received:', Object.keys(ai));
+      
+      // Validate AI response structure
+      if (!ai || typeof ai !== 'object') {
+        throw new Error('Invalid AI response structure');
+      }
+      
+      return NextResponse.json({
+        ok: true,
+        period,
+        week,
+        month,
+        region,
+        storeId,
+        base: {
+          coveragePct,
+          stores: totalStores,
+          responded,
+          regions,
+          totalImpact
+        },
+        ai
+      });
+      
+    } catch (aiError: any) {
+      console.error('❌ AI processing failed:', aiError.message);
+      
+      // Return fallback response when AI fails
+      const fallbackResponse = {
+        kpis: {
+          coveragePct,
+          stores: totalStores,
+          responded,
+          regions,
+          totalImpact
+        },
+        narrative: `Data summary for ${period} period. Coverage: ${coveragePct}% (${responded}/${totalStores} stores). Total impact: $${totalImpact.toLocaleString()}.`,
+        topOpportunities: {
+          week: [],
+          month: []
+        },
+        topActions: {
+          week: [],
+          month: []
+        }
+      };
+      
+      return NextResponse.json({
+        ok: true,
+        period,
+        week,
+        month,
+        region,
+        storeId,
+        base: {
+          coveragePct,
+          stores: totalStores,
+          responded,
+          regions,
+          totalImpact
+        },
+        ai: fallbackResponse,
+        warning: 'AI processing failed, returning basic summary'
+      });
+    }
   } catch (e: any) {
     console.error('❌ Reports summary error:', e);
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });

@@ -36,7 +36,7 @@ export async function analyzePerformance(payload: {
     role: 'user',
     content: JSON.stringify(payload)
   };
-  return callAzureJSON([system, user]);
+  return callAzureJSON([system, user], { timeout: 15000, maxRetries: 1 });
 }
 
 export async function summariseWeeklyFinance(isoWeek: string, region: string, rows: any[]) {
@@ -48,7 +48,7 @@ export async function summariseWeeklyFinance(isoWeek: string, region: string, ro
     role: 'user',
     content: JSON.stringify({ isoWeek, region, rows })
   };
-  return callAzureJSON([system, user]);
+  return callAzureJSON([system, user], { timeout: 15000, maxRetries: 1 });
 }
 
 export async function generateExecutiveReport(isoWeek: string, allRows: any[], allSummaries: any[]) {
@@ -101,7 +101,7 @@ Guidelines:
     })
   };
   
-  return callAzureJSON([system, user]);
+  return callAzureJSON([system, user], { timeout: 15000, maxRetries: 1 });
 }
 
 export async function analyzeIssues(payload: {
@@ -122,7 +122,7 @@ export async function analyzeIssues(payload: {
     role: 'user',
     content: JSON.stringify(payload)
   };
-  return callAzureJSON([system, user]);
+  return callAzureJSON([system, user], { timeout: 15000, maxRetries: 1 });
 }
 
 export async function askCEO(question: string, isoWeek: string, rows: any[], summaries: any[]) {
@@ -134,7 +134,7 @@ export async function askCEO(question: string, isoWeek: string, rows: any[], sum
     role: 'user',
     content: JSON.stringify({ isoWeek, rows, summaries, question })
   };
-  return callAzureJSON([system, user]);
+  return callAzureJSON([system, user], { timeout: 15000, maxRetries: 1 });
 }
 
 export async function analyzeFrontlineFeedback(payload: {
@@ -154,5 +154,5 @@ export async function analyzeFrontlineFeedback(payload: {
     role: 'user',
     content: JSON.stringify(payload)
   };
-  return callAzureJSON([system, user]);
+  return callAzureJSON([system, user], { timeout: 15000, maxRetries: 1 });
 }

@@ -41,13 +41,78 @@ export function getDb() {
       throw new Error('AZURE_SQL_CONNECTION_STRING environment variable is not set');
     }
     
+    // Parse connection string to validate format
+    try {
+      const config = parseConnectionString(connectionString);
+      console.log('🔗 Database config:', {
+        server: config.server,
+        database: config.database,
+        user: config.user,
+        hasPassword: !!config.password,
+        encrypt: config.encrypt
+      });
+    } catch (e) {
+      console.error('❌ Invalid connection string format:', e);
+      throw new Error('Invalid AZURE_SQL_CONNECTION_STRING format');
+    }
+    
     poolPromise = sql.connect(connectionString).catch((err) => {
       poolPromise = null; // Reset so next call can retry
+      console.error('❌ Database connection failed:', err.message);
       throw new DatabaseError(err);
     });
   }
   
   return poolPromise;
+}
+
+// Helper function to parse and validate connection string
+function parseConnectionString(connectionString: string) {
+  const config: any = {};
+  const pairs = connectionString.split(';');
+  
+  for (const pair of pairs) {
+    if (pair.trim()) {
+      const [key, value] = pair.split('=');
+      if (key && value) {
+        const cleanKey = key.trim().toLowerCase();
+        const cleanValue = value.trim();
+        
+        switch (cleanKey) {
+          case 'server':
+            config.server = cleanValue;
+            break;
+          case 'database':
+            config.database = cleanValue;
+            break;
+          case 'user id':
+          case 'userid':
+            config.user = cleanValue;
+            break;
+          case 'password':
+            config.password = cleanValue;
+            break;
+          case 'encrypt':
+            config.encrypt = cleanValue.toLowerCase() === 'true';
+            break;
+          case 'trustservercertificate':
+            config.trustServerCertificate = cleanValue.toLowerCase() === 'true';
+            break;
+          case 'connection timeout':
+            config.connectionTimeout = parseInt(cleanValue) || 30;
+            break;
+        }
+      }
+    }
+  }
+  
+  // Validate required fields
+  if (!config.server) throw new Error('Server is required');
+  if (!config.database) throw new Error('Database is required');
+  if (!config.user) throw new Error('User Id is required');
+  if (!config.password) throw new Error('Password is required');
+  
+  return config;
 }
 
 export async function closeDb() {

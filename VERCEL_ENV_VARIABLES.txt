@@ -25,7 +25,10 @@ Settings → Environment Variables
 6. AZURE_OPENAI_API_VERSION
    Value: 2024-10-01-preview
 
-7. APP_SHARED_PASSCODE
+7. AUTH_JWT_SECRET
+   Value: twg2024-super-secret-jwt-key-change-in-production
+
+8. APP_SHARED_PASSCODE
    Value: twg2024
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
