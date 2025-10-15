@@ -1,11 +1,8 @@
 import { callAzureJSON } from './azure';
+import { getFinancialYearWeek } from './timezone';
 
 export function weekKey(d: Date) {
-  const t = new Date(d.getTime());
-  t.setHours(0, 0, 0, 0);
-  const onejan = new Date(t.getFullYear(), 0, 1);
-  const week = Math.ceil((((t.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
-  return `${t.getFullYear()}-W${week}`;
+  return getFinancialYearWeek(d);
 }
 
 export async function analyzePerformance(payload: {

@@ -55,3 +55,43 @@ export function getAucklandISOWeek(date?: Date | string): string {
   return `${thursday.getFullYear()}-W${weekNum.toString().padStart(2, '0')}`;
 }
 
+/**
+ * Get Financial Year week (FY26-Www format)
+ * Financial year starts August 1st, 2025 (FY26)
+ */
+export function getFinancialYearWeek(date?: Date | string): string {
+  const d = date ? toAuckland(date) : nowAuckland();
+  
+  // Financial year starts August 1st, 2025
+  const fyStart = new Date(2025, 7, 1); // August 1st, 2025 (month is 0-indexed)
+  
+  // Calculate which financial year we're in
+  let fyYear = 26; // Start with FY26
+  let fyStartDate = new Date(fyStart);
+  
+  // If current date is before August 1st, we're still in the previous FY
+  if (d < fyStartDate) {
+    fyYear = 25;
+    fyStartDate = new Date(2024, 7, 1); // August 1st, 2024
+  } else {
+    // Check if we're in a future FY
+    while (d >= new Date(fyStartDate.getFullYear() + 1, 7, 1)) {
+      fyYear++;
+      fyStartDate = new Date(fyStartDate.getFullYear() + 1, 7, 1);
+    }
+  }
+  
+  // Calculate week number within the financial year
+  const daysDiff = Math.floor((d.getTime() - fyStartDate.getTime()) / (1000 * 60 * 60 * 24));
+  const weekNum = Math.floor(daysDiff / 7) + 1;
+  
+  return `FY${fyYear}-W${weekNum.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Get current financial year week (default function for backward compatibility)
+ */
+export function getCurrentFinancialWeek(): string {
+  return getFinancialYearWeek();
+}
+

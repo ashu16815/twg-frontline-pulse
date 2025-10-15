@@ -1,4 +1,5 @@
 import sql from 'mssql';
+import { getFinancialYearWeek } from './timezone';
 
 let poolPromise: Promise<sql.ConnectionPool> | null = null;
 
@@ -141,12 +142,8 @@ export async function query<T = any>(queryText: string, params?: Record<string, 
   }
 }
 
-// Helper function to get week key in ISO format
+// Helper function to get week key in financial year format
 export function weekKey(d: Date): string {
-  const t = new Date(d.getTime());
-  t.setHours(0, 0, 0, 0);
-  const onejan = new Date(t.getFullYear(), 0, 1);
-  const week = Math.ceil((((t.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
-  return `${t.getFullYear()}-W${week}`;
+  return getFinancialYearWeek(d);
 }
 
