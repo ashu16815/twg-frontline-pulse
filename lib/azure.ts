@@ -39,8 +39,7 @@ export async function callAzureJSON(messages: any[], options: { timeout?: number
         body: JSON.stringify({
           messages,
           response_format: { type: 'json_object' },
-          max_completion_tokens: 2000,
-          temperature: 0.1 // Lower temperature for more consistent responses
+          max_completion_tokens: 2000
         }),
         signal: controller.signal
       });

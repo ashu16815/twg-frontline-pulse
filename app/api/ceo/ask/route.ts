@@ -33,8 +33,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ answer: ans.answer });
   } catch (e: any) {
     console.error('❌ CEO ask error:', e);
+    
+    // Provide more specific error messages
+    let errorMessage = 'Unable to process your question right now.';
+    
+    if (e.message?.includes('Azure OpenAI')) {
+      errorMessage = 'AI service is temporarily unavailable. Please try again in a few moments.';
+    } else if (e.message?.includes('database') || e.message?.includes('connection')) {
+      errorMessage = 'Database connection issue. Please check system status.';
+    } else if (e.message?.includes('timeout')) {
+      errorMessage = 'Request timed out. Please try again with a simpler question.';
+    }
+    
     return NextResponse.json({ 
-      answer: `Error: ${e.message}. Please try again.` 
+      answer: errorMessage,
+      error: e.message 
     }, { status: 500 });
   }
 }

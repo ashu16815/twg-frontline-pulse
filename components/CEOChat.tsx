@@ -24,7 +24,7 @@ export default function CEOChat() {
       setA(j.answer || j.error || 'No response received');
     } catch (error) {
       console.error('Error asking question:', error);
-      setA('Sorry, I cannot answer questions right now. The database needs to be set up with the service role key to enable AI-powered Q&A.');
+      setA('Sorry, I cannot answer questions right now. Please check the system status and try again later.');
     }
   }
 
