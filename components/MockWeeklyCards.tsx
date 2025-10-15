@@ -1,6 +1,6 @@
 // Mock version of WeeklyCards for demonstration
 export default function MockWeeklyCards() {
-  const thisWeek = '2025-W38'; // Mock current week
+  const thisWeek = 'FY26-W11'; // Mock current week (financial year format)
   const mockSummaries = [
     {
       region: 'North',

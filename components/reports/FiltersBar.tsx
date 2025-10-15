@@ -49,7 +49,7 @@ export default function FiltersBar({ onChange }: { onChange: (f: any) => void })
       </div>
       <input
         className='btn p-2'
-        placeholder='YYYY-W##'
+        placeholder='FY26-W##'
         value={week}
         onChange={e => setWeek(e.target.value)}
         disabled={period !== 'week'}

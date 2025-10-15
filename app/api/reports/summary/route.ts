@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { callAzureJSON } from '@/lib/azure';
+import { getFinancialYearWeek } from '@/lib/timezone';
 
-function isoWeekKey(d = new Date()) {
-  const t = new Date(d.getTime());
-  t.setHours(0, 0, 0, 0);
-  const onejan = new Date(t.getFullYear(), 0, 1);
-  const week = Math.ceil((((t.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
-  return `${t.getFullYear()}-W${String(week).padStart(2, '0')}`;
+function financialWeekKey(d = new Date()) {
+  return getFinancialYearWeek(d);
 }
 
 function monthKey(d = new Date()) {
@@ -42,7 +39,7 @@ JSON Schema:
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const period = (searchParams.get('period') || 'week').toLowerCase(); // 'week' | 'month'
-  const week = searchParams.get('week') || isoWeekKey();
+  const week = searchParams.get('week') || financialWeekKey();
   const month = searchParams.get('month') || monthKey();
   const region = searchParams.get('region') || '';
   const storeId = searchParams.get('storeId') || '';
