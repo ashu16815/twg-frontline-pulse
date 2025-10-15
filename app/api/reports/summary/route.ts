@@ -160,7 +160,13 @@ export async function GET(req: Request) {
           regions,
           totalImpact
         },
-        ai
+        ai,
+        rawData: {
+          weekRows: sampledWeekRows,
+          monthRows: sampledMonthRows,
+          totalWeekRows: weekRows.length,
+          totalMonthRows: monthRows.length
+        }
       });
       
     } catch (aiError: any) {
@@ -201,7 +207,13 @@ export async function GET(req: Request) {
           totalImpact
         },
         ai: fallbackResponse,
-        warning: 'AI processing failed, returning basic summary'
+        warning: 'AI processing failed, returning basic summary',
+        rawData: {
+          weekRows: sampledWeekRows,
+          monthRows: sampledMonthRows,
+          totalWeekRows: weekRows.length,
+          totalMonthRows: monthRows.length
+        }
       });
     }
   } catch (e: any) {

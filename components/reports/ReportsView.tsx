@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import FiltersBar from './FiltersBar';
 import LoadingButton from '@/components/LoadingButton';
 import Spinner from '@/components/Spinner';
+import FeedbackTable from './FeedbackTable';
 
 function Money(n: number) {
   return `$${Math.round(n || 0).toLocaleString()}`;
@@ -215,6 +216,23 @@ export default function ReportsView() {
             <p className='text-sm whitespace-pre-wrap text-white/80'>
               {ai.narrative || 'AI narrative unavailable. This may be due to insufficient data coverage or filtering that returns no results.'}
             </p>
+          </section>
+
+          {/* Raw Data Tables */}
+          <section className='space-y-4'>
+            <FeedbackTable
+              data={data.rawData?.weekRows || []}
+              title={`Raw Feedback Data — ${data.period === 'week' ? 'This Week' : 'This Month'}`}
+              totalCount={data.rawData?.totalWeekRows || 0}
+            />
+            
+            {data.period === 'month' && (
+              <FeedbackTable
+                data={data.rawData?.monthRows || []}
+                title='Raw Feedback Data — This Month'
+                totalCount={data.rawData?.totalMonthRows || 0}
+              />
+            )}
           </section>
         </>
       )}
