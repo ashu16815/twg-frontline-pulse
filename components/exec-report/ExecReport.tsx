@@ -13,6 +13,7 @@ export default function ExecReport() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState('');
+  const [feedbackStatus, setFeedbackStatus] = useState<{[key: string]: 'submitting' | 'success' | 'error'}>({});
 
   async function load() {
     setLoading(true);
@@ -45,21 +46,45 @@ export default function ExecReport() {
   }, [data]);
 
   async function sendFeedback(section: string, rating: number, comment?: string) {
-    const b = {
-      scope: data.scope,
-      scope_key: data.scope_key,
-      region: filters.region || null,
-      storeId: filters.storeId || null,
-      section,
-      rating,
-      comment: comment || null
-    };
+    const feedbackKey = `${section}-${rating}`;
+    setFeedbackStatus(prev => ({ ...prev, [feedbackKey]: 'submitting' }));
     
-    await fetch('/api/exec-report/feedback', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(b)
-    });
+    try {
+      const b = {
+        scope: data.scope,
+        scope_key: data.scope_key,
+        region: filters.region || null,
+        storeId: filters.storeId || null,
+        section,
+        rating,
+        comment: comment || null
+      };
+      
+      const response = await fetch('/api/exec-report/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(b)
+      });
+      
+      const result = await response.json();
+      
+      if (result.ok) {
+        setFeedbackStatus(prev => ({ ...prev, [feedbackKey]: 'success' }));
+        // Clear success status after 2 seconds
+        setTimeout(() => {
+          setFeedbackStatus(prev => ({ ...prev, [feedbackKey]: undefined }));
+        }, 2000);
+      } else {
+        throw new Error(result.error || 'Failed to submit feedback');
+      }
+    } catch (error: any) {
+      console.error('Feedback submission error:', error);
+      setFeedbackStatus(prev => ({ ...prev, [feedbackKey]: 'error' }));
+      // Clear error status after 3 seconds
+      setTimeout(() => {
+        setFeedbackStatus(prev => ({ ...prev, [feedbackKey]: undefined }));
+      }, 3000);
+    }
   }
 
   return (
@@ -111,7 +136,11 @@ export default function ExecReport() {
           <section className='card'>
             <div className='flex items-center justify-between'>
               <h2 className='font-semibold'>Executive Summary</h2>
-              <Thumbs onRate={(r) => sendFeedback('summary', r)} />
+              <Thumbs 
+                onRate={(r) => sendFeedback('summary', r)} 
+                feedbackStatus={feedbackStatus}
+                section="summary"
+              />
             </div>
             <ul className='list-disc pl-6 text-sm space-y-1 mt-3'>
               {(data?.ai?.summary || []).map((s: string, i: number) => (
@@ -125,7 +154,11 @@ export default function ExecReport() {
             <div className='card'>
               <div className='flex items-center justify-between'>
                 <h3 className='font-semibold'>What's Working</h3>
-                <Thumbs onRate={(r) => sendFeedback('insights', r)} />
+                <Thumbs 
+                onRate={(r) => sendFeedback('insights', r)} 
+                feedbackStatus={feedbackStatus}
+                section="insights"
+              />
               </div>
               <ul className='list-disc pl-6 text-sm space-y-1 mt-3'>
                 {(data?.ai?.whatsWorking || []).map((s: string, i: number) => (
@@ -151,7 +184,11 @@ export default function ExecReport() {
             <div className='card'>
               <div className='flex items-center justify-between'>
                 <h3 className='font-semibold'>Top 3 Opportunities</h3>
-                <Thumbs onRate={(r) => sendFeedback('actions', r)} />
+                <Thumbs 
+                onRate={(r) => sendFeedback('actions', r)} 
+                feedbackStatus={feedbackStatus}
+                section="actions"
+              />
               </div>
               <ol className='list-decimal pl-5 text-sm space-y-2 mt-3'>
                 {(data?.ai?.opportunities || []).slice(0, 3).map((o: any, i: number) => (
@@ -208,7 +245,11 @@ export default function ExecReport() {
           <section className='card'>
             <div className='flex items-center justify-between'>
               <h3 className='font-semibold'>Predictive Outlook</h3>
-              <Thumbs onRate={(r) => sendFeedback('predictive', r)} />
+              <Thumbs 
+                onRate={(r) => sendFeedback('predictive', r)} 
+                feedbackStatus={feedbackStatus}
+                section="predictive"
+              />
             </div>
             {data?.predictive ? (
               <pre className='text-xs whitespace-pre-wrap opacity-80 mt-3'>
@@ -232,17 +273,75 @@ export default function ExecReport() {
   );
 }
 
-function Thumbs({ onRate }: { onRate: (n: 1 | 2 | 3) => void }) {
+function Thumbs({ 
+  onRate, 
+  feedbackStatus, 
+  section 
+}: { 
+  onRate: (n: 1 | 2 | 3) => void;
+  feedbackStatus: {[key: string]: 'submitting' | 'success' | 'error'};
+  section: string;
+}) {
+  const getButtonClass = (rating: number) => {
+    const key = `${section}-${rating}`;
+    const status = feedbackStatus[key];
+    
+    if (status === 'submitting') {
+      return 'btn opacity-50 cursor-not-allowed';
+    } else if (status === 'success') {
+      return 'btn bg-green-600 hover:bg-green-700 text-white';
+    } else if (status === 'error') {
+      return 'btn bg-red-600 hover:bg-red-700 text-white';
+    }
+    return 'btn hover:bg-white/10';
+  };
+
+  const getButtonContent = (rating: number) => {
+    const key = `${section}-${rating}`;
+    const status = feedbackStatus[key];
+    
+    if (status === 'submitting') {
+      return '⏳';
+    } else if (status === 'success') {
+      return '✅';
+    } else if (status === 'error') {
+      return '❌';
+    }
+    
+    // Default emojis
+    switch (rating) {
+      case 1: return '👎';
+      case 2: return '👌';
+      case 3: return '👍';
+      default: return '?';
+    }
+  };
+
   return (
     <div className='inline-flex gap-2'>
-      <button className='btn' title='Not helpful' onClick={() => onRate(1)}>
-        👎
+      <button 
+        className={getButtonClass(1)} 
+        title='Not helpful' 
+        onClick={() => onRate(1)}
+        disabled={feedbackStatus[`${section}-1`] === 'submitting'}
+      >
+        {getButtonContent(1)}
       </button>
-      <button className='btn' title='Okay' onClick={() => onRate(2)}>
-        👌
+      <button 
+        className={getButtonClass(2)} 
+        title='Okay' 
+        onClick={() => onRate(2)}
+        disabled={feedbackStatus[`${section}-2`] === 'submitting'}
+      >
+        {getButtonContent(2)}
       </button>
-      <button className='btn' title='Helpful' onClick={() => onRate(3)}>
-        👍
+      <button 
+        className={getButtonClass(3)} 
+        title='Helpful' 
+        onClick={() => onRate(3)}
+        disabled={feedbackStatus[`${section}-3`] === 'submitting'}
+      >
+        {getButtonContent(3)}
       </button>
     </div>
   );
