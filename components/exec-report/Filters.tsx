@@ -15,7 +15,7 @@ export default function Filters({ onChange }: { onChange: (f: any) => void }) {
     (async () => {
       const r = await fetch('/api/lookups/stores');
       const j = await r.json();
-      const rs = Array.from(new Set((j.stores || []).map((s: any) => s.region_code))).filter(Boolean);
+      const rs = Array.from(new Set((j.stores || []).map((s: any) => s.region_code))).filter(Boolean) as string[];
       setRegions(rs);
       setStores((j.stores || []).map((s: any) => ({ id: s.store_id, name: `${s.store_id} — ${s.store_name}` })));
     })();
