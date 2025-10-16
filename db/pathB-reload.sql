@@ -19,7 +19,8 @@ BEGIN TRY
   -- 2) Map skeleton (old→new)
   IF OBJECT_ID('dbo.store_id_map') IS NOT NULL DROP TABLE dbo.store_id_map;
   CREATE TABLE dbo.store_id_map(
-    store_code   nvarchar(50) PRIMARY KEY,
+    id int IDENTITY(1,1) PRIMARY KEY,
+    store_code   nvarchar(50) NOT NULL,
     old_store_id nvarchar(50) NULL,
     new_store_id nvarchar(50) NULL
   );
@@ -66,4 +67,3 @@ BEGIN CATCH
   DECLARE @msg nvarchar(4000)=ERROR_MESSAGE();
   RAISERROR('Store reload failed: %s',16,1,@msg);
 END CATCH;
-GO

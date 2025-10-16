@@ -18,165 +18,165 @@
     "active": true
   },
   {
-    "store_code": "1001",
-    "store_name": "Demo North",
-    "banner": "Noel",
-    "region": "North",
-    "region_code": "NTH",
-    "manager_email": "demo.north@twgroup.co.nz",
-    "active": true
-  },
-  {
-    "store_code": "1002",
-    "store_name": "Demo Central",
-    "banner": "TWL",
-    "region": "Central",
-    "region_code": "CTR",
-    "manager_email": "demo.central@twgroup.co.nz",
-    "active": true
-  },
-  {
-    "store_code": "1003",
-    "store_name": "Demo South",
-    "banner": "TWL",
-    "region": "South",
-    "region_code": "STH",
-    "manager_email": "demo.south@twgroup.co.nz",
-    "active": true
-  },
-  {
-    "store_code": "2001",
-    "store_name": "Auckland Central",
+    "store_code": "305",
+    "store_name": "East Tamaki",
     "banner": "TWL",
     "region": "Auckland",
     "region_code": "AKL",
-    "manager_email": "auckland.central@twgroup.co.nz",
+    "manager_email": "easttamaki.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "2002",
-    "store_name": "Newmarket",
+    "store_code": "192",
+    "store_name": "Mt Roskill",
     "banner": "TWL",
     "region": "Auckland",
     "region_code": "AKL",
-    "manager_email": "newmarket@twgroup.co.nz",
+    "manager_email": "mtroskill.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "2003",
-    "store_name": "Takapuna",
+    "store_code": "353",
+    "store_name": "Henderson",
     "banner": "TWL",
     "region": "Auckland",
     "region_code": "AKL",
-    "manager_email": "takapuna@twgroup.co.nz",
+    "manager_email": "henderson.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "3001",
-    "store_name": "Wellington Central",
+    "store_code": "114",
+    "store_name": "Pukekohe",
     "banner": "TWL",
-    "region": "Wellington",
-    "region_code": "WLG",
-    "manager_email": "wellington.central@twgroup.co.nz",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "pukekohe.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "3002",
-    "store_name": "Lower Hutt",
+    "store_code": "335",
+    "store_name": "Sylvia Park",
     "banner": "TWL",
-    "region": "Wellington",
-    "region_code": "WLG",
-    "manager_email": "lower.hutt@twgroup.co.nz",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "sylviapark.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "4001",
-    "store_name": "Christchurch Central",
+    "store_code": "176",
+    "store_name": "Ashburton",
     "banner": "TWL",
-    "region": "Canterbury",
-    "region_code": "CAN",
-    "manager_email": "christchurch.central@twgroup.co.nz",
+    "region": "Canterbury - Westcoast",
+    "region_code": "CAN-WTC",
+    "manager_email": "ashburton.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "4002",
+    "store_code": "178",
+    "store_name": "Barrington",
+    "banner": "TWL",
+    "region": "Canterbury - Westcoast",
+    "region_code": "CAN-WTC",
+    "manager_email": "barrington.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "371",
+    "store_name": "Rangiora",
+    "banner": "TWL",
+    "region": "Canterbury - Westcoast",
+    "region_code": "CAN-WTC",
+    "manager_email": "rangiora.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "366",
     "store_name": "Riccarton",
     "banner": "TWL",
-    "region": "Canterbury",
-    "region_code": "CAN",
-    "manager_email": "riccarton@twgroup.co.nz",
+    "region": "Canterbury - Westcoast",
+    "region_code": "CAN-WTC",
+    "manager_email": "riccarton.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "5001",
-    "store_name": "Dunedin Central",
+    "store_code": "120",
+    "store_name": "Northlands",
     "banner": "TWL",
-    "region": "Otago",
-    "region_code": "OTA",
-    "manager_email": "dunedin.central@twgroup.co.nz",
+    "region": "Canterbury - Westcoast",
+    "region_code": "CAN-WTC",
+    "manager_email": "northlands.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "6001",
-    "store_name": "Hamilton Central",
+    "store_code": "329",
+    "store_name": "Timaru",
     "banner": "TWL",
-    "region": "Waikato",
-    "region_code": "WAI",
-    "manager_email": "hamilton.central@twgroup.co.nz",
+    "region": "Canterbury - Westcoast",
+    "region_code": "CAN-WTC",
+    "manager_email": "timaru.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "6002",
-    "store_name": "Rotorua",
+    "store_code": "135",
+    "store_name": "Paraparaumu",
+    "banner": "TWL",
+    "region": "Wellington - Wairarapa",
+    "region_code": "WGN-WPA",
+    "manager_email": "paraparaumu.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "133",
+    "store_name": "Johnsonville",
+    "banner": "TWL",
+    "region": "Wellington - Wairarapa",
+    "region_code": "WGN-WPA",
+    "manager_email": "johnsonville.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "139",
+    "store_name": "Lower Hutt",
+    "banner": "TWL",
+    "region": "Wellington - Wairarapa",
+    "region_code": "WGN-WPA",
+    "manager_email": "lowerhutt.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "131",
+    "store_name": "Petone",
+    "banner": "TWL",
+    "region": "Wellington - Wairarapa",
+    "region_code": "WGN-WPA",
+    "manager_email": "petone.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "132",
+    "store_name": "Porirua",
+    "banner": "TWL",
+    "region": "Wellington - Wairarapa",
+    "region_code": "WGN-WPA",
+    "manager_email": "porirua.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "156",
+    "store_name": "Papamoa",
     "banner": "TWL",
     "region": "Bay of Plenty",
     "region_code": "BOP",
-    "manager_email": "rotorua@twgroup.co.nz",
+    "manager_email": "papamoa.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "7001",
-    "store_name": "Tauranga",
+    "store_code": "392",
+    "store_name": "Tauranga Crossing",
     "banner": "TWL",
     "region": "Bay of Plenty",
     "region_code": "BOP",
-    "manager_email": "tauranga@twgroup.co.nz",
-    "active": true
-  },
-  {
-    "store_code": "8001",
-    "store_name": "Napier",
-    "banner": "TWL",
-    "region": "Hawke's Bay",
-    "region_code": "HKB",
-    "manager_email": "napier@twgroup.co.nz",
-    "active": true
-  },
-  {
-    "store_code": "8002",
-    "store_name": "Hastings",
-    "banner": "TWL",
-    "region": "Hawke's Bay",
-    "region_code": "HKB",
-    "manager_email": "hastings@twgroup.co.nz",
-    "active": true
-  },
-  {
-    "store_code": "9001",
-    "store_name": "Palmerston North",
-    "banner": "TWL",
-    "region": "Manawatu",
-    "region_code": "MAN",
-    "manager_email": "palmerston.north@twgroup.co.nz",
-    "active": true
-  },
-  {
-    "store_code": "9002",
-    "store_name": "Whanganui",
-    "banner": "TWL",
-    "region": "Manawatu",
-    "region_code": "MAN",
-    "manager_email": "whanganui@twgroup.co.nz",
+    "manager_email": "taurangacrossing.manager@twgroup.co.nz",
     "active": true
   }
 ]
