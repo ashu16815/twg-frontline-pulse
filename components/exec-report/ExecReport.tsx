@@ -241,7 +241,7 @@ export default function ExecReport() {
             </div>
           </section>
 
-          {/* Predictive Outlook (stub) */}
+          {/* Predictive Outlook */}
           <section className='card'>
             <div className='flex items-center justify-between'>
               <h3 className='font-semibold'>Predictive Outlook</h3>
@@ -252,9 +252,112 @@ export default function ExecReport() {
               />
             </div>
             {data?.predictive ? (
-              <pre className='text-xs whitespace-pre-wrap opacity-80 mt-3'>
-                {JSON.stringify(data.predictive, null, 2)}
-              </pre>
+              <div className='mt-3 space-y-4'>
+                {/* Forecast Summary */}
+                <div className='bg-white/5 rounded-lg p-4'>
+                  <h4 className='font-medium mb-2'>📊 Forecast Summary</h4>
+                  <div className='text-sm text-white/80'>
+                    <div className='mb-1'><strong>Timeframe:</strong> {data.predictive.timeframe}</div>
+                    <div className='mb-1'><strong>Confidence:</strong> {data.predictive.confidence}</div>
+                    <div><strong>Coverage Score:</strong> {data.predictive.data_quality?.coverage_score || 'N/A'}%</div>
+                  </div>
+                </div>
+
+                {/* Key Forecasts */}
+                <div className='bg-white/5 rounded-lg p-4'>
+                  <h4 className='font-medium mb-3'>📈 Key Forecasts</h4>
+                  <div className='grid md:grid-cols-3 gap-3'>
+                    {data.predictive.forecasts?.map((forecast: any, i: number) => (
+                      <div key={i} className='bg-white/5 rounded p-3'>
+                        <div className='text-sm font-medium'>{forecast.metric}</div>
+                        <div className='text-xs text-white/60 mt-1'>
+                          Current: {forecast.current} → Predicted: {forecast.predicted}
+                        </div>
+                        <div className='text-xs text-white/60'>
+                          Trend: {forecast.trend} ({Math.round(forecast.confidence * 100)}% confidence)
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Scenarios */}
+                <div className='bg-white/5 rounded-lg p-4'>
+                  <h4 className='font-medium mb-3'>🎯 Scenarios</h4>
+                  <div className='space-y-2'>
+                    {data.predictive.scenarios?.map((scenario: any, i: number) => (
+                      <div key={i} className='bg-white/5 rounded p-3'>
+                        <div className='flex justify-between items-start mb-1'>
+                          <div className='font-medium text-sm'>{scenario.name}</div>
+                          <div className='text-xs text-white/60'>{Math.round(scenario.probability * 100)}% probability</div>
+                        </div>
+                        <div className='text-xs text-white/80 mb-1'>{scenario.description}</div>
+                        <div className='text-xs text-white/60'>
+                          Impact: ${Math.round(scenario.impact).toLocaleString()} | 
+                          Drivers: {scenario.key_drivers?.join(', ')}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Recommendations */}
+                <div className='bg-white/5 rounded-lg p-4'>
+                  <h4 className='font-medium mb-3'>💡 Recommendations</h4>
+                  <div className='space-y-2'>
+                    {data.predictive.recommendations?.map((rec: any, i: number) => (
+                      <div key={i} className='bg-white/5 rounded p-3'>
+                        <div className='flex justify-between items-start mb-1'>
+                          <div className='font-medium text-sm'>{rec.action}</div>
+                          <div className={`text-xs px-2 py-1 rounded ${
+                            rec.priority === 'High' ? 'bg-red-600 text-white' :
+                            rec.priority === 'Medium' ? 'bg-yellow-600 text-white' :
+                            'bg-green-600 text-white'
+                          }`}>
+                            {rec.priority}
+                          </div>
+                        </div>
+                        <div className='text-xs text-white/80 mb-1'>{rec.rationale}</div>
+                        <div className='text-xs text-white/60'>Expected: {rec.expected_impact}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Risk Factors */}
+                <div className='bg-white/5 rounded-lg p-4'>
+                  <h4 className='font-medium mb-3'>⚠️ Risk Factors</h4>
+                  <div className='space-y-2'>
+                    {data.predictive.risk_factors?.map((risk: any, i: number) => (
+                      <div key={i} className='bg-white/5 rounded p-3'>
+                        <div className='flex justify-between items-start mb-1'>
+                          <div className='font-medium text-sm'>{risk.risk}</div>
+                          <div className={`text-xs px-2 py-1 rounded ${
+                            risk.probability === 'High' ? 'bg-red-600 text-white' :
+                            risk.probability === 'Medium' ? 'bg-yellow-600 text-white' :
+                            'bg-green-600 text-white'
+                          }`}>
+                            {risk.probability} Risk
+                          </div>
+                        </div>
+                        <div className='text-xs text-white/80 mb-1'>{risk.impact}</div>
+                        <div className='text-xs text-white/60'>Mitigation: {risk.mitigation}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Data Quality Info */}
+                <div className='bg-white/5 rounded-lg p-4'>
+                  <h4 className='font-medium mb-2'>🔍 Data Quality</h4>
+                  <div className='text-xs text-white/60 grid grid-cols-2 gap-2'>
+                    <div>Model: {data.predictive.data_quality?.model_version || 'Mock v1.0'}</div>
+                    <div>Horizon: {data.predictive.data_quality?.prediction_horizon || '4 weeks'}</div>
+                    <div>Freshness: {data.predictive.data_quality?.data_freshness || 'Current'}</div>
+                    <div>Updated: {new Date(data.predictive.data_quality?.last_updated || Date.now()).toLocaleDateString()}</div>
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className='text-sm text-white/60 mt-3'>
                 Azure ML endpoint not configured. Add AZURE_ML_SCORING_URI to enable forecasts/scenarios.
