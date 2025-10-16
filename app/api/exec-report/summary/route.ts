@@ -90,8 +90,11 @@ export async function GET(req: Request) {
     const regions = new Set(rows.map((r: any) => r.region_code)).size;
     const totalImpact = rows.reduce((a: any, r: any) => a + (r.miss1_dollars || 0) + (r.miss2_dollars || 0) + (r.miss3_dollars || 0), 0);
 
-    // 3) compact payload for GPT (RAG-style)
-    const packed = rows.map((r: any) => ({
+    // 3) compact payload for GPT (RAG-style) - limit to prevent timeouts
+    const maxRows = 20; // Limit rows to prevent large payloads
+    const sampledRows = rows.length > maxRows ? rows.slice(0, maxRows) : rows;
+    
+    const packed = sampledRows.map((r: any) => ({
       region: r.region_code,
       store: r.store_id,
       pos: r.top_positive,
@@ -104,12 +107,60 @@ export async function GET(req: Request) {
       comment: r.freeform_comments || ''
     }));
     
+    // If no data, return a default response
+    if (rows.length === 0) {
+      const fallbackResponse = {
+        summary: [`No feedback data available for ${scope} ${scope_key}. Please submit store feedback first.`],
+        whatsWorking: [],
+        whatsNot: [],
+        opportunities: [],
+        actions: [],
+        risks: ['No data available for risk assessment'],
+        oppByRegion: []
+      };
+      
+      return NextResponse.json({
+        ok: true,
+        scope,
+        scope_key,
+        base: { coveragePct, regions, responded, totalImpact },
+        ai: fallbackResponse,
+        warning: 'No feedback data available'
+      });
+    }
+
     const user = {
       role: 'user',
-      content: JSON.stringify({ scope, scope_key, coveragePct, rows: packed })
+      content: JSON.stringify({ 
+        scope, 
+        scope_key, 
+        coveragePct, 
+        rows: packed,
+        dataNote: rows.length > maxRows ? `Data sampled to ${maxRows} rows for performance. Full dataset: ${rows.length} rows.` : undefined
+      })
     } as any;
     
-    const ai = await callAzureJSON([SYS, user], { timeout: 20000, maxRetries: 1 });
+    let ai;
+    try {
+      ai = await callAzureJSON([SYS, user], { timeout: 10000, maxRetries: 1 });
+    } catch (aiError: any) {
+      console.error('❌ AI processing failed:', aiError.message);
+      
+      // Fallback response when AI fails
+      ai = {
+        summary: [`Executive summary for ${scope} ${scope_key}. Coverage: ${coveragePct}% (${responded}/${totalStores} stores). Total impact: $${Math.round(totalImpact).toLocaleString()}.`],
+        whatsWorking: packed.filter(r => r.pos).slice(0, 3).map(r => r.pos),
+        whatsNot: packed.filter(r => r.miss1).slice(0, 3).map(r => ({ text: r.miss1, impact: r.miss1_d })),
+        opportunities: [],
+        actions: [],
+        risks: ['AI processing unavailable - using basic analysis'],
+        oppByRegion: Array.from(new Set(packed.map(r => r.region))).map(region => ({
+          region,
+          impact: packed.filter(r => r.region === region).reduce((sum, r) => sum + r.miss1_d + r.miss2_d + r.miss3_d, 0),
+          mentions: packed.filter(r => r.region === region).length
+        }))
+      };
+    }
 
     // 4) predictive stub (optional)
     const pred = await callAzureML({ 
