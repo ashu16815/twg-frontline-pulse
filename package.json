@@ -24,7 +24,8 @@
     "db:apply:exec-report": "node scripts/db-apply-exec-report.mjs",
     "seed:mock:feedback": "node scripts/seed-mock-feedback.mjs",
     "stores:load": "node scripts/load-stores-from-json.mjs",
-    "stores:pathB": "node scripts/run-migration.mjs"
+    "stores:pathB": "node scripts/run-migration.mjs",
+    "build:stores:from:xlsx": "node scripts/xlsx-to-stores-json.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",
@@ -49,6 +50,7 @@
     "tailwindcss": "3.4.12",
     "uuid": "9.0.1",
     "wavesurfer.js": "7.7.12",
+    "xlsx": "^0.18.5",
     "zod": "3.23.8"
   },
   "devDependencies": {

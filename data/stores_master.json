@@ -171,6 +171,33 @@
     "active": true
   },
   {
+    "store_code": "359",
+    "store_name": "Mount Maunganui",
+    "banner": "TWL",
+    "region": "Bay of Plenty",
+    "region_code": "BOP",
+    "manager_email": "mountmaunganui.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "142",
+    "store_name": "Rotorua",
+    "banner": "TWL",
+    "region": "Bay of Plenty",
+    "region_code": "BOP",
+    "manager_email": "rotorua.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "328",
+    "store_name": "Taupo",
+    "banner": "TWL",
+    "region": "Bay of Plenty",
+    "region_code": "BOP",
+    "manager_email": "taupo.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
     "store_code": "392",
     "store_name": "Tauranga Crossing",
     "banner": "TWL",
