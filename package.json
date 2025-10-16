@@ -20,7 +20,9 @@
     "setup": "npm run db:setup && npm run test:e2e",
     "setup:full": "node scripts/db-apply-azure.mjs && npm run db:seed-stores",
     "setup:auth": "npm run db:apply:auth && npm run seed:users",
-    "timezone:auckland": "node scripts/apply-auckland-timezone.mjs"
+    "timezone:auckland": "node scripts/apply-auckland-timezone.mjs",
+    "db:apply:exec-report": "node scripts/db-apply-exec-report.mjs",
+    "seed:mock:feedback": "node scripts/seed-mock-feedback.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",
