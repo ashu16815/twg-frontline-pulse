@@ -22,7 +22,9 @@
     "setup:auth": "npm run db:apply:auth && npm run seed:users",
     "timezone:auckland": "node scripts/apply-auckland-timezone.mjs",
     "db:apply:exec-report": "node scripts/db-apply-exec-report.mjs",
-    "seed:mock:feedback": "node scripts/seed-mock-feedback.mjs"
+    "seed:mock:feedback": "node scripts/seed-mock-feedback.mjs",
+    "stores:load": "node scripts/load-stores-from-json.mjs",
+    "stores:pathB": "node scripts/run-migration.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",

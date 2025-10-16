@@ -1,0 +1,6 @@
+{
+  "children": [
+    { "table": "dbo.store_feedback", "column": "store_id" },
+    { "table": "dbo.exec_report_feedback", "column": "store_id" }
+  ]
+}
