@@ -13,7 +13,7 @@ export default function ExecReport() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState('');
-  const [feedbackStatus, setFeedbackStatus] = useState<{[key: string]: 'submitting' | 'success' | 'error'}>({});
+  const [feedbackStatus, setFeedbackStatus] = useState<{[key: string]: 'submitting' | 'success' | 'error' | undefined}>({});
 
   async function load() {
     setLoading(true);
@@ -279,7 +279,7 @@ function Thumbs({
   section 
 }: { 
   onRate: (n: 1 | 2 | 3) => void;
-  feedbackStatus: {[key: string]: 'submitting' | 'success' | 'error'};
+  feedbackStatus: {[key: string]: 'submitting' | 'success' | 'error' | undefined};
   section: string;
 }) {
   const getButtonClass = (rating: number) => {
