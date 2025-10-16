@@ -1,5 +1,5 @@
 import { GlassCard } from './Glass';
-import { Activity, Mic, Sparkles } from 'lucide-react';
+import { Activity, Mic, Sparkles, BarChart3 } from 'lucide-react';
 
 function Feature({ icon: Icon, title, desc }: { icon: any; title: string; desc: string }) {
   return (
@@ -19,7 +19,7 @@ function Feature({ icon: Icon, title, desc }: { icon: any; title: string; desc: 
 
 export default function SectionFeatures() {
   return (
-    <section className="max-w-7xl mx-auto px-6 mt-10 grid md:grid-cols-3 gap-4">
+    <section className="max-w-7xl mx-auto px-6 mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
       <Feature 
         icon={Mic} 
         title="Voice-first" 
@@ -34,6 +34,11 @@ export default function SectionFeatures() {
         icon={Activity} 
         title="Insight dashboard" 
         desc="See themes, sentiment, and trace to stores — ready for action."
+      />
+      <Feature 
+        icon={BarChart3} 
+        title="Executive Report" 
+        desc="C-suite dashboard with AI insights, opportunities, and predictive analytics."
       />
     </section>
   );

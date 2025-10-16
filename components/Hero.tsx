@@ -29,6 +29,9 @@ export default function Hero() {
             <a className="btn" href="/reports">
               View Reports
             </a>
+            <a className="btn bg-blue-600 hover:bg-blue-700 text-white" href="/exec-report">
+              Executive Report
+            </a>
             <SheenButton>
               <a href="/ceo">Ask Questions</a>
             </SheenButton>
