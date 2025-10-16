@@ -45,74 +45,106 @@ function trim(v) {
     // Try to find a sheet with "store" in the name, or use the first sheet
     const wsname = wb.SheetNames.find(n => /store/i.test(n)) || wb.SheetNames[0];
     const ws = wb.Sheets[wsname];
-    const rows = xlsx.utils.sheet_to_json(ws, { defval: null });
+    
+    console.log(`📊 Found sheet: ${wsname}`);
 
-    console.log(`📊 Found ${rows.length} rows in sheet: ${wsname}`);
+    // Get all cell values from column A
+    const cells = [];
+    for (let i = 1; i <= 200; i++) {
+      const cell = ws[`A${i}`];
+      if (cell && cell.v) {
+        cells.push(cell.v);
+      }
+    }
 
-    if (rows.length === 0) {
+    console.log(`📊 Found ${cells.length} cells with data`);
+
+    if (cells.length === 0) {
       console.error('❌ No data found in Excel file');
       process.exit(1);
     }
 
-    // Heuristics for column name mapping
-    const map = {
-      code: ['store_code', 'code', 'store id', 'storeid', 'store code', 'store#', 'store_code'],
-      name: ['store_name', 'name', 'store', 'storename', 'store name'],
-      banner: ['banner', 'brand'],
-      region: ['region', 'region_name', 'region name'],
-      region_code: ['region_code', 'region code', 'region id', 'regionid', 'region_code'],
-      email: ['manager_email', 'email', 'manager email', 'store_email', 'store email'],
-      active: ['active', 'is_active', 'status']
-    };
+    // Process the data - looking for store entries
+    const stores = [];
+    
+    for (const cellValue of cells) {
+      const str = String(cellValue).trim();
+      
+      // Skip header rows and empty cells
+      if (!str || str.toLowerCase().includes('xstore') || str.toLowerCase().includes('store')) {
+        continue;
+      }
+      
+      // Parse format like "1103-TWL Westcity" or "1103 TWL Westcity"
+      const match = str.match(/^(\d+)[\s-]+(TWL|Noel)?[\s-]*(.+)$/i);
+      
+      if (match) {
+        const storeCode = match[1];
+        const banner = match[2] || 'TWL';
+        const storeName = match[3].trim();
+        
+        // Infer region from store name (basic heuristics)
+        let region = 'Auckland';
+        let regionCode = 'AKL';
+        
+        if (storeName.toLowerCase().includes('christchurch') || 
+            storeName.toLowerCase().includes('riccarton') ||
+            storeName.toLowerCase().includes('ashburton') ||
+            storeName.toLowerCase().includes('timaru')) {
+          region = 'Canterbury - Westcoast';
+          regionCode = 'CAN-WTC';
+        } else if (storeName.toLowerCase().includes('wellington') ||
+                   storeName.toLowerCase().includes('lower hutt') ||
+                   storeName.toLowerCase().includes('porirua') ||
+                   storeName.toLowerCase().includes('johnsonville')) {
+          region = 'Wellington - Wairarapa';
+          regionCode = 'WGN-WPA';
+        } else if (storeName.toLowerCase().includes('tauranga') ||
+                   storeName.toLowerCase().includes('rotorua') ||
+                   storeName.toLowerCase().includes('papamoa') ||
+                   storeName.toLowerCase().includes('mount maunganui')) {
+          region = 'Bay of Plenty';
+          regionCode = 'BOP';
+        }
+        
+        stores.push({
+          store_code: storeCode,
+          store_name: storeName,
+          banner: banner,
+          region: region,
+          region_code: regionCode,
+          manager_email: inferEmail(storeName),
+          active: true
+        });
+      }
+    }
 
-    // Find column mappings
-    const cols = Object.fromEntries(Object.entries(map).map(([key, alts]) => {
-      const found = Object.keys(rows[0] || {}).find(h => alts.includes(String(h).toLowerCase()));
-      return [key, found];
-    }));
+    console.log(`✅ Processed ${stores.length} valid stores`);
 
-    console.log('🔍 Column mappings found:');
-    Object.entries(cols).forEach(([key, col]) => {
-      console.log(`   ${key}: ${col || 'NOT FOUND'}`);
-    });
-
-    // Process rows
-    const out = rows.map(r => {
-      const store_code = trim(r[cols.code]);
-      const store_name = trim(r[cols.name]);
-      const banner = trim(r[cols.banner]) || 'TWL'; // Default to TWL if not specified
-      const region = trim(r[cols.region]);
-      const region_code = trim(r[cols.region_code]) || (region ? region.slice(0, 3).toUpperCase() : null);
-      const manager_email = trim(r[cols.email]) || inferEmail(store_name);
-      const active = cols.active ? normBool(r[cols.active]) : true;
-
-      return {
-        store_code: String(store_code || '').trim(),
-        store_name,
-        banner,
-        region,
-        region_code,
-        manager_email,
-        active
-      };
-    })
-    .filter(r => r.store_code && r.store_name);
-
-    console.log(`✅ Processed ${out.length} valid stores`);
+    if (stores.length === 0) {
+      console.error('❌ No valid stores found in Excel file');
+      process.exit(1);
+    }
 
     // Write output
-    await fs.writeFile(OUTPUT, JSON.stringify(out, null, 2));
-    console.log(`📝 Wrote ${out.length} stores to ${OUTPUT}`);
+    await fs.writeFile(OUTPUT, JSON.stringify(stores, null, 2));
+    console.log(`📝 Wrote ${stores.length} stores to ${OUTPUT}`);
 
     // Show summary
-    const regions = [...new Set(out.map(s => s.region_code).filter(Boolean))];
-    const banners = [...new Set(out.map(s => s.banner).filter(Boolean))];
+    const regions = [...new Set(stores.map(s => s.region_code).filter(Boolean))];
+    const banners = [...new Set(stores.map(s => s.banner).filter(Boolean))];
     
     console.log('\n📊 Summary:');
-    console.log(`   Total stores: ${out.length}`);
+    console.log(`   Total stores: ${stores.length}`);
     console.log(`   Regions: ${regions.join(', ')}`);
     console.log(`   Banners: ${banners.join(', ')}`);
-    console.log(`   Active stores: ${out.filter(s => s.active).length}`);
+    console.log(`   Active stores: ${stores.filter(s => s.active).length}`);
+
+    // Show first few stores as examples
+    console.log('\n📋 First 5 stores:');
+    stores.slice(0, 5).forEach(store => {
+      console.log(`   ${store.store_code}: ${store.store_name} (${store.region_code})`);
+    });
 
   } catch (error) {
     console.error('❌ Excel conversion failed:', error.message);

@@ -1,51 +1,33 @@
 [
   {
-    "store_code": "362",
-    "store_name": "Albany",
+    "store_code": "1103",
+    "store_name": "Westcity",
     "banner": "TWL",
     "region": "Auckland",
     "region_code": "AKL",
-    "manager_email": "albany.manager@twgroup.co.nz",
+    "manager_email": "westcity.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "383",
-    "store_name": "Manukau",
+    "store_code": "1107",
+    "store_name": "New Lynn",
     "banner": "TWL",
     "region": "Auckland",
     "region_code": "AKL",
-    "manager_email": "manukau.manager@twgroup.co.nz",
+    "manager_email": "newlynn.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "305",
-    "store_name": "East Tamaki",
+    "store_code": "1110",
+    "store_name": "Te Awamutu SWAS",
     "banner": "TWL",
     "region": "Auckland",
     "region_code": "AKL",
-    "manager_email": "easttamaki.manager@twgroup.co.nz",
+    "manager_email": "teawamutuswas.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "192",
-    "store_name": "Mt Roskill",
-    "banner": "TWL",
-    "region": "Auckland",
-    "region_code": "AKL",
-    "manager_email": "mtroskill.manager@twgroup.co.nz",
-    "active": true
-  },
-  {
-    "store_code": "353",
-    "store_name": "Henderson",
-    "banner": "TWL",
-    "region": "Auckland",
-    "region_code": "AKL",
-    "manager_email": "henderson.manager@twgroup.co.nz",
-    "active": true
-  },
-  {
-    "store_code": "114",
+    "store_code": "1111",
     "store_name": "Pukekohe",
     "banner": "TWL",
     "region": "Auckland",
@@ -54,115 +36,313 @@
     "active": true
   },
   {
-    "store_code": "335",
-    "store_name": "Sylvia Park",
+    "store_code": "1113",
+    "store_name": "Newmarket SWAS",
     "banner": "TWL",
     "region": "Auckland",
     "region_code": "AKL",
-    "manager_email": "sylviapark.manager@twgroup.co.nz",
+    "manager_email": "newmarketswas.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "176",
-    "store_name": "Ashburton",
+    "store_code": "1114",
+    "store_name": "Pakuranga",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "pakuranga.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1116",
+    "store_name": "Whangarei SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "whangareiswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1117",
+    "store_name": "Kaitaia",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "kaitaia.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1119",
+    "store_name": "Albany",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "albany.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1120",
+    "store_name": "Northlands SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "northlandsswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1122",
+    "store_name": "Rolleston SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "rollestonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1123",
+    "store_name": "Eastgate",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "eastgate.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1125",
+    "store_name": "Oamaru SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "oamaruswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1126",
+    "store_name": "Nelson SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "nelsonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1127",
+    "store_name": "Timaru SWAS",
     "banner": "TWL",
     "region": "Canterbury - Westcoast",
     "region_code": "CAN-WTC",
-    "manager_email": "ashburton.manager@twgroup.co.nz",
+    "manager_email": "timaruswas.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "178",
-    "store_name": "Barrington",
+    "store_code": "1128",
+    "store_name": "Hornby",
     "banner": "TWL",
-    "region": "Canterbury - Westcoast",
-    "region_code": "CAN-WTC",
-    "manager_email": "barrington.manager@twgroup.co.nz",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "hornby.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "371",
-    "store_name": "Rangiora",
+    "store_code": "1131",
+    "store_name": "Petone SWAS",
     "banner": "TWL",
-    "region": "Canterbury - Westcoast",
-    "region_code": "CAN-WTC",
-    "manager_email": "rangiora.manager@twgroup.co.nz",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "petoneswas.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "366",
-    "store_name": "Riccarton",
-    "banner": "TWL",
-    "region": "Canterbury - Westcoast",
-    "region_code": "CAN-WTC",
-    "manager_email": "riccarton.manager@twgroup.co.nz",
-    "active": true
-  },
-  {
-    "store_code": "120",
-    "store_name": "Northlands",
-    "banner": "TWL",
-    "region": "Canterbury - Westcoast",
-    "region_code": "CAN-WTC",
-    "manager_email": "northlands.manager@twgroup.co.nz",
-    "active": true
-  },
-  {
-    "store_code": "329",
-    "store_name": "Timaru",
-    "banner": "TWL",
-    "region": "Canterbury - Westcoast",
-    "region_code": "CAN-WTC",
-    "manager_email": "timaru.manager@twgroup.co.nz",
-    "active": true
-  },
-  {
-    "store_code": "135",
-    "store_name": "Paraparaumu",
+    "store_code": "1132",
+    "store_name": "Porirua SWAS",
     "banner": "TWL",
     "region": "Wellington - Wairarapa",
     "region_code": "WGN-WPA",
+    "manager_email": "poriruaswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1134",
+    "store_name": "Wellington",
+    "banner": "TWL",
+    "region": "Wellington - Wairarapa",
+    "region_code": "WGN-WPA",
+    "manager_email": "wellington.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1135",
+    "store_name": "Paraparaumu",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
     "manager_email": "paraparaumu.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "133",
-    "store_name": "Johnsonville",
+    "store_code": "1136",
+    "store_name": "Masterton SWAS",
     "banner": "TWL",
-    "region": "Wellington - Wairarapa",
-    "region_code": "WGN-WPA",
-    "manager_email": "johnsonville.manager@twgroup.co.nz",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "mastertonswas.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "139",
-    "store_name": "Lower Hutt",
+    "store_code": "1137",
+    "store_name": "Levin SWAS",
     "banner": "TWL",
-    "region": "Wellington - Wairarapa",
-    "region_code": "WGN-WPA",
-    "manager_email": "lowerhutt.manager@twgroup.co.nz",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "levinswas.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "131",
-    "store_name": "Petone",
+    "store_code": "1138",
+    "store_name": "Upper Hutt SWAS",
     "banner": "TWL",
-    "region": "Wellington - Wairarapa",
-    "region_code": "WGN-WPA",
-    "manager_email": "petone.manager@twgroup.co.nz",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "upperhuttswas.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "132",
-    "store_name": "Porirua",
+    "store_code": "1139",
+    "store_name": "Lower Hutt SWAS",
     "banner": "TWL",
     "region": "Wellington - Wairarapa",
     "region_code": "WGN-WPA",
-    "manager_email": "porirua.manager@twgroup.co.nz",
+    "manager_email": "lowerhuttswas.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "156",
+    "store_code": "1140",
+    "store_name": "Hawera SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "haweraswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1141",
+    "store_name": "Hamilton",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "hamilton.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1142",
+    "store_name": "Rotorua SWAS",
+    "banner": "TWL",
+    "region": "Bay of Plenty",
+    "region_code": "BOP",
+    "manager_email": "rotoruaswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1144",
+    "store_name": "New Plymouth",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "newplymouth.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1145",
+    "store_name": "Wanganui SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wanganuiswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1146",
+    "store_name": "Palmerston North SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "palmerstonnorthswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1147",
+    "store_name": "Tokoroa",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "tokoroa.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1148",
+    "store_name": "Taupo",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "taupo.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1149",
+    "store_name": "Thames SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "thamesswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1151",
+    "store_name": "Hastings",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "hastings.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1152",
+    "store_name": "Napier",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "napier.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1153",
+    "store_name": "Gisborne",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "gisborne.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1154",
+    "store_name": "Matamata SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "matamataswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1155",
+    "store_name": "Whakatane SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "whakataneswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1156",
     "store_name": "Papamoa",
     "banner": "TWL",
     "region": "Bay of Plenty",
@@ -171,39 +351,1164 @@
     "active": true
   },
   {
-    "store_code": "359",
-    "store_name": "Mount Maunganui",
+    "store_code": "1157",
+    "store_name": "Morrinsville",
     "banner": "TWL",
-    "region": "Bay of Plenty",
-    "region_code": "BOP",
-    "manager_email": "mountmaunganui.manager@twgroup.co.nz",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "morrinsville.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "142",
-    "store_name": "Rotorua",
+    "store_code": "1158",
+    "store_name": "Feilding",
     "banner": "TWL",
-    "region": "Bay of Plenty",
-    "region_code": "BOP",
-    "manager_email": "rotorua.manager@twgroup.co.nz",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "feilding.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "328",
-    "store_name": "Taupo",
+    "store_code": "1159",
+    "store_name": "Cambridge",
     "banner": "TWL",
-    "region": "Bay of Plenty",
-    "region_code": "BOP",
-    "manager_email": "taupo.manager@twgroup.co.nz",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "cambridge.manager@twgroup.co.nz",
     "active": true
   },
   {
-    "store_code": "392",
-    "store_name": "Tauranga Crossing",
+    "store_code": "1160",
+    "store_name": "Hillcrest SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "hillcrestswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1161",
+    "store_name": "Dannevirke",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "dannevirke.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1163",
+    "store_name": "Fraser Cove SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "frasercoveswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1164",
+    "store_name": "Bell Block SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "bellblockswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1165",
+    "store_name": "Dargaville",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "dargaville.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1168",
+    "store_name": "Te Kuiti",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "tekuiti.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1169",
+    "store_name": "Waipapa",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "waipapa.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1170",
+    "store_name": "Lyall Bay SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "lyallbayswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1171",
+    "store_name": "Invercargill SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "invercargillswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1172",
+    "store_name": "Gore",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "gore.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1173",
+    "store_name": "Blenheim SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "blenheimswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1174",
+    "store_name": "Greymouth",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "greymouth.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1176",
+    "store_name": "Ashburton SWAS",
+    "banner": "TWL",
+    "region": "Canterbury - Westcoast",
+    "region_code": "CAN-WTC",
+    "manager_email": "ashburtonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1177",
+    "store_name": "Alexandra",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "alexandra.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1178",
+    "store_name": "Barrington",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "barrington.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1179",
+    "store_name": "Queenstown",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "queenstown.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1180",
+    "store_name": "Rangiora SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "rangioraswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1182",
+    "store_name": "Motueka",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "motueka.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1183",
+    "store_name": "South Dunedin SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "southdunedinswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1184",
+    "store_name": "Balclutha",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "balclutha.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1185",
+    "store_name": "Te Rapa SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "terapaswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1186",
+    "store_name": "Sylvia Park",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "sylviapark.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1187",
+    "store_name": "St Lukes",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "stlukes.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1188",
+    "store_name": "Royal Oak",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "royaloak.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1189",
+    "store_name": "Whitianga",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "whitianga.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1190",
+    "store_name": "Lunn Ave SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "lunnaveswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1191",
+    "store_name": "Silverdale SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "silverdaleswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1192",
+    "store_name": "Mt Roskill",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "mtroskill.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1193",
+    "store_name": "Takanini SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "takaniniswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1195",
+    "store_name": "Ormiston SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "ormistonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1196",
+    "store_name": "Warkworth SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "warkworthswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1202",
+    "store_name": "Botany Downs",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "botanydowns.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1204",
+    "store_name": "Kaikohe",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "kaikohe.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1205",
+    "store_name": "Clendon",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "clendon.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1207",
+    "store_name": "Lincoln Road",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "lincolnroad.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1208",
+    "store_name": "Westgate",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "westgate.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1209",
+    "store_name": "Airport SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "airportswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1210",
+    "store_name": "Glenfield SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "glenfieldswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1211",
+    "store_name": "Richmond",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "richmond.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1212",
+    "store_name": "Wanaka SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wanakaswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1220",
+    "store_name": "Riccarton SWAS",
+    "banner": "TWL",
+    "region": "Canterbury - Westcoast",
+    "region_code": "CAN-WTC",
+    "manager_email": "riccartonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1221",
+    "store_name": "Atrium",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "atrium.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1222",
+    "store_name": "Tauranga Crossing SWAS",
     "banner": "TWL",
     "region": "Bay of Plenty",
     "region_code": "BOP",
-    "manager_email": "taurangacrossing.manager@twgroup.co.nz",
+    "manager_email": "taurangacrossingswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "1405",
+    "store_name": "Manukau",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "manukau.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3369",
+    "store_name": "WSL South Dunedin SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslsouthdunedinswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3339",
+    "store_name": "WSL Invercargill SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslinvercargillswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3303",
+    "store_name": "WSL Newmarket SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslnewmarketswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3366",
+    "store_name": "WSL Riccarton SWAS",
+    "banner": "TWL",
+    "region": "Canterbury - Westcoast",
+    "region_code": "CAN-WTC",
+    "manager_email": "wslriccartonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3347",
+    "store_name": "WSL Whangarei SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslwhangareiswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3363",
+    "store_name": "WSL Ashburton SWAS",
+    "banner": "TWL",
+    "region": "Canterbury - Westcoast",
+    "region_code": "CAN-WTC",
+    "manager_email": "wslashburtonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3332",
+    "store_name": "WSL Blenheim SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslblenheimswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3367",
+    "store_name": "WSL Levin SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wsllevinswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3336",
+    "store_name": "WSL Masterton SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslmastertonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3379",
+    "store_name": "WSL Oamaru SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wsloamaruswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3371",
+    "store_name": "WSL Rangiora SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslrangioraswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3368",
+    "store_name": "WSL Te Awamutu SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslteawamutuswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3329",
+    "store_name": "WSL Timaru SWAS",
+    "banner": "TWL",
+    "region": "Canterbury - Westcoast",
+    "region_code": "CAN-WTC",
+    "manager_email": "wsltimaruswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3340",
+    "store_name": "WSL Whakatane SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslwhakataneswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3393",
+    "store_name": "WSL Hawera SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslhaweraswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3377",
+    "store_name": "WSL Matamata SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslmatamataswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3343",
+    "store_name": "WSL Thames SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslthamesswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3373",
+    "store_name": "WSL Warkworth SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslwarkworthswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3354",
+    "store_name": "WSL New Plymouth The Valley SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslnewplymouththevalleyswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3307",
+    "store_name": "WSL Glenfield SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslglenfieldswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3308",
+    "store_name": "WSL Rolleston SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslrollestonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3338",
+    "store_name": "WSL Airport SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslairportswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3341",
+    "store_name": "WSL Fraser Cove SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslfrasercoveswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3334",
+    "store_name": "WSL Chartwell SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslchartwellswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3381",
+    "store_name": "WSL Lower Hutt SWAS",
+    "banner": "TWL",
+    "region": "Wellington - Wairarapa",
+    "region_code": "WGN-WPA",
+    "manager_email": "wsllowerhuttswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3390",
+    "store_name": "WSL Lunn Ave SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wsllunnaveswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3325",
+    "store_name": "WSL Kilbirnie SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslkilbirnieswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3320",
+    "store_name": "WSL Nelson SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslnelsonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3342",
+    "store_name": "WSL Papanui SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslpapanuiswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3391",
+    "store_name": "WSL Ormiston SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslormistonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3351",
+    "store_name": "WSL Palmerston North SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslpalmerstonnorthswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3317",
+    "store_name": "WSL Petone SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslpetoneswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3358",
+    "store_name": "WSL Porirua New",
+    "banner": "TWL",
+    "region": "Wellington - Wairarapa",
+    "region_code": "WGN-WPA",
+    "manager_email": "wslporiruanew.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3312",
+    "store_name": "WSL Rotorua SWAS",
+    "banner": "TWL",
+    "region": "Bay of Plenty",
+    "region_code": "BOP",
+    "manager_email": "wslrotoruaswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3374",
+    "store_name": "WSL Silverdale SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslsilverdaleswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3383",
+    "store_name": "WSL Takanini SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wsltakaniniswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3392",
+    "store_name": "WSL Tauranga Crossing SWAS",
+    "banner": "TWL",
+    "region": "Bay of Plenty",
+    "region_code": "BOP",
+    "manager_email": "wsltaurangacrossingswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3372",
+    "store_name": "WSL The Base SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslthebaseswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3346",
+    "store_name": "WSL Upper Hutt SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslupperhuttswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3326",
+    "store_name": "WSL Wanganui SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslwanganuiswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3360",
+    "store_name": "WSL Wanaka SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslwanakaswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3369",
+    "store_name": "WSL South Dunedin SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslsouthdunedinswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3339",
+    "store_name": "WSL Invercargill SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslinvercargillswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3303",
+    "store_name": "WSL Newmarket SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslnewmarketswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3366",
+    "store_name": "WSL Riccarton SWAS",
+    "banner": "TWL",
+    "region": "Canterbury - Westcoast",
+    "region_code": "CAN-WTC",
+    "manager_email": "wslriccartonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3347",
+    "store_name": "WSL Whangarei SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslwhangareiswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3363",
+    "store_name": "WSL Ashburton SWAS",
+    "banner": "TWL",
+    "region": "Canterbury - Westcoast",
+    "region_code": "CAN-WTC",
+    "manager_email": "wslashburtonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3332",
+    "store_name": "WSL Blenheim SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslblenheimswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3367",
+    "store_name": "WSL Levin SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wsllevinswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3336",
+    "store_name": "WSL Masterton SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslmastertonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3379",
+    "store_name": "WSL Oamaru SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wsloamaruswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3371",
+    "store_name": "WSL Rangiora SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslrangioraswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3368",
+    "store_name": "WSL Te Awamutu SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslteawamutuswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3329",
+    "store_name": "WSL Timaru SWAS",
+    "banner": "TWL",
+    "region": "Canterbury - Westcoast",
+    "region_code": "CAN-WTC",
+    "manager_email": "wsltimaruswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3340",
+    "store_name": "WSL Whakatane SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslwhakataneswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3393",
+    "store_name": "WSL Hawera SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslhaweraswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3377",
+    "store_name": "WSL Matamata SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslmatamataswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3343",
+    "store_name": "WSL Thames SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslthamesswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3373",
+    "store_name": "WSL Warkworth SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslwarkworthswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3354",
+    "store_name": "WSL New Plymouth The Valley SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslnewplymouththevalleyswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3307",
+    "store_name": "WSL Glenfield SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslglenfieldswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3308",
+    "store_name": "WSL Rolleston SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslrollestonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3338",
+    "store_name": "WSL Airport SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslairportswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3341",
+    "store_name": "WSL Fraser Cove SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslfrasercoveswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3334",
+    "store_name": "WSL Chartwell SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslchartwellswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3381",
+    "store_name": "WSL Lower Hutt SWAS",
+    "banner": "TWL",
+    "region": "Wellington - Wairarapa",
+    "region_code": "WGN-WPA",
+    "manager_email": "wsllowerhuttswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3390",
+    "store_name": "WSL Lunn Ave SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wsllunnaveswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3325",
+    "store_name": "WSL Kilbirnie SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslkilbirnieswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3320",
+    "store_name": "WSL Nelson SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslnelsonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3342",
+    "store_name": "WSL Papanui SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslpapanuiswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3391",
+    "store_name": "WSL Ormiston SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslormistonswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3351",
+    "store_name": "WSL Palmerston North SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslpalmerstonnorthswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3317",
+    "store_name": "WSL Petone SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslpetoneswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3358",
+    "store_name": "WSL Porirua New",
+    "banner": "TWL",
+    "region": "Wellington - Wairarapa",
+    "region_code": "WGN-WPA",
+    "manager_email": "wslporiruanew.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3312",
+    "store_name": "WSL Rotorua SWAS",
+    "banner": "TWL",
+    "region": "Bay of Plenty",
+    "region_code": "BOP",
+    "manager_email": "wslrotoruaswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3374",
+    "store_name": "WSL Silverdale SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslsilverdaleswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3383",
+    "store_name": "WSL Takanini SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wsltakaniniswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3392",
+    "store_name": "WSL Tauranga Crossing SWAS",
+    "banner": "TWL",
+    "region": "Bay of Plenty",
+    "region_code": "BOP",
+    "manager_email": "wsltaurangacrossingswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3372",
+    "store_name": "WSL The Base SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslthebaseswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3346",
+    "store_name": "WSL Upper Hutt SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslupperhuttswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3326",
+    "store_name": "WSL Wanganui SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslwanganuiswas.manager@twgroup.co.nz",
+    "active": true
+  },
+  {
+    "store_code": "3360",
+    "store_name": "WSL Wanaka SWAS",
+    "banner": "TWL",
+    "region": "Auckland",
+    "region_code": "AKL",
+    "manager_email": "wslwanakaswas.manager@twgroup.co.nz",
     "active": true
   }
 ]
