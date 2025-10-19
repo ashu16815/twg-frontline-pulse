@@ -115,10 +115,11 @@ export async function callAzureJSON(messages: any[], options: { timeout?: number
 }
 
 export async function transcribeAudioWebm(buf: Buffer, mime: string) {
-  const ep = process.env.AZURE_OPENAI_ENDPOINT?.trim();
-  const key = process.env.AZURE_OPENAI_API_KEY?.trim();
+  // Use dedicated transcription endpoint if available, otherwise fallback to main endpoint
+  const ep = process.env.AZURE_OPENAI_ENDPOINT_TRANSCRIBE?.trim() || process.env.AZURE_OPENAI_ENDPOINT?.trim();
+  const key = process.env.AZURE_OPENAI_API_KEY_TRANSCRIBE?.trim() || process.env.AZURE_OPENAI_API_KEY?.trim();
   const dep = process.env.AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE?.trim() || process.env.AZURE_OPENAI_DEPLOYMENT_GPT5?.trim();
-  const v = process.env.AZURE_OPENAI_API_VERSION?.trim() || '2024-10-01-preview';
+  const v = process.env.AZURE_OPENAI_API_VERSION?.trim() || '2025-03-01-preview';
   
   // Check if transcription is available
   if (!ep || !key || !dep) {
