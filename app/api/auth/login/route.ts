@@ -75,7 +75,8 @@ export async function POST(req: Request) {
         user_id: u.user_id,
         name: u.full_name,
         role: u.role
-      }
+      },
+      token: token // Include token in response for localStorage backup
     });
 
     // Set cookie using Set-Cookie header directly

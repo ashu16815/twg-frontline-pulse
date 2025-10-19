@@ -39,11 +39,23 @@ export default function LoginPage() {
           // User is already authenticated, redirect to home
           window.location.href = next;
         } else {
-          console.log(`❌ [${checkTimestamp}] LOGIN PAGE USER NOT AUTHENTICATED - STAYING ON LOGIN`);
+          // Check localStorage as fallback
+          const localToken = localStorage.getItem('wis_session');
+          if (localToken && localToken !== 'temp_token') {
+            console.log(`💾 [${checkTimestamp}] FOUND TOKEN IN LOCALSTORAGE - REDIRECTING TO:`, next);
+            window.location.href = next;
+          } else {
+            console.log(`❌ [${checkTimestamp}] LOGIN PAGE USER NOT AUTHENTICATED - STAYING ON LOGIN`);
+          }
         }
       } catch (error) {
         console.log(`❌ [${checkTimestamp}] LOGIN PAGE AUTH CHECK ERROR:`, error);
-        // Not authenticated, stay on login page
+        // Check localStorage as fallback
+        const localToken = localStorage.getItem('wis_session');
+        if (localToken && localToken !== 'temp_token') {
+          console.log(`💾 [${checkTimestamp}] FOUND TOKEN IN LOCALSTORAGE (after error) - REDIRECTING TO:`, next);
+          window.location.href = next;
+        }
       }
     };
     
@@ -83,6 +95,10 @@ export default function LoginPage() {
     
     const redirectTimestamp = new Date().toISOString();
     console.log(`🚀 [${redirectTimestamp}] LOGIN PAGE REDIRECTING TO:`, next);
+    
+    // Store token in localStorage as backup and redirect
+    localStorage.setItem('wis_session', responseData.token || 'temp_token');
+    console.log(`💾 [${redirectTimestamp}] STORED TOKEN IN LOCALSTORAGE`);
     
     // Immediate redirect - no delay
     window.location.href = next;
