@@ -117,12 +117,12 @@ export async function callAzureJSON(messages: any[], options: { timeout?: number
 export async function transcribeAudioWebm(buf: Buffer, mime: string) {
   const ep = process.env.AZURE_OPENAI_ENDPOINT?.trim();
   const key = process.env.AZURE_OPENAI_API_KEY?.trim();
-  const dep = process.env.AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE?.trim();
+  const dep = process.env.AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE?.trim() || process.env.AZURE_OPENAI_DEPLOYMENT_GPT5?.trim();
   const v = process.env.AZURE_OPENAI_API_VERSION?.trim() || '2024-10-01-preview';
   
   // Check if transcription is available
   if (!ep || !key || !dep) {
-    throw new Error('Transcription not available - Azure OpenAI transcription deployment not configured: AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE required');
+    throw new Error('Transcription not available - Azure OpenAI transcription deployment not configured: AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE or AZURE_OPENAI_DEPLOYMENT_GPT5 required');
   }
   
   const fd = new FormData();
