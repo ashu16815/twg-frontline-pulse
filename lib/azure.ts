@@ -134,6 +134,57 @@ export async function transcribeAudioWebm(buf: Buffer, mime: string) {
     throw new Error('Transcription not available - Azure OpenAI transcription deployment not configured: AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE or AZURE_OPENAI_DEPLOYMENT_GPT5 required');
   }
   
+  // Try different approaches for Azure transcription
+  try {
+    // Approach 1: Use dedicated transcription endpoint
+    const fd = new FormData();
+    fd.append('file', new Blob([buf], { type: mime }), 'audio.webm');
+    fd.append('response_format', 'json');
+    
+    const url = `${ep}openai/deployments/${dep}/audio/transcriptions?api-version=${v}`;
+    
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${key}`
+      },
+      body: fd
+    });
+    
+    if (!r.ok) {
+      const errorText = await r.text();
+      console.error('Transcription API error:', errorText);
+      
+      // If it's a server error, try the main endpoint as fallback
+      if (r.status >= 500) {
+        console.log('Server error detected, trying main endpoint as fallback...');
+        return await transcribeWithMainEndpoint(buf, mime);
+      }
+      
+      throw new Error(`Transcription failed: ${r.status} - ${errorText}`);
+    }
+    
+    const j = await r.json();
+    return j.text as string;
+  } catch (error: any) {
+    console.error('Transcription failed, trying fallback:', error.message);
+    // Try main endpoint as fallback
+    return await transcribeWithMainEndpoint(buf, mime);
+  }
+}
+
+async function transcribeWithMainEndpoint(buf: Buffer, mime: string) {
+  const ep = process.env.AZURE_OPENAI_ENDPOINT?.trim();
+  const key = process.env.AZURE_OPENAI_API_KEY?.trim();
+  const dep = process.env.AZURE_OPENAI_DEPLOYMENT_GPT5?.trim();
+  const v = process.env.AZURE_OPENAI_API_VERSION?.trim() || '2025-03-01-preview';
+  
+  if (!ep || !key || !dep) {
+    throw new Error('Fallback transcription not available - main Azure OpenAI deployment not configured');
+  }
+  
+  console.log('Using main endpoint fallback for transcription');
+  
   const fd = new FormData();
   fd.append('file', new Blob([buf], { type: mime }), 'audio.webm');
   fd.append('response_format', 'json');
@@ -143,15 +194,15 @@ export async function transcribeAudioWebm(buf: Buffer, mime: string) {
   const r = await fetch(url, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${key}`
+      'api-key': key
     },
     body: fd
   });
   
   if (!r.ok) {
     const errorText = await r.text();
-    console.error('Transcription API error:', errorText);
-    throw new Error(`Transcription failed: ${r.status} - ${errorText}`);
+    console.error('Fallback transcription API error:', errorText);
+    throw new Error(`Fallback transcription failed: ${r.status} - ${errorText}`);
   }
   
   const j = await r.json();
