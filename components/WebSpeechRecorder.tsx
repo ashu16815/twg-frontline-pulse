@@ -6,6 +6,7 @@ export default function WebSpeechRecorder({ onText }: { onText: (t: string) => v
   const [isListening, setIsListening] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
   const [recognition, setRecognition] = useState<any>(null);
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     // Check if Web Speech API is supported
@@ -16,9 +17,11 @@ export default function WebSpeechRecorder({ onText }: { onText: (t: string) => v
 
   const startListening = () => {
     if (!isSupported) {
-      alert('Speech recognition not supported in this browser');
+      setError('Speech recognition not supported in this browser. Please use Chrome or Edge.');
       return;
     }
+
+    setError(''); // Clear any previous errors
 
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const rec = new SpeechRecognition();
@@ -30,6 +33,7 @@ export default function WebSpeechRecorder({ onText }: { onText: (t: string) => v
 
     rec.onstart = () => {
       setIsListening(true);
+      setError('');
       console.log('Speech recognition started');
     };
 
@@ -43,6 +47,7 @@ export default function WebSpeechRecorder({ onText }: { onText: (t: string) => v
       if (finalTranscript) {
         console.log('Speech recognized:', finalTranscript);
         onText(finalTranscript);
+        setError(''); // Clear error on successful recognition
       }
     };
 
@@ -58,6 +63,7 @@ export default function WebSpeechRecorder({ onText }: { onText: (t: string) => v
       
       if (event.error === 'no-speech') {
         console.log('No speech detected, trying again...');
+        setError('No speech detected. Please try speaking again.');
         // Don't show error for no-speech, just restart
         setTimeout(() => {
           if (!isListening) {
@@ -67,9 +73,15 @@ export default function WebSpeechRecorder({ onText }: { onText: (t: string) => v
         return;
       }
       
-      // Only show alert for serious errors
-      if (event.error === 'network' || event.error === 'not-allowed') {
-        alert(`Speech recognition error: ${event.error}. Please check your microphone permissions.`);
+      // Handle serious errors with user-friendly messages
+      if (event.error === 'network') {
+        setError('Network error. Please check your internet connection and try again.');
+      } else if (event.error === 'not-allowed') {
+        setError('Microphone access denied. Please allow microphone access and try again.');
+      } else if (event.error === 'service-not-allowed') {
+        setError('Speech recognition service not available. Please try again later.');
+      } else {
+        setError(`Speech recognition error: ${event.error}. Please try again.`);
       }
       
       setIsListening(false);
@@ -85,6 +97,7 @@ export default function WebSpeechRecorder({ onText }: { onText: (t: string) => v
       setRecognition(rec);
     } catch (error) {
       console.error('Failed to start speech recognition:', error);
+      setError('Failed to start speech recognition. Please try again.');
       setIsListening(false);
     }
   };
@@ -98,36 +111,66 @@ export default function WebSpeechRecorder({ onText }: { onText: (t: string) => v
 
   if (!isSupported) {
     return (
-      <div className='card p-4 rounded-xl space-y-2'>
-        <p className='text-xs text-amber-600'>
-          Voice input not supported in this browser. Please type your feedback instead.
+      <div className='p-4 bg-red-500/10 border border-red-500/30 rounded-lg'>
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-red-400 text-lg">❌</span>
+          <h3 className="text-lg font-semibold text-red-300">Browser Not Supported</h3>
+        </div>
+        <p className='text-sm text-red-300'>
+          Voice input not supported in this browser. Please use Chrome or Edge, or type your feedback instead.
         </p>
       </div>
     );
   }
 
   return (
-    <div className='card p-4 rounded-xl space-y-2'>
-      <div className='flex gap-2 items-center'>
+    <div className='space-y-3'>
+      {/* Main Recording Interface */}
+      <div className='flex gap-3 items-center'>
         {!isListening ? (
-          <button className='btn' onClick={startListening}>
-            🎙️ Start recording (Browser)
+          <button 
+            className='btn btn-primary text-lg px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold' 
+            onClick={startListening}
+          >
+            🎙️ Start Recording
           </button>
         ) : (
-          <button className='btn' onClick={stopListening}>
-            ■ Stop
+          <button 
+            className='btn btn-secondary text-lg px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold' 
+            onClick={stopListening}
+          >
+            ■ Stop Recording
           </button>
         )}
-        <span className='text-slate-600 text-sm'>
-          {isListening ? 'Listening...' : 'Tap to speak your Top-3 (Browser Speech API)'}
-        </span>
+        <div className="flex-1">
+          <p className='text-green-300 font-medium'>
+            {isListening ? '🎧 Listening... Speak now!' : 'Click to start speaking your feedback'}
+          </p>
+          <p className='text-sm text-green-400'>
+            {isListening ? 'Speak clearly into your microphone' : 'Browser speech recognition - instant results!'}
+          </p>
+        </div>
       </div>
-      <p className='text-xs text-slate-500'>
-        Tip: speak in order: "Apparel…; Home…; Toys…" You can edit text afterward.
-      </p>
-      <p className='text-xs text-blue-600'>
-        Using browser built-in speech recognition (no server required).
-      </p>
+
+      {/* Error Display */}
+      {error && (
+        <div className='p-3 bg-red-500/10 border border-red-500/30 rounded-lg'>
+          <p className='text-sm text-red-300'>
+            ⚠️ {error}
+          </p>
+        </div>
+      )}
+
+      {/* Tips */}
+      <div className='p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg'>
+        <p className='text-sm text-blue-300'>
+          💡 <strong>Tip:</strong> Speak clearly and naturally. You can say things like: 
+          "Apparel sales are strong, Home department needs more staff, Toys section is well organized"
+        </p>
+        <p className='text-xs text-blue-400 mt-1'>
+          ✅ No server required • ✅ Works offline • ✅ Instant results
+        </p>
+      </div>
     </div>
   );
 }

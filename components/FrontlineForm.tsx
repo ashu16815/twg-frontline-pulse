@@ -194,14 +194,41 @@ export default function FrontlineForm() {
         {/* Voice Recording */}
         <div className="card">
           <h2 className="text-xl font-semibold mb-4">Voice Recording</h2>
-          <div className="flex gap-4">
+          
+          {/* Primary Option - Browser Speech Recognition */}
+          <div className="mb-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-green-400 text-lg">✅</span>
+              <h3 className="text-lg font-semibold text-green-300">Recommended: Browser Speech Recognition</h3>
+            </div>
             <WebSpeechRecorder onText={handleText} />
-            <VoiceRecorder onText={handleText} />
+            <p className='text-sm text-green-300 mt-2'>
+              💡 <strong>Fast & Reliable:</strong> Uses your browser's built-in speech recognition. 
+              No server dependencies, works offline, immediate results!
+            </p>
           </div>
-          <div className='mt-2 p-2 bg-blue-500/10 border border-blue-500/20 rounded'>
-            <p className='text-sm text-blue-300'>
-              💡 <strong>Recommended:</strong> Use "Start recording (Browser)" for immediate results. 
-              The Azure transcription service is currently experiencing issues.
+
+          {/* Secondary Option - Azure Transcription (Disabled) */}
+          <div className="p-4 bg-gray-500/10 border border-gray-500/30 rounded-lg opacity-60">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-gray-400 text-lg">⚠️</span>
+              <h3 className="text-lg font-semibold text-gray-400">Azure Transcription (Temporarily Disabled)</h3>
+            </div>
+            <div className="p-3 bg-gray-700/50 border border-gray-600/50 rounded">
+              <p className="text-gray-400 text-sm mb-2">
+                Azure transcription service is currently experiencing server errors. 
+                This option will be re-enabled once Azure resolves the issues.
+              </p>
+              <button 
+                disabled 
+                className="btn btn-secondary opacity-50 cursor-not-allowed"
+              >
+                🎙️ Start recording (Azure) - Temporarily Unavailable
+              </button>
+            </div>
+            <p className='text-sm text-gray-400 mt-2'>
+              <strong>Status:</strong> Server errors detected. Request IDs: be907692-c5f1-4034-8aa5-b19e26739ca9, 
+              cabe3aaf-aa27-4525-988d-4da633c613f2
             </p>
           </div>
         </div>
