@@ -2,11 +2,37 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useAuth } from '@/lib/auth-client';
+import { useState, useEffect } from 'react';
 import LogoutButton from './LogoutButton';
 
 export default function Header() {
-  const { user, loading } = useAuth();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check authentication status
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   return (
     <header className='border-b border-white/10 bg-black/40 backdrop-blur'>
@@ -34,7 +60,7 @@ export default function Header() {
           <Link href='/ceo' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
             Ask Questions
           </Link>
-                  {user?.role?.toLowerCase() === 'admin' && (
+          {user?.role?.toLowerCase() === 'admin' && (
             <>
               <Link href='/admin/users' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
                 Users

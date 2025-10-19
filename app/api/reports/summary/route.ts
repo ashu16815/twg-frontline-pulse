@@ -97,19 +97,19 @@ export async function GET(req: Request) {
       rows.map((r: any) => ({
         region: r.region_code,
         store: r.store_id,
-        pos: r.top_positive,
-        miss1: r.miss1,
+        pos: r.top_positive?.substring(0, 100), // Limit text length
+        miss1: r.miss1?.substring(0, 100), // Limit text length
         miss1_dollars: r.miss1_dollars,
-        miss2: r.miss2,
+        miss2: r.miss2?.substring(0, 100), // Limit text length
         miss2_dollars: r.miss2_dollars,
-        miss3: r.miss3,
+        miss3: r.miss3?.substring(0, 100), // Limit text length
         miss3_dollars: r.miss3_dollars,
         mood: r.overall_mood,
-        comments: r.freeform_comments
+        comments: r.freeform_comments?.substring(0, 150) // Limit text length
       }));
 
     // Limit data size to prevent timeout - sample if too large
-    const maxRows = 50; // Limit to prevent large payloads
+    const maxRows = 20; // Reduced from 50 to prevent token limit issues
     const sampledWeekRows = weekRows.length > maxRows ? weekRows.slice(0, maxRows) : weekRows;
     const sampledMonthRows = monthRows.length > maxRows ? monthRows.slice(0, maxRows) : monthRows;
     
@@ -141,8 +141,8 @@ export async function GET(req: Request) {
     
     try {
       const ai = await callAzureJSON([SYS, user], { 
-        timeout: 30000, // 30 seconds for this endpoint
-        maxRetries: 2   // More retries for better success rate
+        timeout: 20000, // Reduced from 30 seconds to 20 seconds
+        maxRetries: 1   // Reduced retries to fail faster
       });
       console.log('✅ AI response received:', Object.keys(ai));
       

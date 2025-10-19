@@ -2,41 +2,46 @@
 
 import { useState, useEffect } from 'react';
 import LoadingButton from '@/components/LoadingButton';
-import { useAuth } from '@/lib/auth-client';
 
 export default function LoginPage() {
   const [user_id, setUid] = useState('');
   const [password, setPw] = useState('');
   const [error, setError] = useState('');
-  const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-
-  const { user, loading, login } = useAuth();
 
   const next =
     typeof window !== 'undefined'
       ? new URLSearchParams(window.location.search).get('next') || '/'
       : '/';
 
-  // Simple mount effect to avoid hydration issues
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (!loading && user) {
-      console.log(`✅ User already authenticated, redirecting to:`, next);
-      window.location.href = next;
-    }
-  }, [user, loading, next]);
-
   async function submit() {
     setError('');
     setSuccess(false);
+    setLoading(true);
 
     try {
-      await login(user_id, password);
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({ user_id, password })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Login failed');
+      }
+
+      const data = await response.json();
+      
+      // Store token in localStorage as backup
+      if (data.token) {
+        localStorage.setItem('wis_session', data.token);
+      }
+
       setSuccess(true);
       
       // Redirect after successful login
@@ -45,6 +50,8 @@ export default function LoginPage() {
       }, 1000);
     } catch (err: any) {
       setError(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -65,8 +72,9 @@ export default function LoginPage() {
               placeholder='e.g., 323905'
               value={user_id}
               onChange={e => setUid(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && submit()}
+              onKeyDown={e => e.key === 'Enter' && !loading && submit()}
               autoFocus
+              disabled={loading}
             />
           </div>
 
@@ -78,7 +86,8 @@ export default function LoginPage() {
               placeholder='••••••••'
               value={password}
               onChange={e => setPw(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && submit()}
+              onKeyDown={e => e.key === 'Enter' && !loading && submit()}
+              disabled={loading}
             />
           </div>
 
@@ -97,12 +106,17 @@ export default function LoginPage() {
           {success ? (
             <button 
               className='btn-liquid w-full py-3' 
-              onClick={() => window.location.replace(next)}
+              onClick={() => window.location.href = next}
             >
               Go to Home Page →
             </button>
           ) : (
-            <LoadingButton className='btn-liquid w-full py-3' busyText='Signing in…' onClick={submit}>
+            <LoadingButton 
+              className='btn-liquid w-full py-3' 
+              busyText='Signing in…' 
+              onClick={submit}
+              disabled={loading}
+            >
               Sign in
             </LoadingButton>
           )}

@@ -15,6 +15,7 @@ export default function FrontlineForm() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+  const [allowSubmission, setAllowSubmission] = useState(false);
 
   // Refs for textareas
   const positiveTextareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
@@ -27,15 +28,13 @@ export default function FrontlineForm() {
     if (!selectedStore) return;
 
     try {
-      const formData = new FormData();
-      const form = document.querySelector('form') as HTMLFormElement;
-      if (!form) return;
-
-      // Collect all form data
+      console.log('🔄 Starting auto-save...');
+      
+      // Collect form data without triggering form submission
       const data: Record<string, string> = {};
-      const formElements = form.querySelectorAll('input, textarea, select');
+      const formElements = document.querySelectorAll('form input, form textarea, form select');
       formElements.forEach((element: any) => {
-        if (element.name && element.value) {
+        if (element.name && element.value && !element.type?.includes('hidden')) {
           data[element.name] = element.value;
         }
       });
@@ -45,6 +44,8 @@ export default function FrontlineForm() {
       data.storeName = selectedStore.store_name;
       data.region = selectedStore.region;
       data.regionCode = selectedStore.region_code;
+
+      console.log('💾 Auto-saving data:', Object.keys(data));
 
       const response = await fetch('/api/frontline/autosave', {
         method: 'POST',
@@ -58,10 +59,12 @@ export default function FrontlineForm() {
 
       if (response.ok) {
         setLastSaved(new Date());
-        console.log('✅ Form auto-saved');
+        console.log('✅ Form auto-saved successfully');
+      } else {
+        console.error('❌ Auto-save failed:', response.status);
       }
     } catch (error) {
-      console.error('Auto-save failed:', error);
+      console.error('❌ Auto-save error:', error);
     }
   }, [selectedStore, sessionId]);
 
@@ -108,8 +111,20 @@ export default function FrontlineForm() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log('🚨 FORM SUBMISSION TRIGGERED!', {
+      event: e.type,
+      target: e.target,
+      currentTarget: e.currentTarget,
+      isSubmitting,
+      allowSubmission,
+      timestamp: new Date().toISOString()
+    });
+    
     e.preventDefault();
-    if (isSubmitting) return;
+    if (isSubmitting || !allowSubmission) {
+      console.log('🚫 Form submission blocked:', { isSubmitting, allowSubmission });
+      return;
+    }
 
     setIsSubmitting(true);
     setSubmitMessage('');
@@ -147,6 +162,7 @@ export default function FrontlineForm() {
       setSubmitMessage(`❌ Error: ${error.message}`);
     } finally {
       setIsSubmitting(false);
+      setAllowSubmission(false);
     }
   };
 
@@ -171,13 +187,28 @@ export default function FrontlineForm() {
         {/* Store Selection */}
         <div className="card">
           <h2 className="text-xl font-semibold mb-4">Store Information</h2>
-          <StoreTypeahead onSelect={setSelectedStore} />
+          <div className="store-dropdown-container">
+            <StoreTypeahead onSelect={setSelectedStore} />
+          </div>
           {selectedStore && (
             <div className="mt-2 p-2 bg-green-500/10 border border-green-500/20 rounded">
               <p className="text-sm text-green-300">
                 Selected: {selectedStore.store_name} ({selectedStore.store_id}) - {selectedStore.region}
               </p>
             </div>
+          )}
+          
+          {/* Hidden fields for store information */}
+          {selectedStore && (
+            <>
+              <input type="hidden" name="storeId" value={selectedStore.store_id} />
+              <input type="hidden" name="storeName" value={selectedStore.store_name} />
+              <input type="hidden" name="region" value={selectedStore.region} />
+              <input type="hidden" name="regionCode" value={selectedStore.region_code || ''} />
+              <input type="hidden" name="storeCode" value={selectedStore.store_code || ''} />
+              <input type="hidden" name="banner" value={selectedStore.banner || ''} />
+              <input type="hidden" name="managerEmail" value={selectedStore.manager_email || ''} />
+            </>
           )}
         </div>
 
@@ -366,7 +397,11 @@ export default function FrontlineForm() {
         {/* Submit Button */}
         <div className="card">
           <LoadingButton
-            onClick={() => {}}
+            type="submit"
+            onClick={() => {
+              console.log('🖱️ Submit button clicked - allowing submission');
+              setAllowSubmission(true);
+            }}
             className="btn-primary w-full"
             disabled={!selectedStore || isSubmitting}
           >

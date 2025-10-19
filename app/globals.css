@@ -101,6 +101,17 @@ body::before {
   @apply glass rounded-3xl p-6;
 }
 
+/* Store dropdown positioning fix */
+.store-dropdown-container {
+  position: relative;
+  z-index: 10;
+}
+
+.store-dropdown-container .dropdown-menu {
+  z-index: 9999 !important;
+  position: absolute !important;
+}
+
 /* Inputs */
 .input {
   @apply w-full rounded-2xl px-3 py-2;

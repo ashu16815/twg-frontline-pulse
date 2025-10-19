@@ -115,7 +115,7 @@ export default function StoreTypeahead({ onSelect }: { onSelect?: (store: Store)
       )}
       
       {open && items.length > 0 && (
-        <div className='absolute z-20 mt-1 w-full rounded-xl border border-white/10 bg-black/95 backdrop-blur p-1 max-h-80 overflow-auto shadow-xl'>
+        <div className='dropdown-menu absolute z-50 mt-1 w-full rounded-xl border border-white/10 bg-black/95 backdrop-blur p-1 max-h-80 overflow-auto shadow-xl'>
           {items.map((store) => (
             <button 
               key={store.store_id} 
@@ -142,7 +142,7 @@ export default function StoreTypeahead({ onSelect }: { onSelect?: (store: Store)
       )}
       
       {open && !loading && items.length === 0 && q.trim().length > 0 && (
-        <div className='absolute z-20 mt-1 w-full rounded-xl border border-white/10 bg-black/95 backdrop-blur p-4 shadow-xl'>
+        <div className='dropdown-menu absolute z-50 mt-1 w-full rounded-xl border border-white/10 bg-black/95 backdrop-blur p-4 shadow-xl'>
           <div className='text-sm text-white/50 text-center'>
             No stores found for "{q}"
           </div>

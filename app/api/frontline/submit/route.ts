@@ -46,7 +46,16 @@ export async function POST(req: Request) {
   const pRes = schema.safeParse(body);
 
   if (!pRes.success) {
-    return NextResponse.json({ error: 'Invalid form data', details: pRes.error.issues }, { status: 400 });
+    console.error('❌ Form validation failed:', {
+      receivedFields: Object.keys(body),
+      validationErrors: pRes.error.issues,
+      formData: body
+    });
+    return NextResponse.json({ 
+      error: 'Invalid form data', 
+      details: pRes.error.issues,
+      receivedFields: Object.keys(body)
+    }, { status: 400 });
   }
 
   const p = pRes.data;
@@ -117,36 +126,50 @@ export async function POST(req: Request) {
       VALUES ('store-manager', 'frontline-submit', ${JSON.stringify({ store: p.storeId, isoWeek, type: 'frontline', idempotencyKey })})
     `;
 
-    // Start background AI analysis (non-blocking)
+    // Start background AI analysis (non-blocking) with timeout protection
     setImmediate(async () => {
       try {
+        // Only run AI analysis if there's meaningful content
+        const hasContent = p.top_positive || p.top_negative_1 || p.top_negative_2 || p.top_negative_3 || p.next_actions || p.freeform_comments;
+        
+        if (!hasContent) {
+          console.log(`⏭️ Skipping AI analysis for submission ${idempotencyKey} - no content`);
+          return;
+        }
+
         const feedbackData = {
           region: p.region,
           isoWeek,
           positive: p.top_positive ? {
-            text: p.top_positive,
+            text: p.top_positive.substring(0, 200), // Limit text length
             impact: p.top_positive_impact ? parseFloat(p.top_positive_impact) : 0
           } : null,
           negatives: [
             p.top_negative_1 ? {
-              text: p.top_negative_1,
+              text: p.top_negative_1.substring(0, 200), // Limit text length
               impact: p.top_negative_1_impact ? parseFloat(p.top_negative_1_impact) : 0
             } : null,
             p.top_negative_2 ? {
-              text: p.top_negative_2,
+              text: p.top_negative_2.substring(0, 200), // Limit text length
               impact: p.top_negative_2_impact ? parseFloat(p.top_negative_2_impact) : 0
             } : null,
             p.top_negative_3 ? {
-              text: p.top_negative_3,
+              text: p.top_negative_3.substring(0, 200), // Limit text length
               impact: p.top_negative_3_impact ? parseFloat(p.top_negative_3_impact) : 0
             } : null
           ].filter((item): item is { text: string; impact: number } => item !== null),
-          nextActions: p.next_actions || '',
-          freeformComments: p.freeform_comments || '',
+          nextActions: (p.next_actions || '').substring(0, 200), // Limit text length
+          freeformComments: (p.freeform_comments || '').substring(0, 200), // Limit text length
           estimatedDollarImpact: p.estimated_dollar_impact ? parseFloat(p.estimated_dollar_impact) : 0
         };
 
-        const ai = await analyzeFrontlineFeedback(feedbackData);
+        // Add timeout wrapper for AI analysis
+        const aiAnalysisPromise = analyzeFrontlineFeedback(feedbackData);
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('AI analysis timeout')), 15000) // 15 second timeout
+        );
+
+        const ai = await Promise.race([aiAnalysisPromise, timeoutPromise]);
         
         // Update the record with AI analysis
         await pool.request().query`
@@ -157,8 +180,8 @@ export async function POST(req: Request) {
         `;
         
         console.log(`✅ AI analysis completed for submission ${idempotencyKey}`);
-      } catch (aiError) {
-        console.error(`❌ AI analysis failed for submission ${idempotencyKey}:`, aiError);
+      } catch (aiError: any) {
+        console.error(`❌ AI analysis failed for submission ${idempotencyKey}:`, aiError.message || aiError);
         // Data is still saved, just without AI analysis
       }
     });
