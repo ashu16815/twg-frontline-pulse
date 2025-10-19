@@ -20,7 +20,7 @@ export default function VoiceRecorder({ onText }: { onText: (t: string) => void 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     
     // Try to get a MediaRecorder with a supported format
-    let mr: MediaRecorder;
+    let mr: MediaRecorder | undefined;
     const supportedTypes = ['audio/webm', 'audio/mp4', 'audio/wav'];
     
     for (const type of supportedTypes) {
