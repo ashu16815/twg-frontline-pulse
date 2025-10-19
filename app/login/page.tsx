@@ -18,7 +18,22 @@ export default function LoginPage() {
   // Simple mount effect to avoid hydration issues
   useEffect(() => {
     setMounted(true);
-  }, []);
+    
+    // Check if user is already logged in and redirect immediately
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (response.ok) {
+          // User is already authenticated, redirect to home
+          window.location.href = next;
+        }
+      } catch (error) {
+        // Not authenticated, stay on login page
+      }
+    };
+    
+    checkAuth();
+  }, [next]);
 
   async function submit() {
     setError('');
@@ -38,13 +53,8 @@ export default function LoginPage() {
     // Show success message briefly
     setSuccess(true);
     
-    // Use multiple redirect methods to ensure it works
-    setTimeout(() => {
-      // Try multiple methods
-      window.location.replace(next);
-      window.location.href = next;
-      window.location.assign(next);
-    }, 100);
+    // Immediate redirect - no delay
+    window.location.href = next;
   }
 
   return (
