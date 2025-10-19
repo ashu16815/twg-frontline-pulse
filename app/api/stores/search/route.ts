@@ -13,5 +13,5 @@ export async function GET(req: Request) {
             WHERE active=1 AND (store_code LIKE @q OR store_name LIKE @q) 
             ORDER BY store_code`);
   
-  return NextResponse.json(res.recordset);
+  return NextResponse.json({ results: res.recordset });
 }
