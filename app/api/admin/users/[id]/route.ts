@@ -6,7 +6,7 @@ import sql from 'mssql';
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   try {
-    requireAdmin();
+    await requireAdmin();
     const id = params.id;
     const body = await req.json();
     const pool = await getDb();
@@ -54,7 +54,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
   try {
-    requireAdmin();
+    await requireAdmin();
     const id = params.id;
     const pool = await getDb();
     await pool.request()

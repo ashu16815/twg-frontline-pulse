@@ -4,7 +4,7 @@ import { getSession } from '@/lib/auth';
 import LogoutButton from './LogoutButton';
 
 export default async function Header() {
-  const session = getSession();
+  const session = await getSession();
 
   return (
     <header className='border-b border-white/10 bg-black/40 backdrop-blur'>

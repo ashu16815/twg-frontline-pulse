@@ -5,7 +5,7 @@ import sql from 'mssql';
 
 export async function GET() {
   try {
-    requireAdmin();
+    await requireAdmin();
     const pool = await getDb();
     const r = await pool.request().query`
       select id, user_id, full_name, email, role, is_active, created_at, last_login_at 
@@ -20,7 +20,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    requireAdmin();
+    await requireAdmin();
     const body = await req.json();
     const { user_id, full_name, email = null, role = 'StoreManager' } = body;
     

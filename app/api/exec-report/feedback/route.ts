@@ -4,7 +4,7 @@ import { getSession } from '@/lib/auth';
 
 export async function POST(req: Request) {
   try {
-    const s = getSession();
+    const s = await getSession();
     const b = await req.json();
     const pool = await getDb();
     

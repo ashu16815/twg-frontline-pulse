@@ -1,5 +1,5 @@
 import 'server-only';
-import jwt from 'jsonwebtoken';
+import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 
 const COOKIE = process.env.SESSION_COOKIE_NAME || 'wis_session';
@@ -13,13 +13,20 @@ export type Session = {
   role?: string;
 };
 
-export function createSessionToken(s: Session) {
-  return jwt.sign(s, SECRET, { expiresIn: `${MAX_DAYS}d` });
+export async function createSessionToken(s: Session) {
+  const secret = new TextEncoder().encode(SECRET);
+  return await new SignJWT(s)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(`${MAX_DAYS}d`)
+    .sign(secret);
 }
 
-export function verifySessionToken(t: string): Session | null {
+export async function verifySessionToken(t: string): Promise<Session | null> {
   try {
-    return jwt.verify(t, SECRET) as Session;
+    const secret = new TextEncoder().encode(SECRET);
+    const { payload } = await jwtVerify(t, secret);
+    return payload as Session;
   } catch {
     return null;
   }
@@ -47,9 +54,9 @@ export function clearSessionCookie() {
   });
 }
 
-export function getSession(): Session | null {
+export async function getSession(): Promise<Session | null> {
   const c = cookies().get(COOKIE)?.value;
   if (!c) return null;
-  return verifySessionToken(c);
+  return await verifySessionToken(c);
 }
 

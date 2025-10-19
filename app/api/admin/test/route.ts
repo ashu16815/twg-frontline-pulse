@@ -12,7 +12,7 @@ interface TestResult {
 
 export async function POST(req: Request) {
   try {
-    requireAdmin();
+    await requireAdmin();
 
     const body = await req.json();
     const testSuite = body.suite || 'all'; // 'all', 'database', 'api', 'ai'

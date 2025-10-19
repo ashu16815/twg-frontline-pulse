@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       .query`update dbo.app_users set last_login_at=sysutcdatetime() where id=@id`;
 
     // Create session
-    const token = createSessionToken({
+    const token = await createSessionToken({
       sub: u.id,
       user_id: u.user_id,
       name: u.full_name,

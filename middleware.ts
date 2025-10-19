@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 
 // Force Node.js runtime (not Edge)
 export const runtime = 'nodejs';
@@ -43,7 +43,9 @@ export async function middleware(req: NextRequest) {
 
   // Verify token
   try {
-    const session = jwt.verify(token, SECRET) as any;
+    const secret = new TextEncoder().encode(SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    const session: any = payload;
     console.log('✅ Token verified for:', session.user_id);
     
     // If admin area, enforce Admin role
