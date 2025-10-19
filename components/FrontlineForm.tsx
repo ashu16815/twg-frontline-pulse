@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import VoiceRecorder from '@/components/VoiceRecorder';
 import WebSpeechRecorder from '@/components/WebSpeechRecorder';
 import StoreTypeahead from '@/components/StoreTypeahead';
@@ -11,6 +11,70 @@ export default function FrontlineForm() {
   const [negativeItems, setNegativeItems] = useState([{ id: 1 }]);
   const [nextPositiveId, setNextPositiveId] = useState(2);
   const [nextNegativeId, setNextNegativeId] = useState(2);
+  const [selectedStore, setSelectedStore] = useState<any>(null);
+  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
+
+  // Auto-save functionality
+  const autoSave = useCallback(async () => {
+    if (!selectedStore) return;
+
+    try {
+      const formData = new FormData();
+      const form = document.querySelector('form') as HTMLFormElement;
+      if (!form) return;
+
+      // Collect all form data
+      const data: Record<string, string> = {};
+      const formElements = form.querySelectorAll('input, textarea, select');
+      formElements.forEach((element: any) => {
+        if (element.name && element.value) {
+          data[element.name] = element.value;
+        }
+      });
+
+      // Add store information
+      data.storeId = selectedStore.store_id;
+      data.storeName = selectedStore.store_name;
+      data.region = selectedStore.region;
+      data.regionCode = selectedStore.region_code;
+
+      const response = await fetch('/api/frontline/autosave', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          storeId: selectedStore.store_id,
+          formData: data
+        })
+      });
+
+      if (response.ok) {
+        setLastSaved(new Date());
+        console.log('✅ Form auto-saved');
+      }
+    } catch (error) {
+      console.error('Auto-save failed:', error);
+    }
+  }, [selectedStore, sessionId]);
+
+  // Auto-save every 30 seconds
+  useEffect(() => {
+    if (!selectedStore) return;
+
+    const interval = setInterval(autoSave, 30000);
+    return () => clearInterval(interval);
+  }, [autoSave, selectedStore]);
+
+  // Auto-save on form changes (debounced)
+  useEffect(() => {
+    if (!selectedStore) return;
+
+    const timeoutId = setTimeout(autoSave, 2000); // 2 second delay
+    return () => clearTimeout(timeoutId);
+  }, [positiveItems, negativeItems, selectedStore, autoSave]);
 
   const handleText = (text: string) => {
     const parts = (text || '').split(/;|\.|\n/).filter(Boolean);
@@ -53,216 +117,242 @@ export default function FrontlineForm() {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitMessage('');
+
+    try {
+      const form = e.target as HTMLFormElement;
+      const formData = new FormData(form);
+
+      // Add idempotency key and session info
+      formData.append('idempotency_key', `frontline_${sessionId}_${Date.now()}`);
+      formData.append('session_id', sessionId);
+
+      const response = await fetch('/api/frontline/submit', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitMessage('✅ Feedback submitted successfully! AI analysis will be completed in the background.');
+        // Clear form after successful submission
+        form.reset();
+        setPositiveItems([{ id: 1 }]);
+        setNegativeItems([{ id: 1 }]);
+        
+        // Redirect after a short delay
+        setTimeout(() => {
+          window.location.href = result.redirect || '/reports';
+        }, 2000);
+      } else {
+        setSubmitMessage(`❌ Error: ${result.error || 'Submission failed'}`);
+      }
+    } catch (error: any) {
+      setSubmitMessage(`❌ Error: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="max-w-4xl mx-auto p-6 space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center space-x-3">
-            <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center">
-              <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-              </svg>
-            </div>
-            <h1 className="text-3xl font-bold">Frontline Feedback</h1>
+    <div className="max-w-4xl mx-auto p-6">
+      {/* Auto-save status */}
+      <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span>Auto-save enabled</span>
           </div>
-          <p className="text-gray-300 text-lg">Share your store's performance insights</p>
-          <p className="text-sm text-gray-400">Help us understand what's working and what needs attention</p>
+          {lastSaved && (
+            <span className="text-blue-300">
+              Last saved: {lastSaved.toLocaleTimeString()}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Store Selection */}
+        <div className="card">
+          <h2 className="text-xl font-semibold mb-4">Store Information</h2>
+          <StoreTypeahead onSelect={setSelectedStore} />
+          {selectedStore && (
+            <div className="mt-2 p-2 bg-green-500/10 border border-green-500/20 rounded">
+              <p className="text-sm text-green-300">
+                Selected: {selectedStore.store_name} ({selectedStore.store_id}) - {selectedStore.region}
+              </p>
+            </div>
+          )}
         </div>
 
-        <form className="space-y-8" action="/api/frontline/submit" method="post" id="frontlineForm">
-          {/* Store Selection */}
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-            <h2 className="text-xl font-semibold mb-4 text-white">Store Information</h2>
-            <StoreTypeahead />
-            
-            {/* Hidden canonical fields populated by typeahead */}
-            <input type="hidden" name="storeId" />
-            <input type="hidden" name="storeName" />
-            <input type="hidden" name="region" />
-            <input type="hidden" name="regionCode" />
-            <input type="hidden" name="storeCode" />
-            <input type="hidden" name="banner" />
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <input 
-                className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500" 
-                name="managerEmail" 
-                placeholder="Manager Email (optional)" 
-                type="email"
+        {/* Voice Recording */}
+        <div className="card">
+          <h2 className="text-xl font-semibold mb-4">Voice Recording</h2>
+          <div className="flex gap-4">
+            <VoiceRecorder onText={handleText} />
+            <WebSpeechRecorder onText={handleText} />
+          </div>
+        </div>
+
+        {/* Positive Feedback */}
+        <div className="card">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">What's Working Well</h2>
+            {positiveItems.length < 3 && (
+              <button
+                type="button"
+                onClick={addPositiveItem}
+                className="btn btn-sm"
+              >
+                + Add Positive
+              </button>
+            )}
+          </div>
+          {positiveItems.map((item, index) => (
+            <div key={item.id} className="mb-4 p-4 border border-white/10 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium">
+                  Positive Feedback #{index + 1}
+                </label>
+                {positiveItems.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removePositiveItem(item.id)}
+                    className="text-red-400 hover:text-red-300 text-sm"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+              <textarea
+                name={`top_positive${index === 0 ? '' : '_' + (index + 1)}`}
+                placeholder="Describe what's working well..."
+                className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
+                rows={3}
               />
-              <input 
-                className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500" 
-                name="managerName" 
-                placeholder="Manager Name (optional)" 
+              <div className="mt-2">
+                <label className="text-sm text-white/70">Estimated Impact ($)</label>
+                <input
+                  type="number"
+                  name={`top_positive${index === 0 ? '' : '_' + (index + 1)}_impact`}
+                  placeholder="0"
+                  className="w-full p-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Negative Feedback */}
+        <div className="card">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">What's Not Working</h2>
+            {negativeItems.length < 3 && (
+              <button
+                type="button"
+                onClick={addNegativeItem}
+                className="btn btn-sm"
+              >
+                + Add Issue
+              </button>
+            )}
+          </div>
+          {negativeItems.map((item, index) => (
+            <div key={item.id} className="mb-4 p-4 border border-white/10 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium">
+                  Issue #{index + 1}
+                </label>
+                {negativeItems.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeNegativeItem(item.id)}
+                    className="text-red-400 hover:text-red-300 text-sm"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+              <textarea
+                name={`top_negative_${index + 1}`}
+                placeholder="Describe the issue..."
+                className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
+                rows={3}
+              />
+              <div className="mt-2">
+                <label className="text-sm text-white/70">Estimated Impact ($)</label>
+                <input
+                  type="number"
+                  name={`top_negative_${index + 1}_impact`}
+                  placeholder="0"
+                  className="w-full p-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Additional Information */}
+        <div className="card">
+          <h2 className="text-xl font-semibold mb-4">Additional Information</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm text-white/70">Next Actions</label>
+              <textarea
+                name="next_actions"
+                placeholder="What actions will you take next week?"
+                className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="text-sm text-white/70">Additional Comments</label>
+              <textarea
+                name="freeform_comments"
+                placeholder="Any other feedback or comments..."
+                className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
+                rows={4}
+              />
+            </div>
+            <div>
+              <label className="text-sm text-white/70">Total Estimated Dollar Impact</label>
+              <input
+                type="number"
+                name="estimated_dollar_impact"
+                placeholder="0"
+                className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
               />
             </div>
           </div>
+        </div>
 
-          {/* Voice Input - Hidden for now, will be added later */}
-          {/* <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-            <h3 className="text-lg font-semibold mb-4 text-white">Voice Input (Optional)</h3>
-            <p className="text-sm text-gray-400 mb-4">Speak your feedback and we'll transcribe it for you</p>
-            <div className="space-y-3">
-              <VoiceRecorder onText={handleText} />
-              <WebSpeechRecorder onText={handleText} />
+        {/* Submit Button */}
+        <div className="card">
+          <LoadingButton
+            onClick={() => {}}
+            className="btn-primary w-full"
+            disabled={!selectedStore || isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
+          </LoadingButton>
+          
+          {submitMessage && (
+            <div className={`mt-4 p-3 rounded-lg text-sm ${
+              submitMessage.includes('✅') 
+                ? 'bg-green-500/10 border border-green-500/20 text-green-300'
+                : 'bg-red-500/10 border border-red-500/20 text-red-300'
+            }`}>
+              {submitMessage}
             </div>
-          </div> */}
-
-          {/* Positive Feedback - Multiple Items */}
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">✓ Top Performing Areas</h3>
-              <span className="text-sm text-gray-400">Up to 3 items</span>
-            </div>
-            <p className="text-sm text-gray-400 mb-4">What went really well this week? (Optional but encouraged)</p>
-            
-            <div className="space-y-4">
-              {positiveItems.map((item, index) => (
-                <div key={item.id} className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-medium text-green-400">Success #{index + 1}</span>
-                    {positiveItems.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removePositiveItem(item.id)}
-                        className="text-gray-400 hover:text-gray-300 text-sm px-2 py-1 rounded hover:bg-gray-700"
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                  <div className="space-y-3">
-                    <input 
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-green-500 focus:ring-1 focus:ring-green-500" 
-                      name={index === 0 ? 'top_positive' : `top_positive_${index + 1}`}
-                      placeholder="e.g., Apparel sales exceeded target by 15% due to new display layout" 
-                    />
-                    <input 
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-green-500 focus:ring-1 focus:ring-green-500" 
-                      name={index === 0 ? 'top_positive_impact' : `top_positive_${index + 1}_impact`}
-                      placeholder="Estimated $ impact (optional)" 
-                      type="number"
-                      step="0.01"
-                    />
-                  </div>
-                </div>
-              ))}
-              
-              {positiveItems.length < 3 && (
-                <button
-                  type="button"
-                  onClick={addPositiveItem}
-                  className="w-full border-2 border-dashed border-gray-600 rounded-lg px-4 py-3 text-gray-400 hover:text-green-400 hover:border-green-500 transition-colors"
-                >
-                  + Add Another Success
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Negative Feedback */}
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">✗ Top Performance Misses</h3>
-              <span className="text-sm text-gray-400">Up to 3 items</span>
-            </div>
-            <p className="text-sm text-gray-400 mb-4">What are the key challenges impacting your store's performance?</p>
-            
-            <div className="space-y-4">
-              {negativeItems.map((item, index) => (
-                <div key={item.id} className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-medium text-gray-300">Issue #{index + 1}</span>
-                    {negativeItems.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeNegativeItem(item.id)}
-                        className="text-red-400 hover:text-red-300 text-sm px-2 py-1 rounded hover:bg-red-500/10"
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                  <div className="space-y-3">
-                    <input 
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500" 
-                      name={`top_negative_${index + 1}`} 
-                      placeholder="Describe the challenge concisely" 
-                      required={index === 0}
-                    />
-                    <input 
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500" 
-                      name={`top_negative_${index + 1}_impact`} 
-                      placeholder="Estimated $ impact (optional)" 
-                      type="number"
-                      step="0.01"
-                    />
-                  </div>
-                </div>
-              ))}
-              
-              {negativeItems.length < 3 && (
-                <button
-                  type="button"
-                  onClick={addNegativeItem}
-                  className="w-full border-2 border-dashed border-gray-600 rounded-lg p-4 text-gray-400 hover:text-white hover:border-red-500 transition-colors"
-                >
-                  + Add Another Challenge
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Next Actions */}
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-            <h3 className="text-lg font-semibold mb-4 text-white">Next Month/Quarter Priorities</h3>
-            <p className="text-sm text-gray-400 mb-4">What do you need to win in the coming period?</p>
-            <textarea 
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 min-h-[100px] resize-none" 
-              name="next_actions" 
-              placeholder="e.g., Need additional staff for peak hours, better inventory management system, improved supplier communication..."
-            />
-          </div>
-
-          {/* Additional Insights */}
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-            <h3 className="text-lg font-semibold mb-4 text-white">Additional Insights</h3>
-            <p className="text-sm text-gray-400 mb-4">Competitor observations, local context, team feedback, or other commentary</p>
-            <textarea 
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 min-h-[100px] resize-none" 
-              name="freeform_comments" 
-              placeholder="e.g., Competitor opened new store nearby, local events affecting foot traffic, team morale insights..."
-            />
-          </div>
-
-          {/* Overall Impact */}
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-            <h3 className="text-lg font-semibold mb-4 text-white">Overall Impact Estimate</h3>
-            <p className="text-sm text-gray-400 mb-4">What's the total estimated dollar impact of this week's performance?</p>
-            <input 
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500" 
-              name="estimated_dollar_impact" 
-              placeholder="e.g., -5000 (negative impact) or +3000 (positive impact)" 
-              type="number"
-              step="0.01"
-            />
-          </div>
-
-          {/* Submit Button */}
-          <div className="text-center">
-            <LoadingButton
-              type="submit"
-              busyText="Submitting..."
-              className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
-            >
-              Submit My Store Report
-            </LoadingButton>
-            <p className="text-sm text-gray-400 mt-3">Your feedback helps us improve store performance</p>
-          </div>
-        </form>
-      </div>
+          )}
+        </div>
+      </form>
     </div>
   );
 }
-
