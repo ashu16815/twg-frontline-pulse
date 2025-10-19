@@ -1,12 +1,9 @@
-import Overview from '@/components/exec/Overview';
+import ExecDashboard from '@/components/exec/ExecDashboard';
 
-export const dynamic = 'force-dynamic';
-
-export default function Page({ searchParams }: { searchParams: { week?: string; region?: string } }) {
+export default function Page() {
   return (
-    <main className='max-w-7xl mx-auto p-8'>
-      <Overview searchParams={searchParams} />
+    <main className='max-w-6xl mx-auto p-6 space-y-6'>
+      <ExecDashboard />
     </main>
   );
 }
-

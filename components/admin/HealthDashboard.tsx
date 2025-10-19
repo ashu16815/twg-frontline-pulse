@@ -208,7 +208,7 @@ export default function HealthDashboard() {
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
           <h2 className='text-lg font-semibold'>Functionality Tests</h2>
-          <div className='flex gap-2'>
+          <div className='flex gap-2 flex-wrap'>
             <LoadingButton
               onClick={() => runTests('database')}
               className='btn'
@@ -229,6 +229,27 @@ export default function HealthDashboard() {
               busyText='Testing...'
             >
               Test AI
+            </LoadingButton>
+            <LoadingButton
+              onClick={() => runTests('voice')}
+              className='btn'
+              busyText='Testing...'
+            >
+              Test Voice
+            </LoadingButton>
+            <LoadingButton
+              onClick={() => runTests('executive')}
+              className='btn'
+              busyText='Testing...'
+            >
+              Test Executive
+            </LoadingButton>
+            <LoadingButton
+              onClick={() => runTests('performance')}
+              className='btn'
+              busyText='Testing...'
+            >
+              Test Performance
             </LoadingButton>
             <LoadingButton
               onClick={() => runTests('all')}
@@ -309,33 +330,59 @@ export default function HealthDashboard() {
 
       {/* Quick Actions */}
       <div className='card'>
-        <h3 className='font-semibold mb-3'>Quick Actions & Tips</h3>
+        <h3 className='font-semibold mb-3'>Production System Status & Tips</h3>
         <div className='space-y-2 text-sm'>
           <div className='flex items-start gap-2'>
-            <span className='text-white/40'>💡</span>
+            <span className='text-white/40'>🎙️</span>
             <div>
-              <div className='font-medium'>Database Connection Failed?</div>
+              <div className='font-medium'>Voice-to-Form Integration</div>
               <div className='text-xs text-white/60'>
-                Check your public IP above and add it to Azure SQL firewall in Azure Portal
+                Test voice capture at <code className='bg-white/10 px-1 rounded'>/feedback</code> - AI extracts structured data from speech
+              </div>
+            </div>
+          </div>
+          <div className='flex items-start gap-2'>
+            <span className='text-white/40'>📊</span>
+            <div>
+              <div className='font-medium'>Executive Dashboard</div>
+              <div className='text-xs text-white/60'>
+                Access AI insights at <code className='bg-white/10 px-1 rounded'>/exec</code> - Big-4 style analysis with charts
+              </div>
+            </div>
+          </div>
+          <div className='flex items-start gap-2'>
+            <span className='text-white/40'>🔒</span>
+            <div>
+              <div className='font-medium'>Idempotent Submissions</div>
+              <div className='text-xs text-white/60'>
+                Duplicate prevention enabled - test with same idempotency key
+              </div>
+            </div>
+          </div>
+          <div className='flex items-start gap-2'>
+            <span className='text-white/40'>⚡</span>
+            <div>
+              <div className='font-medium'>Database Performance</div>
+              <div className='text-xs text-white/60'>
+                Optimized with indexes - queries should complete in &lt;3s
+              </div>
+            </div>
+          </div>
+          <div className='flex items-start gap-2'>
+            <span className='text-white/40'>🏥</span>
+            <div>
+              <div className='font-medium'>Health Monitoring</div>
+              <div className='text-xs text-white/60'>
+                Real-time status at <code className='bg-white/10 px-1 rounded'>/api/health</code> - SQL + OpenAI + version tracking
               </div>
             </div>
           </div>
           <div className='flex items-start gap-2'>
             <span className='text-white/40'>💡</span>
             <div>
-              <div className='font-medium'>Schema Errors?</div>
+              <div className='font-medium'>Troubleshooting</div>
               <div className='text-xs text-white/60'>
-                Run: <code className='bg-white/10 px-1 rounded'>npm run db:apply</code> and{' '}
-                <code className='bg-white/10 px-1 rounded'>npm run seed</code>
-              </div>
-            </div>
-          </div>
-          <div className='flex items-start gap-2'>
-            <span className='text-white/40'>💡</span>
-            <div>
-              <div className='font-medium'>AI Tests Failing?</div>
-              <div className='text-xs text-white/60'>
-                Verify your Azure OpenAI endpoint and API keys are correct in environment variables
+                Database issues: Check Azure SQL firewall • AI issues: Verify OpenAI keys • Performance: Check indexes
               </div>
             </div>
           </div>

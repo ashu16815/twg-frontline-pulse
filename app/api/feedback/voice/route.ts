@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
-import { callAzureJSON } from '@/lib/azure';
+import { callAzureJSON } from '@/lib/azure-simple';
 
-const SYS = { role: 'system', content: `You extract structured feedback for a weekly store report. Output strict JSON only:
+const SYS = {
+  role: 'system',
+  content: `Extract weekly store feedback as strict JSON only:
 {
   "store_code": string,
-  "iso_week": string,        // e.g., 2025-W41
-  "month_key": string,       // e.g., 2025-10
+  "iso_week": string,  
+  "month_key": string, 
   "top_positive": string,
   "miss1": string, "miss1_dollars": number,
   "miss2": string, "miss2_dollars": number,
@@ -13,11 +15,11 @@ const SYS = { role: 'system', content: `You extract structured feedback for a we
   "overall_mood": "pos"|"neu"|"neg",
   "freeform_comments": string
 }
-Return only the JSON.` };
+Return only JSON.`
+};
 
-export async function POST(req: Request){
-  const body = await req.json();
-  const user = { role:'user', content: body.transcript||'' };
-  const out = await callAzureJSON([SYS,user]);
-  return NextResponse.json({ ok:true, data: out });
+export async function POST(req: Request) {
+  const { transcript } = await req.json();
+  const out = await callAzureJSON([SYS, { role: 'user', content: transcript || '' }]);
+  return NextResponse.json({ ok: true, data: out });
 }
