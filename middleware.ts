@@ -34,15 +34,18 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Get the token from cookies
-  const token = req.cookies.get(COOKIE)?.value;
+  // Get the token from cookies - try both regular and debug cookies
+  const token = req.cookies.get(COOKIE)?.value || req.cookies.get(`${COOKIE}_debug`)?.value;
   let isAuthenticated = false;
 
   console.log(`🍪 [${timestamp}] MIDDLEWARE COOKIE CHECK:`, {
     cookieName: COOKIE,
+    debugCookieName: `${COOKIE}_debug`,
     hasToken: !!token,
     tokenLength: token?.length || 0,
-    tokenPreview: token?.substring(0, 30) + '...' || 'none'
+    tokenPreview: token?.substring(0, 30) + '...' || 'none',
+    regularCookie: req.cookies.get(COOKIE)?.value?.substring(0, 30) + '...' || 'none',
+    debugCookie: req.cookies.get(`${COOKIE}_debug`)?.value?.substring(0, 30) + '...' || 'none'
   });
 
   if (token) {
