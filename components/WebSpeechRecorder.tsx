@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 export default function WebSpeechRecorder({ onText }: { onText: (t: string) => void }) {
   const [isListening, setIsListening] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
+  const [recognition, setRecognition] = useState<any>(null);
 
   useEffect(() => {
     // Check if Web Speech API is supported
@@ -20,17 +21,19 @@ export default function WebSpeechRecorder({ onText }: { onText: (t: string) => v
     }
 
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
+    const rec = new SpeechRecognition();
 
-    recognition.continuous = true;
-    recognition.interimResults = false;
-    recognition.lang = 'en-US';
+    rec.continuous = false; // Changed to false to avoid aborted errors
+    rec.interimResults = false;
+    rec.lang = 'en-US';
+    rec.maxAlternatives = 1;
 
-    recognition.onstart = () => {
+    rec.onstart = () => {
       setIsListening(true);
+      console.log('Speech recognition started');
     };
 
-    recognition.onresult = (event: any) => {
+    rec.onresult = (event: any) => {
       let finalTranscript = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
         if (event.results[i].isFinal) {
@@ -38,26 +41,59 @@ export default function WebSpeechRecorder({ onText }: { onText: (t: string) => v
         }
       }
       if (finalTranscript) {
+        console.log('Speech recognized:', finalTranscript);
         onText(finalTranscript);
       }
     };
 
-    recognition.onerror = (event: any) => {
+    rec.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error);
-      alert(`Speech recognition error: ${event.error}`);
+      
+      // Handle specific error types more gracefully
+      if (event.error === 'aborted') {
+        console.log('Speech recognition was aborted (user stopped or interrupted)');
+        setIsListening(false);
+        return;
+      }
+      
+      if (event.error === 'no-speech') {
+        console.log('No speech detected, trying again...');
+        // Don't show error for no-speech, just restart
+        setTimeout(() => {
+          if (!isListening) {
+            rec.start();
+          }
+        }, 1000);
+        return;
+      }
+      
+      // Only show alert for serious errors
+      if (event.error === 'network' || event.error === 'not-allowed') {
+        alert(`Speech recognition error: ${event.error}. Please check your microphone permissions.`);
+      }
+      
       setIsListening(false);
     };
 
-    recognition.onend = () => {
+    rec.onend = () => {
+      console.log('Speech recognition ended');
       setIsListening(false);
     };
 
-    recognition.start();
+    try {
+      rec.start();
+      setRecognition(rec);
+    } catch (error) {
+      console.error('Failed to start speech recognition:', error);
+      setIsListening(false);
+    }
   };
 
   const stopListening = () => {
+    if (recognition) {
+      recognition.stop();
+    }
     setIsListening(false);
-    // The recognition will stop automatically
   };
 
   if (!isSupported) {
