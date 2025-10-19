@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import StoreTypeahead from '@/components/StoreTypeahead';
 import LoadingButton from '@/components/LoadingButton';
 import VoiceInput from '@/components/VoiceInput';
@@ -15,6 +15,12 @@ export default function FrontlineForm() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+
+  // Refs for textareas
+  const positiveTextareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
+  const negativeTextareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
+  const nextActionsRef = useRef<HTMLTextAreaElement | null>(null);
+  const commentsRef = useRef<HTMLTextAreaElement | null>(null);
 
   // Auto-save functionality
   const autoSave = useCallback(async () => {
@@ -207,6 +213,9 @@ export default function FrontlineForm() {
               </div>
               <div className="flex gap-2">
                 <textarea
+                  ref={(el) => {
+                    positiveTextareaRefs.current[index] = el;
+                  }}
                   name={`top_positive${index === 0 ? '' : '_' + (index + 1)}`}
                   placeholder="Describe what's working well..."
                   className="flex-1 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
@@ -214,7 +223,7 @@ export default function FrontlineForm() {
                 />
                 <VoiceInput 
                   onText={(text) => {
-                    const textarea = document.querySelector(`textarea[name="top_positive${index === 0 ? '' : '_' + (index + 1)}"]`) as HTMLTextAreaElement;
+                    const textarea = positiveTextareaRefs.current[index];
                     if (textarea) {
                       textarea.value = text;
                       textarea.dispatchEvent(new Event('input', { bubbles: true }));
@@ -267,6 +276,9 @@ export default function FrontlineForm() {
               </div>
               <div className="flex gap-2">
                 <textarea
+                  ref={(el) => {
+                    negativeTextareaRefs.current[index] = el;
+                  }}
                   name={`top_negative_${index + 1}`}
                   placeholder="Describe the issue..."
                   className="flex-1 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
@@ -274,7 +286,7 @@ export default function FrontlineForm() {
                 />
                 <VoiceInput 
                   onText={(text) => {
-                    const textarea = document.querySelector(`textarea[name="top_negative_${index + 1}"]`) as HTMLTextAreaElement;
+                    const textarea = negativeTextareaRefs.current[index];
                     if (textarea) {
                       textarea.value = text;
                       textarea.dispatchEvent(new Event('input', { bubbles: true }));
@@ -303,6 +315,7 @@ export default function FrontlineForm() {
               <label className="text-sm text-white/70">Next Actions</label>
               <div className="flex gap-2">
                 <textarea
+                  ref={nextActionsRef}
                   name="next_actions"
                   placeholder="What actions will you take next week?"
                   className="flex-1 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
@@ -310,10 +323,9 @@ export default function FrontlineForm() {
                 />
                 <VoiceInput 
                   onText={(text) => {
-                    const textarea = document.querySelector('textarea[name="next_actions"]') as HTMLTextAreaElement;
-                    if (textarea) {
-                      textarea.value = text;
-                      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                    if (nextActionsRef.current) {
+                      nextActionsRef.current.value = text;
+                      nextActionsRef.current.dispatchEvent(new Event('input', { bubbles: true }));
                     }
                   }}
                 />
@@ -323,6 +335,7 @@ export default function FrontlineForm() {
               <label className="text-sm text-white/70">Additional Comments</label>
               <div className="flex gap-2">
                 <textarea
+                  ref={commentsRef}
                   name="freeform_comments"
                   placeholder="Any other feedback or comments..."
                   className="flex-1 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
@@ -330,10 +343,9 @@ export default function FrontlineForm() {
                 />
                 <VoiceInput 
                   onText={(text) => {
-                    const textarea = document.querySelector('textarea[name="freeform_comments"]') as HTMLTextAreaElement;
-                    if (textarea) {
-                      textarea.value = text;
-                      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                    if (commentsRef.current) {
+                      commentsRef.current.value = text;
+                      commentsRef.current.dispatchEvent(new Event('input', { bubbles: true }));
                     }
                   }}
                 />
