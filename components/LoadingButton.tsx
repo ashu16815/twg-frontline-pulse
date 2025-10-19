@@ -5,12 +5,14 @@ export default function LoadingButton({
   onClick,
   className = '',
   children,
-  busyText = 'Working…'
+  busyText = 'Working…',
+  disabled = false
 }: {
   onClick: () => Promise<any> | any;
   className?: string;
   children: any;
   busyText?: string;
+  disabled?: boolean;
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -26,9 +28,9 @@ export default function LoadingButton({
 
   return (
     <button
-      disabled={loading}
+      disabled={loading || disabled}
       onClick={handle}
-      className={`btn btn-primary ${loading ? 'opacity-60 pointer-events-none' : ''} ${className}`}
+      className={`btn btn-primary ${loading || disabled ? 'opacity-60 pointer-events-none' : ''} ${className}`}
     >
       {loading ? busyText : children}
     </button>
