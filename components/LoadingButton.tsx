@@ -4,11 +4,13 @@ import { useState } from 'react';
 export default function LoadingButton({
   onClick,
   className = '',
-  children
+  children,
+  busyText = 'Working…'
 }: {
   onClick: () => Promise<any> | any;
   className?: string;
   children: any;
+  busyText?: string;
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -28,7 +30,7 @@ export default function LoadingButton({
       onClick={handle}
       className={`btn btn-primary ${loading ? 'opacity-60 pointer-events-none' : ''} ${className}`}
     >
-      {loading ? 'Working…' : children}
+      {loading ? busyText : children}
     </button>
   );
 }
