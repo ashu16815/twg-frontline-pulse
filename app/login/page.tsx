@@ -35,15 +35,11 @@ export default function LoginPage() {
       return;
     }
 
-    const responseData = await r.json();
-
-    // Show success message
+    // Show success message briefly
     setSuccess(true);
     
-    // Use window.location.href instead of window.location.replace for better compatibility
-    setTimeout(() => {
-      window.location.href = next;
-    }, 1000);
+    // Force a hard redirect immediately
+    window.location.href = next;
   }
 
   return (
