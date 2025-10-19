@@ -121,6 +121,14 @@ export async function transcribeAudioWebm(buf: Buffer, mime: string) {
   const dep = process.env.AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE?.trim() || process.env.AZURE_OPENAI_DEPLOYMENT_GPT5?.trim();
   const v = process.env.AZURE_OPENAI_API_VERSION?.trim() || '2025-03-01-preview';
   
+  console.log('Transcription request:', { 
+    endpoint: ep?.substring(0, 50) + '...', 
+    deployment: dep, 
+    version: v,
+    bufferSize: buf.length,
+    mimeType: mime
+  });
+  
   // Check if transcription is available
   if (!ep || !key || !dep) {
     throw new Error('Transcription not available - Azure OpenAI transcription deployment not configured: AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE or AZURE_OPENAI_DEPLOYMENT_GPT5 required');

@@ -18,13 +18,35 @@ export default function VoiceRecorder({ onText }: { onText: (t: string) => void 
 
   async function start() {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const mr = new MediaRecorder(stream);
+    
+    // Try to get a MediaRecorder with a supported format
+    let mr: MediaRecorder;
+    const supportedTypes = ['audio/webm', 'audio/mp4', 'audio/wav'];
+    
+    for (const type of supportedTypes) {
+      if (MediaRecorder.isTypeSupported(type)) {
+        mr = new MediaRecorder(stream, { mimeType: type });
+        break;
+      }
+    }
+    
+    if (!mr) {
+      mr = new MediaRecorder(stream); // Fallback to default
+    }
+    
+    const audioChunks: BlobPart[] = [];
     setChunks([]);
     setSec(0);
     
-    mr.ondataavailable = (e) => setChunks(c => [...c, e.data]);
+    mr.ondataavailable = (e) => {
+      audioChunks.push(e.data);
+      setChunks(c => [...c, e.data]);
+    };
+    
     mr.onstop = async () => {
-      const blob = new Blob(chunks, { type: mr.mimeType });
+      const blob = new Blob(audioChunks, { type: mr.mimeType });
+      console.log('Audio blob created:', { size: blob.size, type: mr.mimeType });
+      
       const fd = new FormData();
       fd.append('file', blob, 'audio.webm');
       fd.append('mime', mr.mimeType);
