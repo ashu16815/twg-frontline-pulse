@@ -38,8 +38,13 @@ export default function LoginPage() {
     // Show success message briefly
     setSuccess(true);
     
-    // Force a hard redirect immediately
-    window.location.href = next;
+    // Use multiple redirect methods to ensure it works
+    setTimeout(() => {
+      // Try multiple methods
+      window.location.replace(next);
+      window.location.href = next;
+      window.location.assign(next);
+    }, 100);
   }
 
   return (
