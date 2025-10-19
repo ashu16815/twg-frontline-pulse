@@ -195,8 +195,14 @@ export default function FrontlineForm() {
         <div className="card">
           <h2 className="text-xl font-semibold mb-4">Voice Recording</h2>
           <div className="flex gap-4">
-            <VoiceRecorder onText={handleText} />
             <WebSpeechRecorder onText={handleText} />
+            <VoiceRecorder onText={handleText} />
+          </div>
+          <div className='mt-2 p-2 bg-blue-500/10 border border-blue-500/20 rounded'>
+            <p className='text-sm text-blue-300'>
+              💡 <strong>Recommended:</strong> Use "Start recording (Browser)" for immediate results. 
+              The Azure transcription service is currently experiencing issues.
+            </p>
           </div>
         </div>
 
