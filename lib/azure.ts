@@ -143,7 +143,7 @@ export async function transcribeAudioWebm(buf: Buffer, mime: string) {
   const r = await fetch(url, {
     method: 'POST',
     headers: {
-      'api-key': key
+      'Authorization': `Bearer ${key}`
     },
     body: fd
   });
