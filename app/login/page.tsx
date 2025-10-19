@@ -17,17 +17,32 @@ export default function LoginPage() {
 
   // Simple mount effect to avoid hydration issues
   useEffect(() => {
+    const timestamp = new Date().toISOString();
+    console.log(`🔄 [${timestamp}] LOGIN PAGE MOUNT:`, { next });
     setMounted(true);
     
     // Check if user is already logged in and redirect immediately
     const checkAuth = async () => {
+      const checkTimestamp = new Date().toISOString();
+      console.log(`🔍 [${checkTimestamp}] LOGIN PAGE CHECK AUTH START`);
+      
       try {
         const response = await fetch('/api/auth/me');
+        console.log(`📡 [${checkTimestamp}] LOGIN PAGE AUTH CHECK RESPONSE:`, {
+          status: response.status,
+          ok: response.ok,
+          headers: Object.fromEntries(response.headers.entries())
+        });
+        
         if (response.ok) {
+          console.log(`✅ [${checkTimestamp}] LOGIN PAGE USER ALREADY AUTHENTICATED - REDIRECTING TO:`, next);
           // User is already authenticated, redirect to home
           window.location.href = next;
+        } else {
+          console.log(`❌ [${checkTimestamp}] LOGIN PAGE USER NOT AUTHENTICATED - STAYING ON LOGIN`);
         }
       } catch (error) {
+        console.log(`❌ [${checkTimestamp}] LOGIN PAGE AUTH CHECK ERROR:`, error);
         // Not authenticated, stay on login page
       }
     };
@@ -36,6 +51,8 @@ export default function LoginPage() {
   }, [next]);
 
   async function submit() {
+    const timestamp = new Date().toISOString();
+    console.log(`🔐 [${timestamp}] LOGIN PAGE SUBMIT START:`, { user_id, hasPassword: !!password, next });
     setError('');
 
     const r = await fetch('/api/auth/login', {
@@ -44,14 +61,28 @@ export default function LoginPage() {
       body: JSON.stringify({ user_id, password })
     });
 
+    const responseTimestamp = new Date().toISOString();
+    console.log(`📡 [${responseTimestamp}] LOGIN PAGE SUBMIT RESPONSE:`, {
+      status: r.status,
+      ok: r.ok,
+      headers: Object.fromEntries(r.headers.entries())
+    });
+
     if (!r.ok) {
       const j = await r.json().catch(() => ({}));
+      console.log(`❌ [${responseTimestamp}] LOGIN PAGE SUBMIT FAILED:`, j);
       setError(j.error || 'Login failed');
       return;
     }
 
+    const responseData = await r.json();
+    console.log(`✅ [${responseTimestamp}] LOGIN PAGE SUBMIT SUCCESS:`, responseData);
+
     // Show success message briefly
     setSuccess(true);
+    
+    const redirectTimestamp = new Date().toISOString();
+    console.log(`🚀 [${redirectTimestamp}] LOGIN PAGE REDIRECTING TO:`, next);
     
     // Immediate redirect - no delay
     window.location.href = next;

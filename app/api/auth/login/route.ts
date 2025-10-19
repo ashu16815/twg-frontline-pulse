@@ -5,15 +5,22 @@ import { createSessionToken, setSessionCookie } from '@/lib/auth';
 import sql from 'mssql';
 
 export async function POST(req: Request) {
+  const timestamp = new Date().toISOString();
+  
   try {
     const body = await req.json();
     const user_id = (body.user_id || '').trim();
     const password = (body.password || '').trim();
 
-    console.log('🔐 LOGIN ATTEMPT:', { user_id, hasPassword: !!password });
+    console.log(`🔐 [${timestamp}] LOGIN API START:`, { 
+      user_id, 
+      hasPassword: !!password,
+      userAgent: req.headers.get('user-agent')?.substring(0, 50) + '...',
+      referer: req.headers.get('referer')?.substring(0, 50) + '...'
+    });
 
     if (!user_id || !password) {
-      console.log('❌ MISSING CREDENTIALS');
+      console.log(`❌ [${timestamp}] LOGIN API MISSING CREDENTIALS`);
       return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
     }
 
@@ -25,17 +32,21 @@ export async function POST(req: Request) {
 
     const u = r.recordset[0];
     if (!u) {
-      console.log('❌ LOGIN FAILED: User not found -', user_id);
+      console.log(`❌ [${timestamp}] LOGIN API USER NOT FOUND:`, user_id);
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
     const ok = await bcrypt.compare(password, u.password_hash);
     if (!ok) {
-      console.log('❌ LOGIN FAILED: Invalid password for user -', user_id);
+      console.log(`❌ [${timestamp}] LOGIN API INVALID PASSWORD:`, user_id);
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    console.log('✅ LOGIN SUCCESSFUL:', user_id, '-', u.full_name);
+    console.log(`✅ [${timestamp}] LOGIN API SUCCESS:`, { 
+      user_id: u.user_id, 
+      name: u.full_name,
+      role: u.role 
+    });
 
     // Update last login
     await pool
@@ -51,7 +62,7 @@ export async function POST(req: Request) {
       role: u.role || undefined
     });
 
-    console.log('🔑 CREATED TOKEN:', {
+    console.log(`🔑 [${timestamp}] LOGIN API TOKEN CREATED:`, {
       user_id: u.user_id,
       tokenLength: token.length,
       tokenPreview: token.substring(0, 50) + '...'
@@ -76,15 +87,16 @@ export async function POST(req: Request) {
     
     response.headers.set('Set-Cookie', cookieValue);
 
-    console.log('🍪 SET COOKIE:', {
+    console.log(`🍪 [${timestamp}] LOGIN API COOKIE SET:`, {
       cookieName: COOKIE,
       cookieValue: cookieValue.substring(0, 100) + '...',
-      maxAge: MAX_AGE
+      maxAge: MAX_AGE,
+      responseHeaders: Object.fromEntries(response.headers.entries())
     });
     
     return response;
   } catch (e: any) {
-    console.error('💥 LOGIN ERROR:', e);
+    console.error(`💥 [${timestamp}] LOGIN API ERROR:`, e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

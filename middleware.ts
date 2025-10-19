@@ -5,7 +5,19 @@ const COOKIE = process.env.SESSION_COOKIE_NAME || 'wis_session';
 const SECRET = process.env.AUTH_JWT_SECRET || 'dev_secret_change_me';
 
 export async function middleware(req: NextRequest) {
+  const timestamp = new Date().toISOString();
   const { pathname } = req.nextUrl;
+  const method = req.method;
+  const userAgent = req.headers.get('user-agent') || 'unknown';
+  const referer = req.headers.get('referer') || 'direct';
+
+  console.log(`🔍 [${timestamp}] MIDDLEWARE START:`, {
+    pathname,
+    method,
+    userAgent: userAgent.substring(0, 50) + '...',
+    referer: referer.substring(0, 50) + '...',
+    cookies: Object.fromEntries(req.cookies.getAll().map(c => [c.name, c.value?.substring(0, 20) + '...']))
+  });
 
   // Allow specific API routes and static assets to pass without auth checks
   if (
@@ -16,6 +28,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/favicon.ico') ||     // Favicon
     pathname.startsWith('/brand/')             // Brand assets
   ) {
+    console.log(`⏭️ [${timestamp}] MIDDLEWARE SKIP:`, pathname);
     return NextResponse.next();
   }
 
@@ -23,22 +36,44 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get(COOKIE)?.value;
   let isAuthenticated = false;
 
+  console.log(`🍪 [${timestamp}] MIDDLEWARE COOKIE CHECK:`, {
+    cookieName: COOKIE,
+    hasToken: !!token,
+    tokenLength: token?.length || 0,
+    tokenPreview: token?.substring(0, 30) + '...' || 'none'
+  });
+
   if (token) {
     try {
       const secret = new TextEncoder().encode(SECRET);
-      await jwtVerify(token, secret);
+      const { payload } = await jwtVerify(token, secret);
       isAuthenticated = true;
+      console.log(`✅ [${timestamp}] MIDDLEWARE TOKEN VALID:`, {
+        user_id: (payload as any)?.user_id,
+        name: (payload as any)?.name,
+        role: (payload as any)?.role,
+        exp: (payload as any)?.exp,
+        iat: (payload as any)?.iat
+      });
     } catch (e) {
       // Token is invalid or expired. Clear the cookie and treat as unauthenticated.
       isAuthenticated = false;
+      console.log(`❌ [${timestamp}] MIDDLEWARE TOKEN INVALID:`, {
+        error: (e as Error).message,
+        pathname
+      });
       const response = NextResponse.redirect(new URL('/login', req.url));
       response.cookies.set(COOKIE, '', { maxAge: 0, path: '/' }); // Clear invalid cookie
+      console.log(`🔄 [${timestamp}] MIDDLEWARE REDIRECT TO LOGIN (invalid token):`, '/login');
       return response;
     }
+  } else {
+    console.log(`❌ [${timestamp}] MIDDLEWARE NO TOKEN:`, pathname);
   }
 
   // If on the login page and already authenticated, redirect to home
   if (pathname === '/login' && isAuthenticated) {
+    console.log(`🔄 [${timestamp}] MIDDLEWARE REDIRECT FROM LOGIN TO HOME:`, '/');
     return NextResponse.redirect(new URL('/', req.url));
   }
 
@@ -46,10 +81,19 @@ export async function middleware(req: NextRequest) {
   if (!isAuthenticated && pathname !== '/login') {
     const url = new URL('/login', req.url);
     url.searchParams.set('next', pathname); // Preserve the intended destination
+    console.log(`🔄 [${timestamp}] MIDDLEWARE REDIRECT TO LOGIN (no auth):`, {
+      from: pathname,
+      to: url.toString()
+    });
     return NextResponse.redirect(url);
   }
 
   // For all other cases (authenticated on a protected route, or unauthenticated on login page), proceed
+  console.log(`✅ [${timestamp}] MIDDLEWARE PROCEED:`, {
+    pathname,
+    isAuthenticated,
+    reason: pathname === '/login' ? 'login page' : 'authenticated user'
+  });
   return NextResponse.next();
 }
 
