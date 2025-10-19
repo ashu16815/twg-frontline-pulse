@@ -4,28 +4,14 @@ import { jwtVerify } from 'jose';
 const COOKIE = process.env.SESSION_COOKIE_NAME || 'wis_session';
 const SECRET = process.env.AUTH_JWT_SECRET || 'dev_secret_change_me';
 
-// Public routes that don't require authentication
-const PUBLIC_ROUTES = [
-  '/login',
-  '/api/auth/login',
-  '/api/auth/me',
-  '/api/auth/verify-token',
-  '/api/health',
-  '/api/sys/maintenance'
-];
-
-// Routes that should redirect authenticated users away
-const AUTH_REDIRECT_ROUTES = ['/login'];
-
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   
-  // Skip middleware for API routes, static files, and public routes
+  // Skip middleware for API routes, static files, and favicon
   if (
     pathname.startsWith('/api/') ||
     pathname.startsWith('/_next/') ||
-    pathname.startsWith('/favicon') ||
-    PUBLIC_ROUTES.includes(pathname)
+    pathname.startsWith('/favicon')
   ) {
     return NextResponse.next();
   }
@@ -47,7 +33,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Handle login page - redirect authenticated users away
-  if (AUTH_REDIRECT_ROUTES.includes(pathname)) {
+  if (pathname === '/login') {
     if (isAuthenticated) {
       const nextUrl = req.nextUrl.searchParams.get('next') || '/';
       return NextResponse.redirect(new URL(nextUrl, req.url));

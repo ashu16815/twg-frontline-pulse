@@ -44,9 +44,9 @@ export default function LoginPage() {
 
       setSuccess(true);
       
-      // Redirect after successful login
+      // Let the middleware handle the redirect - just reload the page
       setTimeout(() => {
-        window.location.href = next;
+        window.location.reload();
       }, 1000);
     } catch (err: any) {
       setError(err.message || 'Login failed');
@@ -106,7 +106,7 @@ export default function LoginPage() {
           {success ? (
             <button 
               className='btn-liquid w-full py-3' 
-              onClick={() => window.location.href = next}
+              onClick={() => window.location.reload()}
             >
               Go to Home Page →
             </button>
