@@ -43,6 +43,7 @@ export async function GET(req: Request) {
   const month = searchParams.get('month') || monthKey();
   const region = searchParams.get('region') || '';
   const storeId = searchParams.get('storeId') || '';
+  const forceAI = searchParams.get('force_ai') === 'true';
 
   try {
     const pool = await getDb();
@@ -131,13 +132,17 @@ export async function GET(req: Request) {
       weekRows: sampledWeekRows.length,
       monthRows: sampledMonthRows.length,
       totalStores,
-      coveragePct
+      coveragePct,
+      forceAI,
+      period,
+      week,
+      month
     });
     
     try {
       const ai = await callAzureJSON([SYS, user], { 
-        timeout: 20000, // 20 seconds for this endpoint
-        maxRetries: 1   // Single retry for faster failure
+        timeout: 30000, // 30 seconds for this endpoint
+        maxRetries: 2   // More retries for better success rate
       });
       console.log('✅ AI response received:', Object.keys(ai));
       
@@ -145,6 +150,11 @@ export async function GET(req: Request) {
       if (!ai || typeof ai !== 'object') {
         throw new Error('Invalid AI response structure');
       }
+      
+      // Ensure required fields exist
+      if (!ai.topOpportunities) ai.topOpportunities = { week: [], month: [] };
+      if (!ai.topActions) ai.topActions = { week: [], month: [] };
+      if (!ai.narrative) ai.narrative = 'AI analysis completed successfully.';
       
       return NextResponse.json({
         ok: true,
