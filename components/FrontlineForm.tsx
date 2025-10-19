@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import VoiceRecorder from '@/components/VoiceRecorder';
-import WebSpeechRecorder from '@/components/WebSpeechRecorder';
 import StoreTypeahead from '@/components/StoreTypeahead';
 import LoadingButton from '@/components/LoadingButton';
+import VoiceInput from '@/components/VoiceInput';
 
 export default function FrontlineForm() {
   const [positiveItems, setPositiveItems] = useState([{ id: 1 }]);
@@ -75,21 +74,6 @@ export default function FrontlineForm() {
     const timeoutId = setTimeout(autoSave, 2000); // 2 second delay
     return () => clearTimeout(timeoutId);
   }, [positiveItems, negativeItems, selectedStore, autoSave]);
-
-  const handleText = (text: string) => {
-    const parts = (text || '').split(/;|\.|\n/).filter(Boolean);
-    const set = (n: string, v: string) => {
-      const el = document.querySelector(`[name="${n}"]`) as HTMLInputElement;
-      if (el) el.value = v;
-    };
-    
-    // Auto-populate feedback items
-    parts.forEach((part, index) => {
-      if (index < positiveItems.length) {
-        set(`top_positive${index === 0 ? '' : '_' + (index + 1)}`, part.trim());
-      }
-    });
-  };
 
   const addPositiveItem = () => {
     if (positiveItems.length < 3) {
@@ -191,48 +175,6 @@ export default function FrontlineForm() {
           )}
         </div>
 
-        {/* Voice Recording */}
-        <div className="card">
-          <h2 className="text-xl font-semibold mb-4">Voice Recording</h2>
-          
-          {/* Primary Option - Browser Speech Recognition */}
-          <div className="mb-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-green-400 text-lg">✅</span>
-              <h3 className="text-lg font-semibold text-green-300">Recommended: Browser Speech Recognition</h3>
-            </div>
-            <WebSpeechRecorder onText={handleText} />
-            <p className='text-sm text-green-300 mt-2'>
-              💡 <strong>Fast & Reliable:</strong> Uses your browser's built-in speech recognition. 
-              No server dependencies, works offline, immediate results!
-            </p>
-          </div>
-
-          {/* Secondary Option - Azure Transcription (Disabled) */}
-          <div className="p-4 bg-gray-500/10 border border-gray-500/30 rounded-lg opacity-60">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-gray-400 text-lg">⚠️</span>
-              <h3 className="text-lg font-semibold text-gray-400">Azure Transcription (Temporarily Disabled)</h3>
-            </div>
-            <div className="p-3 bg-gray-700/50 border border-gray-600/50 rounded">
-              <p className="text-gray-400 text-sm mb-2">
-                Azure transcription service is currently experiencing server errors. 
-                This option will be re-enabled once Azure resolves the issues.
-              </p>
-              <button 
-                disabled 
-                className="btn btn-secondary opacity-50 cursor-not-allowed"
-              >
-                🎙️ Start recording (Azure) - Temporarily Unavailable
-              </button>
-            </div>
-            <p className='text-sm text-gray-400 mt-2'>
-              <strong>Status:</strong> Server errors detected. Request IDs: be907692-c5f1-4034-8aa5-b19e26739ca9, 
-              cabe3aaf-aa27-4525-988d-4da633c613f2
-            </p>
-          </div>
-        </div>
-
         {/* Positive Feedback */}
         <div className="card">
           <div className="flex items-center justify-between mb-4">
@@ -263,12 +205,23 @@ export default function FrontlineForm() {
                   </button>
                 )}
               </div>
-              <textarea
-                name={`top_positive${index === 0 ? '' : '_' + (index + 1)}`}
-                placeholder="Describe what's working well..."
-                className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
-                rows={3}
-              />
+              <div className="flex gap-2">
+                <textarea
+                  name={`top_positive${index === 0 ? '' : '_' + (index + 1)}`}
+                  placeholder="Describe what's working well..."
+                  className="flex-1 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
+                  rows={3}
+                />
+                <VoiceInput 
+                  onText={(text) => {
+                    const textarea = document.querySelector(`textarea[name="top_positive${index === 0 ? '' : '_' + (index + 1)}"]`) as HTMLTextAreaElement;
+                    if (textarea) {
+                      textarea.value = text;
+                      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                  }}
+                />
+              </div>
               <div className="mt-2">
                 <label className="text-sm text-white/70">Estimated Impact ($)</label>
                 <input
@@ -312,12 +265,23 @@ export default function FrontlineForm() {
                   </button>
                 )}
               </div>
-              <textarea
-                name={`top_negative_${index + 1}`}
-                placeholder="Describe the issue..."
-                className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
-                rows={3}
-              />
+              <div className="flex gap-2">
+                <textarea
+                  name={`top_negative_${index + 1}`}
+                  placeholder="Describe the issue..."
+                  className="flex-1 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
+                  rows={3}
+                />
+                <VoiceInput 
+                  onText={(text) => {
+                    const textarea = document.querySelector(`textarea[name="top_negative_${index + 1}"]`) as HTMLTextAreaElement;
+                    if (textarea) {
+                      textarea.value = text;
+                      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                  }}
+                />
+              </div>
               <div className="mt-2">
                 <label className="text-sm text-white/70">Estimated Impact ($)</label>
                 <input
@@ -337,21 +301,43 @@ export default function FrontlineForm() {
           <div className="space-y-4">
             <div>
               <label className="text-sm text-white/70">Next Actions</label>
-              <textarea
-                name="next_actions"
-                placeholder="What actions will you take next week?"
-                className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
-                rows={3}
-              />
+              <div className="flex gap-2">
+                <textarea
+                  name="next_actions"
+                  placeholder="What actions will you take next week?"
+                  className="flex-1 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
+                  rows={3}
+                />
+                <VoiceInput 
+                  onText={(text) => {
+                    const textarea = document.querySelector('textarea[name="next_actions"]') as HTMLTextAreaElement;
+                    if (textarea) {
+                      textarea.value = text;
+                      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                  }}
+                />
+              </div>
             </div>
             <div>
               <label className="text-sm text-white/70">Additional Comments</label>
-              <textarea
-                name="freeform_comments"
-                placeholder="Any other feedback or comments..."
-                className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
-                rows={4}
-              />
+              <div className="flex gap-2">
+                <textarea
+                  name="freeform_comments"
+                  placeholder="Any other feedback or comments..."
+                  className="flex-1 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
+                  rows={4}
+                />
+                <VoiceInput 
+                  onText={(text) => {
+                    const textarea = document.querySelector('textarea[name="freeform_comments"]') as HTMLTextAreaElement;
+                    if (textarea) {
+                      textarea.value = text;
+                      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                  }}
+                />
+              </div>
             </div>
             <div>
               <label className="text-sm text-white/70">Total Estimated Dollar Impact</label>
