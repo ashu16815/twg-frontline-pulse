@@ -9,7 +9,18 @@ export default function MaintenanceBanner() {
   useEffect(() => {
     const checkMaintenanceStatus = async () => {
       try {
-        const response = await fetch('/api/sys/maintenance');
+        const response = await fetch('/api/sys/maintenance', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
         const data = await response.json();
         setIsMaintenanceActive(data.active || false);
       } catch (error) {
@@ -23,8 +34,8 @@ export default function MaintenanceBanner() {
     // Check immediately
     checkMaintenanceStatus();
 
-    // Check every 5 seconds
-    const interval = setInterval(checkMaintenanceStatus, 5000);
+    // Check every 30 seconds (less frequent to reduce load)
+    const interval = setInterval(checkMaintenanceStatus, 30000);
 
     return () => clearInterval(interval);
   }, []);
