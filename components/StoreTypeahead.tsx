@@ -12,7 +12,7 @@ interface Store {
   manager_email?: string;
 }
 
-export default function StoreTypeahead() {
+export default function StoreTypeahead({ onSelect }: { onSelect?: (store: Store) => void }) {
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<Store[]>([]);
@@ -72,6 +72,11 @@ export default function StoreTypeahead() {
     // Close dropdown immediately and clear items to prevent re-search
     setOpen(false);
     setItems([]);
+    
+    // Call the onSelect callback if provided
+    if (onSelect) {
+      onSelect(store);
+    }
     
     // Autofill hidden/other inputs
     const setField = (name: string, val: any) => {
