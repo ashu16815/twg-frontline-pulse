@@ -1,17 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function TestSpeechPage() {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [isSupported, setIsSupported] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  useState(() => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  useEffect(() => {
+    setMounted(true);
+    if (typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
       setIsSupported(true);
     }
-  });
+  }, []);
 
   const startListening = () => {
     if (!isSupported) {
@@ -76,6 +78,15 @@ export default function TestSpeechPage() {
       setIsListening(false);
     }
   };
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white p-8">
+        <h1 className="text-2xl font-bold mb-4">Speech Recognition Test</h1>
+        <p className="text-white/60">Loading...</p>
+      </div>
+    );
+  }
 
   if (!isSupported) {
     return (

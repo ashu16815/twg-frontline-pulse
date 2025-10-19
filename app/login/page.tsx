@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import LoadingButton from '@/components/LoadingButton';
+import { useAuth } from '@/lib/auth-client';
 
 export default function LoginPage() {
   const [user_id, setUid] = useState('');
@@ -10,6 +11,8 @@ export default function LoginPage() {
   const [mounted, setMounted] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  const { user, loading, login } = useAuth();
+
   const next =
     typeof window !== 'undefined'
       ? new URLSearchParams(window.location.search).get('next') || '/'
@@ -17,91 +20,32 @@ export default function LoginPage() {
 
   // Simple mount effect to avoid hydration issues
   useEffect(() => {
-    const timestamp = new Date().toISOString();
-    console.log(`🔄 [${timestamp}] LOGIN PAGE MOUNT:`, { next });
     setMounted(true);
-    
-    // Check if user is already logged in and redirect immediately
-    const checkAuth = async () => {
-      const checkTimestamp = new Date().toISOString();
-      console.log(`🔍 [${checkTimestamp}] LOGIN PAGE CHECK AUTH START`);
-      
-      try {
-        const response = await fetch('/api/auth/me');
-        console.log(`📡 [${checkTimestamp}] LOGIN PAGE AUTH CHECK RESPONSE:`, {
-          status: response.status,
-          ok: response.ok,
-          headers: Object.fromEntries(response.headers.entries())
-        });
-        
-        if (response.ok) {
-          console.log(`✅ [${checkTimestamp}] LOGIN PAGE USER ALREADY AUTHENTICATED - REDIRECTING TO:`, next);
-          // User is already authenticated, redirect to home
-          window.location.href = next;
-        } else {
-          // Check localStorage as fallback
-          const localToken = localStorage.getItem('wis_session');
-          if (localToken && localToken !== 'temp_token') {
-            console.log(`💾 [${checkTimestamp}] FOUND TOKEN IN LOCALSTORAGE - REDIRECTING TO:`, next);
-            window.location.href = next;
-          } else {
-            console.log(`❌ [${checkTimestamp}] LOGIN PAGE USER NOT AUTHENTICATED - STAYING ON LOGIN`);
-          }
-        }
-      } catch (error) {
-        console.log(`❌ [${checkTimestamp}] LOGIN PAGE AUTH CHECK ERROR:`, error);
-        // Check localStorage as fallback
-        const localToken = localStorage.getItem('wis_session');
-        if (localToken && localToken !== 'temp_token') {
-          console.log(`💾 [${checkTimestamp}] FOUND TOKEN IN LOCALSTORAGE (after error) - REDIRECTING TO:`, next);
-          window.location.href = next;
-        }
-      }
-    };
-    
-    checkAuth();
-  }, [next]);
+  }, []);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!loading && user) {
+      console.log(`✅ User already authenticated, redirecting to:`, next);
+      window.location.href = next;
+    }
+  }, [user, loading, next]);
 
   async function submit() {
-    const timestamp = new Date().toISOString();
-    console.log(`🔐 [${timestamp}] LOGIN PAGE SUBMIT START:`, { user_id, hasPassword: !!password, next });
     setError('');
+    setSuccess(false);
 
-    const r = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id, password })
-    });
-
-    const responseTimestamp = new Date().toISOString();
-    console.log(`📡 [${responseTimestamp}] LOGIN PAGE SUBMIT RESPONSE:`, {
-      status: r.status,
-      ok: r.ok,
-      headers: Object.fromEntries(r.headers.entries())
-    });
-
-    if (!r.ok) {
-      const j = await r.json().catch(() => ({}));
-      console.log(`❌ [${responseTimestamp}] LOGIN PAGE SUBMIT FAILED:`, j);
-      setError(j.error || 'Login failed');
-      return;
+    try {
+      await login(user_id, password);
+      setSuccess(true);
+      
+      // Redirect after successful login
+      setTimeout(() => {
+        window.location.href = next;
+      }, 1000);
+    } catch (err: any) {
+      setError(err.message || 'Login failed');
     }
-
-    const responseData = await r.json();
-    console.log(`✅ [${responseTimestamp}] LOGIN PAGE SUBMIT SUCCESS:`, responseData);
-
-    // Show success message briefly
-    setSuccess(true);
-    
-    const redirectTimestamp = new Date().toISOString();
-    console.log(`🚀 [${redirectTimestamp}] LOGIN PAGE REDIRECTING TO:`, next);
-    
-    // Store token in localStorage as backup and redirect
-    localStorage.setItem('wis_session', responseData.token || 'temp_token');
-    console.log(`💾 [${redirectTimestamp}] STORED TOKEN IN LOCALSTORAGE`);
-    
-    // Immediate redirect - no delay
-    window.location.href = next;
   }
 
   return (

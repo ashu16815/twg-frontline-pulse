@@ -1,10 +1,12 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
-import { getSession } from '@/lib/auth';
+import { useAuth } from '@/lib/auth-client';
 import LogoutButton from './LogoutButton';
 
-export default async function Header() {
-  const session = await getSession();
+export default function Header() {
+  const { user, loading } = useAuth();
 
   return (
     <header className='border-b border-white/10 bg-black/40 backdrop-blur'>
@@ -32,7 +34,7 @@ export default async function Header() {
           <Link href='/ceo' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
             Ask Questions
           </Link>
-          {session?.role?.toLowerCase() === 'admin' && (
+                  {user?.role?.toLowerCase() === 'admin' && (
             <>
               <Link href='/admin/users' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
                 Users
@@ -45,15 +47,17 @@ export default async function Header() {
         </nav>
         
         <div className='ml-auto flex items-center gap-3'>
-          {session ? (
+          {loading ? (
+            <div className='text-xs text-white/40'>Loading...</div>
+          ) : user ? (
             <>
               <div className='text-xs text-white/60'>
-                {session.name} ({session.role || 'User'})
+                {user.name} ({user.role || 'User'})
               </div>
               <LogoutButton />
             </>
           ) : (
-            <div className='text-xs text-white/60'>Frontline → Bottom line</div>
+            <Link href='/login' className='btn text-xs px-3 py-1.5'>Sign In</Link>
           )}
         </div>
       </div>

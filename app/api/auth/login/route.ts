@@ -79,31 +79,22 @@ export async function POST(req: Request) {
       token: token // Include token in response for localStorage backup
     });
 
-    // Set cookie using Set-Cookie header directly
+    // Set cookie with Vercel-compatible settings
     const COOKIE = process.env.SESSION_COOKIE_NAME || 'wis_session';
     const MAX_AGE = 14 * 24 * 60 * 60; // 14 days in seconds
     
-    // Build cookie string manually to ensure it works in Vercel
-    const isProduction = process.env.NODE_ENV === 'production';
-    
-    // Try a simpler cookie approach for Vercel
-    const cookieValue = `${COOKIE}=${token}; Path=/; Max-Age=${MAX_AGE}; SameSite=Lax`;
-    
-    // Set cookie via headers (most reliable method)
-    response.headers.set('Set-Cookie', cookieValue);
-    
-    // Also try setting it via the NextResponse cookies method
+    // Use NextResponse cookies method with Vercel-optimized settings
     response.cookies.set(COOKIE, token, {
-      httpOnly: false, // Temporarily disable HttpOnly to test
-      secure: false,   // Temporarily disable Secure to test
-      sameSite: 'lax',
-      path: '/',
-      maxAge: MAX_AGE
+      httpOnly: false,  // Allow client-side access for localStorage backup
+      secure: false,    // Disable Secure for Vercel compatibility
+      sameSite: 'lax', // Lax SameSite for cross-site compatibility
+      path: '/',        // Available site-wide
+      maxAge: MAX_AGE   // 14 days
     });
 
     console.log(`🍪 [${timestamp}] LOGIN API COOKIE SET:`, {
       cookieName: COOKIE,
-      cookieValue: cookieValue.substring(0, 100) + '...',
+      tokenLength: token.length,
       maxAge: MAX_AGE,
       responseHeaders: Object.fromEntries(response.headers.entries())
     });
