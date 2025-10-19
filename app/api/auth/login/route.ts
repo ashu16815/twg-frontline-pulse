@@ -82,10 +82,20 @@ export async function POST(req: Request) {
     const COOKIE = process.env.SESSION_COOKIE_NAME || 'wis_session';
     const MAX_AGE = 14 * 24 * 60 * 60; // 14 days in seconds
     
-    // Build cookie string manually to ensure it works
-    const cookieValue = `${COOKIE}=${token}; Path=/; Max-Age=${MAX_AGE}; HttpOnly; SameSite=Lax`;
+    // Build cookie string manually to ensure it works in Vercel
+    const isProduction = process.env.NODE_ENV === 'production';
+    const cookieValue = `${COOKIE}=${token}; Path=/; Max-Age=${MAX_AGE}; HttpOnly; SameSite=Lax${isProduction ? '; Secure' : ''}`;
     
     response.headers.set('Set-Cookie', cookieValue);
+    
+    // Also try setting it via the NextResponse cookies method as backup
+    response.cookies.set(COOKIE, token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: MAX_AGE
+    });
 
     console.log(`🍪 [${timestamp}] LOGIN API COOKIE SET:`, {
       cookieName: COOKIE,

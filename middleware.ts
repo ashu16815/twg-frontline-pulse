@@ -16,7 +16,9 @@ export async function middleware(req: NextRequest) {
     method,
     userAgent: userAgent.substring(0, 50) + '...',
     referer: referer.substring(0, 50) + '...',
-    cookies: Object.fromEntries(req.cookies.getAll().map(c => [c.name, c.value?.substring(0, 20) + '...']))
+    cookies: Object.fromEntries(req.cookies.getAll().map(c => [c.name, c.value?.substring(0, 20) + '...'])),
+    allCookieNames: req.cookies.getAll().map(c => c.name),
+    environment: process.env.NODE_ENV
   });
 
   // Allow specific API routes and static assets to pass without auth checks
