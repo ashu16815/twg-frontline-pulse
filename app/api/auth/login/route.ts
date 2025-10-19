@@ -10,7 +10,10 @@ export async function POST(req: Request) {
     const user_id = (body.user_id || '').trim();
     const password = (body.password || '').trim();
 
+    console.log('🔐 LOGIN ATTEMPT:', { user_id, hasPassword: !!password });
+
     if (!user_id || !password) {
+      console.log('❌ MISSING CREDENTIALS');
       return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
     }
 
@@ -22,17 +25,17 @@ export async function POST(req: Request) {
 
     const u = r.recordset[0];
     if (!u) {
-      console.log('❌ Login failed: User not found -', user_id);
+      console.log('❌ LOGIN FAILED: User not found -', user_id);
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
     const ok = await bcrypt.compare(password, u.password_hash);
     if (!ok) {
-      console.log('❌ Login failed: Invalid password for user -', user_id);
+      console.log('❌ LOGIN FAILED: Invalid password for user -', user_id);
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    console.log('✅ Login successful:', user_id, '-', u.full_name);
+    console.log('✅ LOGIN SUCCESSFUL:', user_id, '-', u.full_name);
 
     // Update last login
     await pool
@@ -48,7 +51,11 @@ export async function POST(req: Request) {
       role: u.role || undefined
     });
 
-    console.log('🔑 Setting session cookie for:', user_id);
+    console.log('🔑 CREATED TOKEN:', {
+      user_id: u.user_id,
+      tokenLength: token.length,
+      tokenPreview: token.substring(0, 50) + '...'
+    });
     
     // Create response
     const response = NextResponse.json({
@@ -69,10 +76,15 @@ export async function POST(req: Request) {
     
     response.headers.set('Set-Cookie', cookieValue);
 
-    console.log('✅ Session cookie set:', cookieValue);
+    console.log('🍪 SET COOKIE:', {
+      cookieName: COOKIE,
+      cookieValue: cookieValue.substring(0, 100) + '...',
+      maxAge: MAX_AGE
+    });
+    
     return response;
   } catch (e: any) {
-    console.error('Login error:', e);
+    console.error('💥 LOGIN ERROR:', e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

@@ -22,6 +22,7 @@ export default function LoginPage() {
 
   async function submit() {
     setError('');
+    console.log('🔐 CLIENT LOGIN ATTEMPT:', { user_id, hasPassword: !!password });
 
     const r = await fetch('/api/auth/login', {
       method: 'POST',
@@ -29,17 +30,30 @@ export default function LoginPage() {
       body: JSON.stringify({ user_id, password })
     });
 
+    console.log('📡 LOGIN RESPONSE:', {
+      status: r.status,
+      ok: r.ok,
+      headers: Object.fromEntries(r.headers.entries())
+    });
+
     if (!r.ok) {
       const j = await r.json().catch(() => ({}));
+      console.log('❌ LOGIN FAILED:', j);
       setError(j.error || 'Login failed');
       return;
     }
 
+    const responseData = await r.json();
+    console.log('✅ LOGIN SUCCESS:', responseData);
+
     // Show success message with button
     setSuccess(true);
     
+    console.log('🔄 REDIRECTING TO:', next);
+    
     // Force a full page reload to ensure cookies are loaded
     setTimeout(() => {
+      console.log('🚀 PERFORMING REDIRECT TO:', next);
       window.location.replace(next);
     }, 500);
   }

@@ -14,20 +14,37 @@ export type Session = {
 };
 
 export async function createSessionToken(s: Session) {
+  console.log('🔑 CREATING SESSION TOKEN:', s);
   const secret = new TextEncoder().encode(SECRET);
-  return await new SignJWT(s)
+  const token = await new SignJWT(s)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime(`${MAX_DAYS}d`)
     .sign(secret);
+  
+  console.log('✅ TOKEN CREATED:', {
+    tokenLength: token.length,
+    tokenPreview: token.substring(0, 50) + '...',
+    secretLength: secret.length
+  });
+  
+  return token;
 }
 
 export async function verifySessionToken(t: string): Promise<Session | null> {
   try {
+    console.log('🔍 VERIFYING TOKEN:', {
+      tokenLength: t.length,
+      tokenPreview: t.substring(0, 50) + '...'
+    });
+    
     const secret = new TextEncoder().encode(SECRET);
     const { payload } = await jwtVerify(t, secret);
+    
+    console.log('✅ TOKEN VERIFIED:', payload);
     return payload as Session;
-  } catch {
+  } catch (e) {
+    console.log('❌ TOKEN VERIFICATION FAILED:', e);
     return null;
   }
 }
