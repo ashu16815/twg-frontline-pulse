@@ -3,6 +3,9 @@ import { getDb } from '@/lib/db';
 import { callAzureJSON } from '@/lib/azure-simple';
 import { weekKey } from '@/lib/db';
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 const SYS = {
   role: 'system',
   content: `You are a Big-4 style analyst. Given rows of store feedback, produce JSON only:
