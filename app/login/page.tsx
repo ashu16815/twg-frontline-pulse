@@ -46,16 +46,16 @@ export default function LoginPage() {
     const responseData = await r.json();
     console.log('✅ LOGIN SUCCESS:', responseData);
 
-    // Show success message with button
+    // Show success message
     setSuccess(true);
     
     console.log('🔄 REDIRECTING TO:', next);
     
-    // Force a full page reload to ensure cookies are loaded
+    // Use window.location.href instead of window.location.replace for better compatibility
     setTimeout(() => {
       console.log('🚀 PERFORMING REDIRECT TO:', next);
-      window.location.replace(next);
-    }, 500);
+      window.location.href = next;
+    }, 1000);
   }
 
   return (
