@@ -1,51 +1,11 @@
 'use client';
-
 import { useState } from 'react';
-import Spinner from './Spinner';
-
-export default function LoadingButton({
-  children,
-  className = '',
-  onClick,
-  type = 'button',
-  busyText = 'Working...',
-  disabled = false
-}: {
-  children: any;
-  className?: string;
-  onClick?: (e: any) => Promise<any> | any;
-  type?: 'button' | 'submit';
-  busyText?: string;
-  disabled?: boolean;
-}) {
-  const [busy, setBusy] = useState(false);
-
-  async function handle(e: any) {
-    if (busy || disabled) return;
-    const ret = onClick?.(e);
-    if (ret && typeof ret.then === 'function') {
-      try {
-        setBusy(true);
-        await ret;
-      } finally {
-        setBusy(false);
-      }
-    }
-  }
-
-  const cls = `btn ${className}`;
-
+export default function LoadingButton({onClick, children, className}:{onClick:()=>Promise<any>|any, children:any, className?:string}){
+  const [loading,setLoading]=useState(false);
+  async function handle(){ if(loading) return; setLoading(true); try{ await onClick(); } finally{ setLoading(false); } }
   return (
-    <button type={type} className={cls} aria-busy={busy} disabled={busy || disabled} onClick={handle}>
-      {busy ? (
-        <span className='inline-flex items-center gap-2'>
-          <Spinner />
-          <span>{busyText}</span>
-        </span>
-      ) : (
-        children
-      )}
+    <button disabled={loading} onClick={handle} className={`btn ${className||''} ${loading?'opacity-60 pointer-events-none':''}`}>
+      {loading? 'Working…' : children}
     </button>
   );
 }
-
