@@ -67,12 +67,16 @@ export async function GET(req: Request) {
       }
     }
 
-    // 2) fetch data rows
+    // 2) fetch data rows with optimized query and LIMIT
     const where = [scope === 'week' ? 'iso_week = @wk' : 'month_key = @mk'];
     if (region) where.push('region_code=@rg');
     if (storeId) where.push('store_id=@st');
     
-    const q = `select region_code, store_id, top_positive, miss1, miss1_dollars, miss2, miss2_dollars, miss3, miss3_dollars, overall_mood, freeform_comments from dbo.store_feedback where ${where.join(' and ')}`;
+    // Optimized query with TOP clause and only necessary columns
+    const q = `SELECT TOP 50 region_code, store_id, top_positive, miss1, miss1_dollars, miss2, miss2_dollars, miss3, miss3_dollars, overall_mood, freeform_comments 
+               FROM dbo.store_feedback 
+               WHERE ${where.join(' AND ')} 
+               ORDER BY created_at DESC`;
     
     const rows = (await pool.request()
       .input('wk', week)
@@ -81,8 +85,9 @@ export async function GET(req: Request) {
       .input('st', storeId)
       .query(q)).recordset;
 
+    // Optimized total stores count with index hint
     const totalStores = (await pool.request()
-      .query`select count(*) as c from dbo.store_master where active=1`)
+      .query`SELECT COUNT(*) as c FROM dbo.store_master WITH (INDEX(ix_store_master_active_region)) WHERE active=1`)
       .recordset?.[0]?.c || 0;
     
     const responded = rows.length;

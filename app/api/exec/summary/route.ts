@@ -13,15 +13,21 @@ export async function GET(req: Request) {
 
     const pool = await getDb();
 
-    // Build query with optional region filter
+    // Build optimized query with TOP clause and specific columns
     let feedbackQuery = `
-      SELECT * FROM dbo.store_feedback 
+      SELECT TOP 100 region_code, store_id, store_name, top_positive, top_positive_impact, 
+             top_negative_1, top_negative_1_impact, top_negative_2, top_negative_2_impact, 
+             top_negative_3, top_negative_3_impact, miss1_dollars, miss2_dollars, miss3_dollars,
+             overall_mood, freeform_comments, created_at
+      FROM dbo.store_feedback 
       WHERE iso_week = @week
     `;
     
     if (region) {
       feedbackQuery += ` AND region_code = @region`;
     }
+    
+    feedbackQuery += ` ORDER BY created_at DESC`;
 
     const request = pool.request()
       .input('week', sql.NVarChar(10), week);
@@ -40,9 +46,9 @@ export async function GET(req: Request) {
     const rows = feedbackResult.recordset || [];
     const report = reportResult.recordset?.[0];
 
-    // Calculate base metrics
+    // Calculate base metrics with optimized query
     const totalStores = await pool.request()
-      .query('SELECT COUNT(DISTINCT store_id) as total FROM dbo.store_master WHERE active = 1');
+      .query('SELECT COUNT(*) as total FROM dbo.store_master WITH (INDEX(ix_store_master_active_region)) WHERE active = 1');
     
     const storeCount = totalStores.recordset[0]?.total || 0;
     const submittedStores = rows.length;

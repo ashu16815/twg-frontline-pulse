@@ -26,7 +26,8 @@
     "stores:load": "node scripts/load-stores-from-json.mjs",
     "stores:pathB": "node scripts/run-migration.mjs",
     "build:stores:from:xlsx": "node scripts/xlsx-to-stores-json.mjs",
-    "db:prod": "node scripts/apply-prod-hardening.mjs"
+    "db:prod": "node scripts/apply-prod-hardening.mjs",
+    "db:optimize": "node scripts/apply-performance-optimization.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",
