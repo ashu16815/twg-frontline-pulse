@@ -35,6 +35,22 @@ export async function middleware(req: NextRequest) {
   const isPublic = PUBLIC_ROUTES.some(route => pathname === route);
   if (isPublic) {
     console.log('✅ PUBLIC ROUTE:', pathname);
+    
+    // If user is trying to access login page but is already authenticated, redirect to home
+    if (pathname === '/login') {
+      const token = req.cookies.get(COOKIE)?.value;
+      if (token) {
+        try {
+          const secret = new TextEncoder().encode(SECRET);
+          const { payload } = await jwtVerify(token, secret);
+          console.log('🔄 ALREADY AUTHENTICATED - REDIRECTING FROM LOGIN TO HOME');
+          return NextResponse.redirect(new URL('/', req.url));
+        } catch (e) {
+          console.log('⚠️ INVALID TOKEN ON LOGIN PAGE - ALLOWING ACCESS');
+        }
+      }
+    }
+    
     return NextResponse.next();
   }
 
