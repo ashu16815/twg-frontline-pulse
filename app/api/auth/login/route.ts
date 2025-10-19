@@ -84,24 +84,17 @@ export async function POST(req: Request) {
     
     // Build cookie string manually to ensure it works in Vercel
     const isProduction = process.env.NODE_ENV === 'production';
-    const cookieValue = `${COOKIE}=${token}; Path=/; Max-Age=${MAX_AGE}; HttpOnly; SameSite=Lax${isProduction ? '; Secure' : ''}`;
     
-    // Try multiple cookie setting methods for Vercel compatibility
+    // Try a simpler cookie approach for Vercel
+    const cookieValue = `${COOKIE}=${token}; Path=/; Max-Age=${MAX_AGE}; SameSite=Lax`;
+    
+    // Set cookie via headers (most reliable method)
     response.headers.set('Set-Cookie', cookieValue);
     
-    // Also try setting it via the NextResponse cookies method as backup
+    // Also try setting it via the NextResponse cookies method
     response.cookies.set(COOKIE, token, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: MAX_AGE
-    });
-    
-    // Try setting a non-httpOnly cookie as well for debugging
-    response.cookies.set(`${COOKIE}_debug`, token, {
-      httpOnly: false,
-      secure: isProduction,
+      httpOnly: false, // Temporarily disable HttpOnly to test
+      secure: false,   // Temporarily disable Secure to test
       sameSite: 'lax',
       path: '/',
       maxAge: MAX_AGE
