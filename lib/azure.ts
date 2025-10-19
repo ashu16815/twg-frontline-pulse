@@ -118,7 +118,7 @@ export async function transcribeAudioWebm(buf: Buffer, mime: string) {
   // Use dedicated transcription endpoint if available, otherwise fallback to main endpoint
   const ep = process.env.AZURE_OPENAI_ENDPOINT_TRANSCRIBE?.trim() || process.env.AZURE_OPENAI_ENDPOINT?.trim();
   const key = process.env.AZURE_OPENAI_API_KEY_TRANSCRIBE?.trim() || process.env.AZURE_OPENAI_API_KEY?.trim();
-  const dep = process.env.AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE?.trim() || process.env.AZURE_OPENAI_DEPLOYMENT_GPT5?.trim();
+  const dep = process.env.AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE?.trim() || 'gpt-4o-transcribe-redpulse';
   const v = process.env.AZURE_OPENAI_API_VERSION?.trim() || '2025-03-01-preview';
   
   console.log('Transcription request:', { 
@@ -131,7 +131,7 @@ export async function transcribeAudioWebm(buf: Buffer, mime: string) {
   
   // Check if transcription is available
   if (!ep || !key || !dep) {
-    throw new Error('Transcription not available - Azure OpenAI transcription deployment not configured: AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE or AZURE_OPENAI_DEPLOYMENT_GPT5 required');
+    throw new Error('Transcription not available - Azure OpenAI transcription deployment not configured: AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE required');
   }
   
   // Try different approaches for Azure transcription
@@ -155,9 +155,9 @@ export async function transcribeAudioWebm(buf: Buffer, mime: string) {
       const errorText = await r.text();
       console.error('Transcription API error:', errorText);
       
-      // If it's a server error, try the main endpoint as fallback
+      // If it's a server error, try the fallback
       if (r.status >= 500) {
-        console.log('Server error detected, trying main endpoint as fallback...');
+        console.log('Server error detected, trying fallback...');
         return await transcribeWithMainEndpoint(buf, mime);
       }
       
@@ -168,22 +168,23 @@ export async function transcribeAudioWebm(buf: Buffer, mime: string) {
     return j.text as string;
   } catch (error: any) {
     console.error('Transcription failed, trying fallback:', error.message);
-    // Try main endpoint as fallback
+    // Try fallback
     return await transcribeWithMainEndpoint(buf, mime);
   }
 }
 
 async function transcribeWithMainEndpoint(buf: Buffer, mime: string) {
-  const ep = process.env.AZURE_OPENAI_ENDPOINT?.trim();
-  const key = process.env.AZURE_OPENAI_API_KEY?.trim();
-  const dep = process.env.AZURE_OPENAI_DEPLOYMENT_GPT5?.trim();
+  // Use the dedicated transcription endpoint as fallback
+  const ep = process.env.AZURE_OPENAI_ENDPOINT_TRANSCRIBE?.trim();
+  const key = process.env.AZURE_OPENAI_API_KEY_TRANSCRIBE?.trim();
+  const dep = process.env.AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE?.trim();
   const v = process.env.AZURE_OPENAI_API_VERSION?.trim() || '2025-03-01-preview';
   
   if (!ep || !key || !dep) {
-    throw new Error('Fallback transcription not available - main Azure OpenAI deployment not configured');
+    throw new Error('Fallback transcription not available - dedicated transcription deployment not configured');
   }
   
-  console.log('Using main endpoint fallback for transcription');
+  console.log('Using dedicated transcription endpoint as fallback');
   
   const fd = new FormData();
   fd.append('file', new Blob([buf], { type: mime }), 'audio.webm');
@@ -194,7 +195,7 @@ async function transcribeWithMainEndpoint(buf: Buffer, mime: string) {
   const r = await fetch(url, {
     method: 'POST',
     headers: {
-      'api-key': key
+      'Authorization': `Bearer ${key}`
     },
     body: fd
   });
