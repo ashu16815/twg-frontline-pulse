@@ -16,18 +16,39 @@ export default function VoiceInput({ onText, placeholder = "Click mic to speak",
 
   useEffect(() => {
     // Check if Web Speech API is supported
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      setIsSupported(true);
+    if (typeof window !== 'undefined') {
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        setIsSupported(true);
+        console.log('✅ Web Speech API is supported');
+      } else {
+        console.log('❌ Web Speech API not supported');
+        setError('Speech recognition not supported in this browser');
+      }
     }
   }, []);
 
-  const startListening = () => {
+  const startListening = async () => {
     if (!isSupported || disabled) {
       setError('Speech recognition not supported or disabled');
       return;
     }
 
     setError(''); // Clear any previous errors
+    console.log('🎙️ Starting voice input...');
+
+    // Check microphone permissions
+    try {
+      if (navigator.permissions) {
+        const permission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+        console.log('🎤 Microphone permission:', permission.state);
+        if (permission.state === 'denied') {
+          setError('Microphone access denied. Please enable in browser settings.');
+          return;
+        }
+      }
+    } catch (e) {
+      console.log('Could not check microphone permissions:', e);
+    }
 
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const rec = new SpeechRecognition();
@@ -58,7 +79,7 @@ export default function VoiceInput({ onText, placeholder = "Click mic to speak",
     };
 
     rec.onerror = (event: any) => {
-      console.error('Voice input error:', event.error);
+      console.error('❌ Voice input error:', event.error);
       
       // Handle specific error types more gracefully
       if (event.error === 'aborted') {
@@ -115,13 +136,16 @@ export default function VoiceInput({ onText, placeholder = "Click mic to speak",
 
   if (!isSupported) {
     return (
-      <button 
-        disabled 
-        className="p-2 text-gray-400 cursor-not-allowed"
-        title="Speech recognition not supported"
-      >
-        🎙️
-      </button>
+      <div className="flex flex-col items-center gap-1">
+        <button 
+          disabled 
+          className="p-2 text-gray-400 cursor-not-allowed"
+          title="Speech recognition not supported in this browser"
+        >
+          🎙️
+        </button>
+        <span className="text-xs text-gray-400">Not supported</span>
+      </div>
     );
   }
 
