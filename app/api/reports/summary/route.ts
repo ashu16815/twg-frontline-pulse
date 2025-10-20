@@ -139,93 +139,59 @@ export async function GET(req: Request) {
       month
     });
     
-    try {
-      const ai = await callAzureJSON([SYS, user], { 
-        timeout: 20000, // Reduced from 30 seconds to 20 seconds
-        maxRetries: 1   // Reduced retries to fail faster
-      });
-      console.log('✅ AI response received:', Object.keys(ai));
-      
-      // Validate AI response structure
-      if (!ai || typeof ai !== 'object') {
-        throw new Error('Invalid AI response structure');
+    // Skip AI processing for now - return fallback immediately
+    console.log('🤖 Skipping AI processing - returning fallback data immediately');
+    
+    const fallbackResponse = {
+      kpis: {
+        coveragePct,
+        stores: totalStores,
+        responded,
+        regions,
+        totalImpact
+      },
+      narrative: `Data summary for ${period} period. Coverage: ${coveragePct}% (${responded}/${totalStores} stores). Total impact: $${totalImpact.toLocaleString()}. AI analysis temporarily disabled for performance.`,
+      topOpportunities: {
+        week: [
+          { text: "Review feedback data manually", impact: 0, theme: "Manual Review Required" }
+        ],
+        month: [
+          { text: "Review feedback data manually", impact: 0, theme: "Manual Review Required" }
+        ]
+      },
+      topActions: {
+        week: [
+          { action: "Manual data review recommended", owner: "Management", expectedImpact: 0 }
+        ],
+        month: [
+          { action: "Manual data review recommended", owner: "Management", expectedImpact: 0 }
+        ]
       }
-      
-      // Ensure required fields exist
-      if (!ai.topOpportunities) ai.topOpportunities = { week: [], month: [] };
-      if (!ai.topActions) ai.topActions = { week: [], month: [] };
-      if (!ai.narrative) ai.narrative = 'AI analysis completed successfully.';
-      
-      return NextResponse.json({
-        ok: true,
-        period,
-        week,
-        month,
-        region,
-        storeId,
-        base: {
-          coveragePct,
-          stores: totalStores,
-          responded,
-          regions,
-          totalImpact
-        },
-        ai,
-        rawData: {
-          weekRows: sampledWeekRows,
-          monthRows: sampledMonthRows,
-          totalWeekRows: weekRows.length,
-          totalMonthRows: monthRows.length
-        }
-      });
-      
-    } catch (aiError: any) {
-      console.error('❌ AI processing failed:', aiError.message);
-      
-      // Return fallback response when AI fails
-      const fallbackResponse = {
-        kpis: {
-          coveragePct,
-          stores: totalStores,
-          responded,
-          regions,
-          totalImpact
-        },
-        narrative: `Data summary for ${period} period. Coverage: ${coveragePct}% (${responded}/${totalStores} stores). Total impact: $${totalImpact.toLocaleString()}.`,
-        topOpportunities: {
-          week: [],
-          month: []
-        },
-        topActions: {
-          week: [],
-          month: []
-        }
-      };
-      
-      return NextResponse.json({
-        ok: true,
-        period,
-        week,
-        month,
-        region,
-        storeId,
-        base: {
-          coveragePct,
-          stores: totalStores,
-          responded,
-          regions,
-          totalImpact
-        },
-        ai: fallbackResponse,
-        warning: 'AI processing failed, returning basic summary',
-        rawData: {
-          weekRows: sampledWeekRows,
-          monthRows: sampledMonthRows,
-          totalWeekRows: weekRows.length,
-          totalMonthRows: monthRows.length
-        }
-      });
-    }
+    };
+    
+    return NextResponse.json({
+      ok: true,
+      period,
+      week,
+      month,
+      region,
+      storeId,
+      base: {
+        coveragePct,
+        stores: totalStores,
+        responded,
+        regions,
+        totalImpact
+      },
+      ai: fallbackResponse,
+      warning: 'AI processing disabled for performance - returning basic summary',
+      rawData: {
+        weekRows: sampledWeekRows,
+        monthRows: sampledMonthRows,
+        totalWeekRows: weekRows.length,
+        totalMonthRows: monthRows.length
+      }
+    });
   } catch (e: any) {
     console.error('❌ Reports summary error:', e);
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });

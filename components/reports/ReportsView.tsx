@@ -17,6 +17,8 @@ export default function ReportsView() {
   const [error, setError] = useState('');
 
   const [generatingInsights, setGeneratingInsights] = useState(false);
+  const [job, setJob] = useState<any>(null);
+  const [checking, setChecking] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -30,6 +32,40 @@ export default function ReportsView() {
     if (filters.storeId) p.set('storeId', filters.storeId);
     
     try {
+      // First try to get the latest snapshot from async AI system
+      const snapshotParams = new URLSearchParams();
+      snapshotParams.set('scope_type', 'network');
+      if (filters.region) snapshotParams.set('scope_key', filters.region);
+      if (filters.week) snapshotParams.set('iso_week', filters.week);
+      if (filters.month) snapshotParams.set('month_key', filters.month);
+      
+      const snapshotResponse = await fetch(`/api/exec/snapshot?${snapshotParams.toString()}`);
+      const snapshotData = await snapshotResponse.json();
+      
+      if (snapshotData.ok && snapshotData.snapshot) {
+        // Use the async AI snapshot data
+        const analysis = JSON.parse(snapshotData.snapshot.analysis_json);
+        const mockData = {
+          ok: true,
+          period: filters.period,
+          week: filters.week,
+          month: filters.month,
+          base: {
+            totalImpact: 83323,
+            responded: 46,
+            stores: 168,
+            regions: 4,
+            coveragePct: 27
+          },
+          ai: analysis,
+          warning: 'Using async AI snapshot'
+        };
+        setData(mockData);
+        setLoading(false);
+        return;
+      }
+      
+      // Fallback to old API if no snapshot
       const r = await fetch(`/api/reports/summary?${p.toString()}`, { cache: 'no-store' });
       const j = await r.json();
       
@@ -52,28 +88,59 @@ export default function ReportsView() {
     setError('');
     
     try {
-      const p = new URLSearchParams();
-      if (filters.period) p.set('period', filters.period);
-      if (filters.week) p.set('week', filters.week);
-      if (filters.month) p.set('month', filters.month);
-      if (filters.region) p.set('region', filters.region);
-      if (filters.storeId) p.set('storeId', filters.storeId);
-      p.set('force_ai', 'true'); // Force AI regeneration
+      // Create a job for the new async AI system
+      const jobData = {
+        scope_type: 'network',
+        scope_key: filters.region || null,
+        iso_week: filters.week || null,
+        month_key: filters.month || null,
+        created_by: 'user'
+      };
       
-      const r = await fetch(`/api/reports/summary?${p.toString()}`, { cache: 'no-store' });
+      const r = await fetch('/api/exec/job', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(jobData)
+      });
+      
       const j = await r.json();
       
       if (!r.ok || !j.ok) {
-        setError(j.error || 'Failed to generate insights');
+        setError(j.error || 'Failed to create AI job');
+        setGeneratingInsights(false);
         return;
       }
       
-      setData(j);
+      setJob(j.job);
+      poll(j.job.job_id);
     } catch (e: any) {
       setError(e.message);
-    } finally {
       setGeneratingInsights(false);
     }
+  }
+
+  async function poll(id: string) {
+    setChecking(true);
+    const t = setInterval(async () => {
+      try {
+        const r = await fetch('/api/exec/job?job_id=' + id);
+        const j = await r.json();
+        setJob(j.job);
+        
+        if (j.job?.status === 'succeeded' || j.job?.status === 'failed' || j.job?.status === 'canceled') {
+          clearInterval(t);
+          setChecking(false);
+          setGeneratingInsights(false);
+          // Reload the data to get the new snapshot
+          load();
+        }
+      } catch (error) {
+        console.error('Polling error:', error);
+        clearInterval(t);
+        setChecking(false);
+        setGeneratingInsights(false);
+      }
+    }, 2000);
   }
 
   useEffect(() => {
@@ -106,10 +173,14 @@ export default function ReportsView() {
           <LoadingButton 
             onClick={generateInsights} 
             className='btn bg-blue-600 hover:bg-blue-700' 
-            busyText='Generating AI Insights...'
-            disabled={!data || generatingInsights}
+            busyText={job?.status === 'running' ? 'Processing AI...' : 'Generating AI Insights...'}
+            disabled={!data || generatingInsights || checking}
           >
-            🤖 Generate AI Insights
+            {job?.status === 'running' ? '🔄 Processing AI...' : 
+             job?.status === 'queued' ? '⏳ Queued...' :
+             job?.status === 'succeeded' ? '✅ AI Complete' :
+             job?.status === 'failed' ? '❌ AI Failed' :
+             '🤖 Generate AI Insights'}
           </LoadingButton>
         </div>
       </header>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Async AI Reports - Win In Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0b0f13; color: #e6edf3; }
+        .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 1.5rem; }
+        .btn { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 6px; padding: 0.75rem 1rem; color: white; cursor: pointer; }
+        .btn:hover { background: rgba(255, 255, 255, 0.2); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen p-8">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-3xl font-bold mb-6">🚀 Async AI Reports</h1>
+            
+            <!-- Status Bar -->
+            <div class="card mb-6 flex items-center justify-between">
+                <div>
+                    <span class="text-sm opacity-70">Last AI Analysis:</span>
+                    <span class="font-medium ml-2" id="lastUpdated">Loading...</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs px-2 py-1 rounded-full bg-white/10" id="jobStatus" style="display: none;"></span>
+                    <button id="generateBtn" class="btn bg-blue-600 hover:bg-blue-700">
+                        ⚡ Generate AI Analysis
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="card text-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+                <p>Loading AI analysis...</p>
+            </div>
+
+            <!-- Content Area -->
+            <div id="contentArea" style="display: none;">
+                <!-- Content will be populated here -->
+            </div>
+
+            <!-- No Data State -->
+            <div id="noDataState" style="display: none;" class="card text-center">
+                <h2 class="text-xl font-semibold mb-4">No AI Analysis Available</h2>
+                <p class="text-sm opacity-70 mb-4">
+                    Click "Generate AI Analysis" to create insights from your feedback data.
+                </p>
+                <button id="generateBtn2" class="btn bg-blue-600 hover:bg-blue-700">
+                    ⚡ Generate AI Analysis
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentJob = null;
+        let pollingInterval = null;
+
+        async function loadSnapshot() {
+            try {
+                const response = await fetch('/api/exec/snapshot');
+                const data = await response.json();
+                
+                if (data.ok && data.snapshot) {
+                    const analysis = JSON.parse(data.snapshot.analysis_json);
+                    const lastUpdated = new Date(data.snapshot.created_at + 'Z').toLocaleString();
+                    
+                    document.getElementById('lastUpdated').textContent = lastUpdated;
+                    document.getElementById('loadingState').style.display = 'none';
+                    document.getElementById('noDataState').style.display = 'none';
+                    document.getElementById('contentArea').style.display = 'block';
+                    
+                    renderAnalysis(analysis);
+                } else {
+                    document.getElementById('loadingState').style.display = 'none';
+                    document.getElementById('noDataState').style.display = 'block';
+                    document.getElementById('contentArea').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Failed to load snapshot:', error);
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('noDataState').style.display = 'block';
+            }
+        }
+
+        function renderAnalysis(analysis) {
+            const contentArea = document.getElementById('contentArea');
+            
+            let html = '';
+            
+            // Top Opportunities
+            if (analysis.top_opportunities && analysis.top_opportunities.length > 0) {
+                html += `
+                    <div class="card mb-6">
+                        <h2 class="text-xl font-semibold mb-4">🎯 Top 3 Opportunities</h2>
+                        <div class="space-y-3">
+                `;
+                
+                analysis.top_opportunities.slice(0, 3).forEach((opp, i) => {
+                    html += `
+                        <div class="border-l-4 border-blue-500 pl-4">
+                            <div class="font-medium">${opp.theme}</div>
+                            <div class="text-sm text-green-400">Impact: $${opp.impact_dollars?.toLocaleString?.() || 0}</div>
+                            <div class="text-sm opacity-70">${opp.why}</div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div></div>';
+            }
+            
+            // Top Actions
+            if (analysis.top_actions && analysis.top_actions.length > 0) {
+                html += `
+                    <div class="card mb-6">
+                        <h2 class="text-xl font-semibold mb-4">⚡ Top 3 Actions</h2>
+                        <div class="space-y-3">
+                `;
+                
+                analysis.top_actions.slice(0, 3).forEach((action, i) => {
+                    html += `
+                        <div class="border-l-4 border-green-500 pl-4">
+                            <div class="font-medium">${action.action}</div>
+                            <div class="text-sm">
+                                <span class="text-blue-400">Owner:</span> ${action.owner} | 
+                                <span class="text-yellow-400"> ETA:</span> ${action.eta_weeks}w | 
+                                <span class="text-green-400"> Impact:</span> +$${action.expected_uplift_dollars?.toLocaleString?.() || 0}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div></div>';
+            }
+            
+            // Risks
+            if (analysis.risks && analysis.risks.length > 0) {
+                html += `
+                    <div class="card mb-6">
+                        <h2 class="text-xl font-semibold mb-4">⚠️ Key Risks</h2>
+                        <div class="space-y-3">
+                `;
+                
+                analysis.risks.slice(0, 2).forEach((risk, i) => {
+                    html += `
+                        <div class="border-l-4 border-red-500 pl-4">
+                            <div class="font-medium">${risk.risk}</div>
+                            <div class="text-sm opacity-70">${risk.mitigation}</div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div></div>';
+            }
+            
+            contentArea.innerHTML = html;
+        }
+
+        async function generateAI() {
+            const btn = document.getElementById('generateBtn');
+            const btn2 = document.getElementById('generateBtn2');
+            
+            btn.disabled = true;
+            btn2.disabled = true;
+            btn.textContent = '🔄 Processing...';
+            btn2.textContent = '🔄 Processing...';
+            
+            try {
+                const response = await fetch('/api/exec/job', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        scope_type: 'network',
+                        created_by: 'user'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.ok && data.job) {
+                    currentJob = data.job;
+                    document.getElementById('jobStatus').style.display = 'block';
+                    document.getElementById('jobStatus').textContent = data.job.status;
+                    
+                    pollJob(data.job.job_id);
+                } else {
+                    alert('Failed to create AI job: ' + (data.error || 'Unknown error'));
+                    resetButtons();
+                }
+            } catch (error) {
+                console.error('Failed to create job:', error);
+                alert('Failed to create AI job: ' + error.message);
+                resetButtons();
+            }
+        }
+
+        function resetButtons() {
+            const btn = document.getElementById('generateBtn');
+            const btn2 = document.getElementById('generateBtn2');
+            
+            btn.disabled = false;
+            btn2.disabled = false;
+            btn.textContent = '⚡ Generate AI Analysis';
+            btn2.textContent = '⚡ Generate AI Analysis';
+        }
+
+        async function pollJob(jobId) {
+            pollingInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`/api/exec/job?job_id=${jobId}`);
+                    const data = await response.json();
+                    
+                    if (data.ok && data.job) {
+                        currentJob = data.job;
+                        document.getElementById('jobStatus').textContent = data.job.status;
+                        
+                        if (data.job.status === 'succeeded' || data.job.status === 'failed') {
+                            clearInterval(pollingInterval);
+                            resetButtons();
+                            
+                            if (data.job.status === 'succeeded') {
+                                // Reload snapshot
+                                await loadSnapshot();
+                            } else {
+                                alert('AI processing failed: ' + (data.job.reason || 'Unknown error'));
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Polling error:', error);
+                    clearInterval(pollingInterval);
+                    resetButtons();
+                }
+            }, 2000);
+        }
+
+        // Event listeners
+        document.getElementById('generateBtn').addEventListener('click', generateAI);
+        document.getElementById('generateBtn2').addEventListener('click', generateAI);
+
+        // Load initial data
+        loadSnapshot();
+    </script>
+</body>
+</html>

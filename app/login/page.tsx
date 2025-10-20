@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import LoadingButton from '@/components/LoadingButton';
 
 export default function LoginPage() {
@@ -9,11 +9,6 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-
-  const next =
-    typeof window !== 'undefined'
-      ? new URLSearchParams(window.location.search).get('next') || '/'
-      : '/';
 
   async function submit() {
     setError('');
@@ -44,9 +39,10 @@ export default function LoginPage() {
 
       setSuccess(true);
       
-      // Let the middleware handle the redirect - just reload the page
+      // Simple redirect after successful login
       setTimeout(() => {
-        window.location.reload();
+        const next = new URLSearchParams(window.location.search).get('next') || '/';
+        window.location.href = next;
       }, 1000);
     } catch (err: any) {
       setError(err.message || 'Login failed');
@@ -106,7 +102,10 @@ export default function LoginPage() {
           {success ? (
             <button 
               className='btn-liquid w-full py-3' 
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                const next = new URLSearchParams(window.location.search).get('next') || '/';
+                window.location.href = next;
+              }}
             >
               Go to Home Page →
             </button>

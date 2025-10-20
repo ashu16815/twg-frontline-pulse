@@ -2,6 +2,7 @@ import './globals.css';
 import Header from '@/components/Header';
 import LoadingTopbar from '@/components/LoadingTopbar';
 import MaintenanceBanner from '@/components/MaintenanceBanner';
+import AuthGuard from '@/components/AuthGuard';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
@@ -16,8 +17,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className='min-h-screen bg-[#0b0f13] text-[#e6edf3]'>
         <LoadingTopbar />
         <MaintenanceBanner />
-        <Header />
-        {children}
+        <AuthGuard>
+          <Header />
+          {children}
+        </AuthGuard>
         <Analytics />
         <SpeedInsights />
       </body>
