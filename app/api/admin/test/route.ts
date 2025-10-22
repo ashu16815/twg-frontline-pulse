@@ -96,14 +96,14 @@ export async function POST(req: Request) {
         });
       }
 
-      // Test 5: Read Reports
+      // Test 5: Read AI Report Snapshots
       try {
         const pool = await getDb();
-        const r = await pool.request().query('SELECT COUNT(*) as cnt FROM dbo.executive_reports');
+        const r = await pool.request().query('SELECT COUNT(*) as cnt FROM dbo.exec_report_snapshots');
         results.push({
           name: 'Read Reports Table',
           status: 'pass',
-          message: `Found ${r.recordset[0].cnt} reports`,
+          message: `Found ${r.recordset[0].cnt} AI report snapshots`,
           details: { count: r.recordset[0].cnt }
         });
       } catch (error: any) {
@@ -219,33 +219,37 @@ export async function POST(req: Request) {
       try {
         const pool = await getDb();
         const r = await pool.request().query(`
-          SELECT TOP 1 id, iso_week, report_json 
-          FROM dbo.executive_reports 
+          SELECT TOP 1 snapshot_id, scope_type, scope_key, iso_week, month_key, analysis_json, created_at
+          FROM dbo.exec_report_snapshots 
           ORDER BY created_at DESC
         `);
 
         if (r.recordset.length > 0) {
-          const report = r.recordset[0];
-          const parsed = typeof report.report_json === 'string' 
-            ? JSON.parse(report.report_json) 
-            : report.report_json;
+          const snapshot = r.recordset[0];
+          const parsed = typeof snapshot.analysis_json === 'string' 
+            ? JSON.parse(snapshot.analysis_json) 
+            : snapshot.analysis_json;
 
           results.push({
             name: 'Report Generation',
             status: 'pass',
-            message: `Latest report: ${report.iso_week}`,
+            message: `Latest AI snapshot: ${snapshot.iso_week || snapshot.month_key || 'Network-wide'}`,
             details: {
-              week: report.iso_week,
-              has_narrative: !!parsed?.ai?.narrative,
-              has_themes: !!parsed?.ai?.themes,
-              has_actions: !!parsed?.ai?.actions
+              snapshot_id: snapshot.snapshot_id,
+              scope: `${snapshot.scope_type}${snapshot.scope_key ? ` (${snapshot.scope_key})` : ''}`,
+              week: snapshot.iso_week,
+              month: snapshot.month_key,
+              has_narrative: !!parsed?.narrative,
+              has_opportunities: !!parsed?.top_opportunities?.length,
+              has_actions: !!parsed?.top_actions?.length,
+              created_at: snapshot.created_at
             }
           });
         } else {
           results.push({
             name: 'Report Generation',
             status: 'skip',
-            message: 'No reports generated yet'
+            message: 'No AI snapshots generated yet'
           });
         }
       } catch (error: any) {

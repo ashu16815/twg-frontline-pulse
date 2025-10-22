@@ -26,8 +26,7 @@ export async function GET() {
     'AZURE_SQL_CONNECTION_STRING',
     'AZURE_OPENAI_ENDPOINT',
     'AZURE_OPENAI_API_KEY',
-    'AZURE_OPENAI_DEPLOYMENT_GPT5',
-    'AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE',
+    'AZURE_OPENAI_DEPLOYMENT',
     'AUTH_JWT_SECRET'
   ];
 
@@ -56,7 +55,7 @@ export async function GET() {
 
   try {
     const pool = await getDb();
-    const result = await pool.request().query('SELECT @@VERSION as version, DB_NAME() as database, GETUTCDATE() as server_time');
+    const result = await pool.request().query('SELECT @@VERSION as version, DB_NAME() as db_name, GETUTCDATE() as server_time');
     
     dbCheck.duration = Date.now() - dbCheckStart;
     
@@ -68,7 +67,7 @@ export async function GET() {
     dbCheck.details = {
       connected: true,
       server: serverName,
-      database: result.recordset[0].database,
+      database: result.recordset[0].db_name,
       version: result.recordset[0].version.split('\n')[0],
       server_time: result.recordset[0].server_time,
       response_time: `${dbCheck.duration}ms`
@@ -111,7 +110,7 @@ export async function GET() {
         ORDER BY TABLE_NAME
       `);
 
-      const expectedTables = ['app_users', 'store_master', 'store_feedback', 'frontline_feedback', 'executive_reports'];
+      const expectedTables = ['app_users', 'store_master', 'store_feedback', 'exec_report_snapshots', 'exec_report_jobs', 'exec_areas', 'exec_kpi_targets', 'exec_bookmarks', 'weekly_summary'];
       const actualTables = tables.recordset.map((t: any) => t.TABLE_NAME);
 
       schemaCheck.details = {
@@ -157,8 +156,7 @@ export async function GET() {
       openaiCheck.details = {
         endpoint: endpoint.replace(/\/+$/, ''),
         api_key: apiKey.substring(0, 8) + '...' + apiKey.substring(apiKey.length - 4),
-        gpt5_deployment: process.env.AZURE_OPENAI_DEPLOYMENT_GPT5 || 'Not set',
-        transcribe_deployment: process.env.AZURE_OPENAI_DEPLOYMENT_TRANSCRIBE || 'Not set'
+        deployment: process.env.AZURE_OPENAI_DEPLOYMENT || 'Not set'
       };
 
       // Simple connectivity test (without making an actual AI call)
