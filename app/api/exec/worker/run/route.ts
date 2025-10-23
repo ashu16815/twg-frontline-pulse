@@ -50,7 +50,7 @@ export async function POST() {
     let analysis;
     try {
       analysis = await callAzureJSON([SYS, { role:'user', content: payload }], { timeout: 30000 }); // 30 second timeout
-    } catch (error) {
+    } catch (error: any) {
       console.log('⚠️ Azure OpenAI failed, using mock data:', error.message);
       analysis = {
         "narrative": "Mock analysis: Store feedback shows inventory management opportunities worth $15,000 impact. Customer experience improvements needed for checkout efficiency.",
