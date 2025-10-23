@@ -26,8 +26,8 @@ export async function GET() {
     'AZURE_SQL_CONNECTION_STRING',
     'AZURE_OPENAI_ENDPOINT',
     'AZURE_OPENAI_API_KEY',
-    'AZURE_OPENAI_DEPLOYMENT',
-    'AUTH_JWT_SECRET'
+    'AZURE_OPENAI_DEPLOYMENT_GPT5',
+    'APP_SHARED_PASSCODE'
   ];
 
   const missingVars: string[] = [];
