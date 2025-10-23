@@ -139,7 +139,7 @@ export default function ExecutiveReportV2() {
                 <XAxis dataKey='theme' />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey='impact_dollars' />
+                <Bar dataKey='impact_dollars' fill='#3b82f6' />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -162,7 +162,7 @@ export default function ExecutiveReportV2() {
               <XAxis dataKey='region' />
               <YAxis />
               <Tooltip />
-              <Bar dataKey='miss' />
+              <Bar dataKey='miss' fill='#ef4444' />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -185,7 +185,12 @@ export default function ExecutiveReportV2() {
 
       {/* Stock & Delivery Issues */}
       <div className='card p-4'>
-        <div className='font-semibold mb-2'>Stock & Delivery Issues — Last 7 Days</div>
+        <div className='flex items-center justify-between mb-4'>
+          <div className='font-semibold'>Stock & Delivery Issues — Last 7 Days</div>
+          <a href='/stock-issues' className='btn btn-primary text-sm'>
+            📊 View All Issues
+          </a>
+        </div>
         {!issues?.items?.length ? <div className='text-sm opacity-70'>No issues captured yet.</div> : (
           <ul className='text-sm grid md:grid-cols-2 gap-2'>
             {issues.items.slice(0, 12).map((it: any) => (

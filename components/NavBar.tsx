@@ -23,6 +23,12 @@ export default function NavBar() {
           <Link href="/reports" className="btn">
             Reports
           </Link>
+          <Link href="/exec" className="btn">
+            Executive Report
+          </Link>
+          <Link href="/stock-issues" className="btn">
+            Stock Issues
+          </Link>
           <Link href="/ceo-demo" className="btn">
             CEO Demo
           </Link>
