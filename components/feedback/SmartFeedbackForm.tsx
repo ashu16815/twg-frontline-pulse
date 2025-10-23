@@ -63,7 +63,7 @@ export default function SmartFeedbackForm() {
       
       <div className='card p-4 space-y-3'>
         <div className='font-semibold'>Voice capture</div>
-        <VoiceCapture onTranscript={setTranscript} />
+        <VoiceCapture onText={setTranscript} />
         {transcript && (
           <div className='text-xs opacity-70'>Transcript: "{transcript}"</div>
         )}
