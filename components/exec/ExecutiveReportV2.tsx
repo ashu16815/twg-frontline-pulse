@@ -17,7 +17,8 @@ export default function ExecutiveReportV2() {
     scope_type, 
     ...(scope_key ? { scope_key } : {}), 
     ...(iso_week ? { iso_week } : {}), 
-    ...(month_key ? { month_key } : {}) 
+    ...(month_key ? { month_key } : {}),
+    ...(range ? { range } : {})
   });
   
   const qsKpi = new URLSearchParams({ 
@@ -38,7 +39,16 @@ export default function ExecutiveReportV2() {
   }).toString(), f, { revalidateOnFocus: false });
 
   const analysis = snapshot?.snapshot?.analysis_json ? JSON.parse(snapshot.snapshot.analysis_json) : null;
-  const stamp = snapshot?.snapshot?.created_at ? new Date(snapshot.snapshot.created_at + 'Z').toLocaleString() : 'Not generated yet';
+  const stamp = snapshot?.snapshot?.created_at ? (() => {
+    try {
+      const dateStr = snapshot.snapshot.created_at;
+      // Handle both ISO strings and SQL datetime formats
+      const date = new Date(dateStr.includes('Z') ? dateStr : dateStr + 'Z');
+      return isNaN(date.getTime()) ? 'Invalid Date' : date.toLocaleString();
+    } catch (e) {
+      return 'Invalid Date';
+    }
+  })() : 'Not generated yet';
 
   async function generate() {
     await fetch('/api/exec/job', {
@@ -48,7 +58,8 @@ export default function ExecutiveReportV2() {
         scope_type, 
         scope_key: scope_key || null, 
         iso_week: iso_week || null, 
-        month_key: month_key || null 
+        month_key: month_key || null,
+        range: range || null
       })
     });
   }

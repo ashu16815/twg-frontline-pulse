@@ -3,14 +3,29 @@ import { getDb } from '@/lib/db';
 
 export async function POST(req: Request) {
   const b = await req.json();
-  const { scope_type='network', scope_key=null, iso_week=null, month_key=null, created_by=null } = b||{};
+  const { scope_type='network', scope_key=null, iso_week=null, month_key=null, range=null, created_by=null } = b||{};
   const pool = await getDb();
+  
+  // Convert range to appropriate iso_week or month_key if needed
+  let finalIsoWeek = iso_week;
+  let finalMonthKey = month_key;
+  
+  if(range === 'this_week') {
+    // Get current ISO week
+    const weekQuery = await pool.request().query("SELECT FORMAT(DATEADD(day, 1-DATEPART(weekday, SYSUTCDATETIME()), SYSUTCDATETIME()), 'yyyy-\\'W\\'ww') as current_week");
+    finalIsoWeek = weekQuery.recordset?.[0]?.current_week || null;
+  } else if(range === 'last_7') {
+    // For last 7 days, we'll handle this in the worker
+    finalIsoWeek = null;
+    finalMonthKey = null;
+  }
+  
   const q = `INSERT INTO dbo.exec_report_jobs(scope_type,scope_key,iso_week,month_key,status,reason,created_by)
              OUTPUT inserted.job_id, inserted.status, inserted.created_at
              VALUES(@t,@k,@w,@m,'queued','user-request',@u);`;
   const rs = await pool.request()
     .input('t', scope_type).input('k', scope_key)
-    .input('w', iso_week).input('m', month_key)
+    .input('w', finalIsoWeek).input('m', finalMonthKey)
     .input('u', created_by)
     .query(q);
   return NextResponse.json({ ok:true, job: rs.recordset?.[0] });
