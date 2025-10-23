@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     try {
       ans = await askCEO(question, isoWeek, rows, summ);
       console.log(`✅ Answer generated:`, ans.answer?.substring(0, 100));
-    } catch (error) {
+    } catch (error: any) {
       console.log('⚠️ CEO AI failed, using fallback:', error.message);
       // Provide a fallback answer based on the data
       const totalImpact = rows.reduce((sum, r) => sum + (r.miss1_dollars || 0) + (r.miss2_dollars || 0) + (r.miss3_dollars || 0), 0);
