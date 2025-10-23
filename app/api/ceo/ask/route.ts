@@ -11,10 +11,12 @@ export async function POST(req: Request) {
     const pool = await getDb();
     
     // Fetch data from Azure SQL (limit to recent data to avoid large payloads)
+    // Use a more dynamic query based on the question context
+    const limit = question.toLowerCase().includes('month') ? 50 : 20; // More data for monthly questions
     const [feedbackResult, summaryResult] = await Promise.all([
       pool.request()
         .input('week', sql.NVarChar(10), isoWeek)
-        .query('SELECT TOP 20 store_id, region_code, iso_week, top_positive, miss1, miss1_dollars, miss2, miss2_dollars, miss3, miss3_dollars, overall_mood, freeform_comments FROM dbo.store_feedback WHERE iso_week = @week ORDER BY created_at DESC'),
+        .query(`SELECT TOP ${limit} store_id, region_code, iso_week, top_positive, miss1, miss1_dollars, miss2, miss2_dollars, miss3, miss3_dollars, overall_mood, freeform_comments FROM dbo.store_feedback WHERE iso_week = @week ORDER BY NEWID()`),
       pool.request()
         .input('week', sql.NVarChar(10), isoWeek)
         .query('SELECT TOP 10 * FROM dbo.weekly_summary WHERE iso_week = @week ORDER BY created_at DESC')
