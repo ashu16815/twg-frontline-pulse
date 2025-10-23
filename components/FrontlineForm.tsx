@@ -348,7 +348,7 @@ export default function FrontlineForm() {
                 <textarea
                   ref={nextActionsRef}
                   name="next_actions"
-                  placeholder="What actions will you take next week?"
+                  placeholder="What actions are you taking?"
                   className="flex-1 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50"
                   rows={3}
                 />
