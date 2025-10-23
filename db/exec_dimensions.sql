@@ -27,17 +27,6 @@ CREATE TABLE dbo.exec_kpi_targets(
   CONSTRAINT ux_kpi_target UNIQUE(kpi_code, scope_type, scope_key, eff_from)
 );
 
-IF OBJECT_ID('dbo.v_exec_quick_kpis','V') IS NOT NULL DROP VIEW dbo.v_exec_quick_kpis;
-GO
-CREATE VIEW dbo.v_exec_quick_kpis AS
-SELECT sf.region_code, sf.iso_week,
-       COUNT_BIG(1) AS feedback_count,
-       AVG(CASE WHEN sf.overall_mood='pos' THEN 1.0 WHEN sf.overall_mood='neg' THEN 0 ELSE 0.5 END) AS mood_index,
-       SUM(ISNULL(sf.miss1_dollars,0)+ISNULL(sf.miss2_dollars,0)+ISNULL(sf.miss3_dollars,0)) AS total_missed_dollars
-FROM dbo.store_feedback sf
-GROUP BY sf.region_code, sf.iso_week;
-GO
-
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name='ix_sf_filters')
   CREATE INDEX ix_sf_filters ON dbo.store_feedback(region_code, store_id, iso_week, month_key) INCLUDE(overall_mood, miss1_dollars, miss2_dollars, miss3_dollars, created_at);
 

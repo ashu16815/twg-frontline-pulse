@@ -20,15 +20,6 @@ CREATE TABLE dbo.store_stock_issues(
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name='ix_stock_issues_time')
   CREATE INDEX ix_stock_issues_time ON dbo.store_stock_issues(issue_date DESC, region_code, store_id, issue_type, severity);
 
-IF OBJECT_ID('dbo.v_stock_issues_last7','V') IS NOT NULL DROP VIEW dbo.v_stock_issues_last7;
-GO
-CREATE VIEW dbo.v_stock_issues_last7 AS
-SELECT region_code, issue_type, COUNT_BIG(*) as cnt, SUM(ISNULL(est_impact_dollars,0)) as dollars
-FROM dbo.store_stock_issues
-WHERE issue_date >= DATEADD(day,-7, CONVERT(date,SYSUTCDATETIME()))
-GROUP BY region_code, issue_type;
-GO
-
 COMMIT TRAN;
 END TRY
 BEGIN CATCH IF @@TRANCOUNT>0 ROLLBACK TRAN; THROW; END CATCH;
