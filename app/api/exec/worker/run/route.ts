@@ -4,16 +4,19 @@ import { callAzureJSON } from '@/lib/azure';
 
 const SYS = { 
   role: 'system', 
-  content: `Return executive JSON:
+  content: `You are an executive analyst. Analyze the provided store feedback and stock issues data to generate insights.
+
+Return ONLY a JSON object with this exact structure:
 {
-  "narrative": string,
-  "top_opportunities": [{"theme": string, "impact_dollars": number, "why": string}],
-  "top_actions": [{"action": string, "owner": string, "eta_weeks": number, "expected_uplift_dollars": number}],
-  "risks": [{"risk": string, "mitigation": string}],
-  "volume_series": [{"week": string, "count": number}],
-  "stock_issues_summary": [{"issue_type": string, "count": number, "est_dollars": number}]
+  "narrative": "Executive summary based on actual data provided",
+  "top_opportunities": [{"theme": "specific theme", "impact_dollars": number, "why": "reasoning"}],
+  "top_actions": [{"action": "specific action", "owner": "role/team", "eta_weeks": number, "expected_uplift_dollars": number}],
+  "risks": [{"risk": "specific risk", "mitigation": "mitigation strategy"}],
+  "volume_series": [{"week": "week identifier", "count": number}],
+  "stock_issues_summary": [{"issue_type": "type", "count": number, "est_dollars": number}]
 }
-No prose.` 
+
+Base your analysis ONLY on the actual data provided. Do not use placeholder or mock data.` 
 };
 
 export async function POST() {
@@ -48,7 +51,7 @@ export async function POST() {
       rq.input('s', job.scope_key);
     }
 
-    const q1 = `SELECT TOP 400 sf.store_id, sf.region_code, sf.iso_week, sf.month_key, sf.overall_mood, sf.miss1, sf.miss1_dollars, sf.miss2, sf.miss2_dollars, sf.miss3, sf.miss3_dollars, sf.freeform_comments, sm.store_name
+    const q1 = `SELECT TOP 50 sf.store_id, sf.region_code, sf.iso_week, sf.month_key, sf.overall_mood, sf.miss1, sf.miss1_dollars, sf.miss2, sf.miss2_dollars, sf.miss3, sf.miss3_dollars, sf.freeform_comments, sm.store_name
                 FROM dbo.store_feedback sf JOIN dbo.store_master sm ON sf.store_id=sm.store_id
                 WHERE ${where.join(' AND ')} ORDER BY sf.created_at DESC`;
 
@@ -66,7 +69,7 @@ export async function POST() {
       rq2.input('s', job.scope_key);
     }
 
-    const q2 = `SELECT TOP 200 issue_type, COUNT(*) cnt, SUM(ISNULL(est_impact_dollars,0)) dollars
+    const q2 = `SELECT TOP 20 issue_type, COUNT(*) cnt, SUM(ISNULL(est_impact_dollars,0)) dollars
                FROM dbo.store_stock_issues
                WHERE issue_date >= DATEADD(day,-7, CONVERT(date,SYSUTCDATETIME()))
                  ${sw.length ? ' AND ' + sw.join(' AND ') : ''}
@@ -78,7 +81,7 @@ export async function POST() {
     const payload = JSON.stringify({ 
       feedback: rs1.recordset, 
       stock_issues: rs2.recordset 
-    }).slice(0, 140000);
+    }).slice(0, 80000); // Reduced from 140000 to 80000
 
     const t0 = Date.now();
     const analysis = await callAzureJSON([SYS, { role: 'user', content: payload }]);
