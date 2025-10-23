@@ -30,7 +30,9 @@
     "db:exec:apply": "node scripts/apply-sql.mjs db/exec_dimensions.sql",
     "ai:worker:once": "node scripts/ai-worker.mjs",
     "ai:worker:loop": "node scripts/ai-worker.mjs --watch",
-    "db:cleanup": "node scripts/apply-sql.mjs db/cleanup.sql"
+    "db:cleanup": "node scripts/apply-sql.mjs db/cleanup.sql",
+    "db:stock-issues": "node scripts/apply-sql.mjs db/exec_stock_issues.sql",
+    "db:exec-targets": "node scripts/apply-sql.mjs db/exec_dimensions.sql"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",

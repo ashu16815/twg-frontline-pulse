@@ -7,5 +7,14 @@
     "app/api/**/*.ts": {
       "maxDuration": 30
     }
-  }
+  },
+  "git": {
+    "deploymentEnabled": {
+      "production": true,
+      "preview": true
+    }
+  },
+  "crons": [
+    { "path": "/api/exec/worker/run", "schedule": "*/10 * * * *" }
+  ]
 }

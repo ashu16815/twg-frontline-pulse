@@ -1,4 +1,4 @@
-import ExecutiveReport from '@/components/exec/ExecutiveReport';
+import ExecutiveReportV2 from '@/components/exec/ExecutiveReportV2';
 
 export default function Page(){
   return (
@@ -6,7 +6,7 @@ export default function Page(){
       <div className='flex items-center justify-between'>
         <h1 className='text-2xl font-semibold'>Executive Report</h1>
       </div>
-      <ExecutiveReport />
+      <ExecutiveReportV2 />
     </main>
   );
 }

@@ -1,68 +1,52 @@
 'use client';
-import { useEffect, useState } from 'react';
-import * as sdk from 'microsoft-cognitiveservices-speech-sdk';
+import { useEffect, useRef, useState } from 'react';
 
-export default function VoiceCapture({ onTranscript }: { onTranscript: (t: string) => void }) {
-  const [rec, setRec] = useState<sdk.SpeechRecognizer | null>(null);
-  const [on, setOn] = useState(false);
-  const [err, setErr] = useState('');
+export default function VoiceCapture({ onText }: { onText: (t: string) => void }) {
+  const [recording, setRecording] = useState(false);
+  const recRef = useRef<any>(null);
+  const supported = typeof window !== 'undefined' && ('webkitSpeechRecognition' in (window as any) || 'SpeechRecognition' in (window as any));
 
-  useEffect(() => () => rec?.close(), [rec]);
+  useEffect(() => {
+    if (!supported) return;
+    
+    const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    recRef.current = new SR();
+    recRef.current.lang = 'en-NZ';
+    recRef.current.continuous = false;
+    recRef.current.interimResults = true;
+    
+    recRef.current.onresult = (e: any) => {
+      let text = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        text += e.results[i][0].transcript;
+      }
+      if (text) onText(text);
+    };
+    
+    recRef.current.onend = () => setRecording(false);
+  }, [supported, onText]);
 
-  async function start() {
-    try {
-      setErr('');
-      const key = process.env.NEXT_PUBLIC_AZ_SPEECH_KEY!;
-      const region = process.env.NEXT_PUBLIC_AZ_SPEECH_REGION!;
-      
-      const speechConfig = sdk.SpeechConfig.fromSubscription(key, region);
-      speechConfig.speechRecognitionLanguage = 'en-NZ';
-      
-      const audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
-      const r = new sdk.SpeechRecognizer(speechConfig, audioConfig);
-      setRec(r);
-      setOn(true);
-
-      r.recognized = (_s, e) => {
-        if (e.result?.text) onTranscript(e.result.text);
-      };
-
-      r.sessionStopped = () => {
-        setOn(false);
-        r.close();
-      };
-
-      r.canceled = (_, ev) => {
-        setOn(false);
-        setErr(ev.errorDetails || 'Canceled');
-        r.close();
-      };
-
-      r.startContinuousRecognitionAsync();
-    } catch (e: any) {
-      setErr(e.message || 'Mic error');
+  const toggle = () => {
+    if (!supported) return alert('Voice not supported on this browser');
+    
+    if (recording) {
+      recRef.current?.stop();
+      setRecording(false);
+    } else {
+      onText('');
+      recRef.current?.start();
+      setRecording(true);
     }
-  }
-
-  function stop() {
-    rec?.stopContinuousRecognitionAsync(() => {
-      setOn(false);
-      rec?.close();
-    });
-  }
+  };
 
   return (
-    <div className='flex items-center gap-2'>
-      {!on ? (
-        <button className='btn' onClick={start}>
-          🎙️ Start
-        </button>
-      ) : (
-        <button className='btn' onClick={stop}>
-          ■ Stop
-        </button>
-      )}
-      {err && <span className='text-xs text-red-400'>{err}</span>}
-    </div>
+    <button 
+      type='button' 
+      className={'btn ' + (recording ? 'btn-primary' : '')} 
+      onClick={toggle} 
+      aria-label='Dictate'
+    >
+      🎤 {recording ? 'Listening…' : 'Speak'}
+    </button>
   );
 }
