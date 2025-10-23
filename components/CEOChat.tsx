@@ -39,8 +39,12 @@ export default function CEOChat() {
     try {
       const r = await fetch('/api/ceo/ask', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q })
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        },
+        body: JSON.stringify({ question: q, timestamp: Date.now() })
       });
       
       if (!r.ok) {
