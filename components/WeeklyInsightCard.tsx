@@ -10,9 +10,17 @@ export default function WeeklyInsightCard() {
     revalidateOnFocus: false,
     refreshInterval: 30000 // Refresh every 30 seconds
   });
+  
+  const { data: kpiData } = useSWR('/api/exec/kpis?scope_type=network', fetcher, { 
+    revalidateOnFocus: false,
+    refreshInterval: 30000 // Refresh every 30 seconds
+  });
 
   const analysis = snapshotData?.snapshot?.analysis_json ? JSON.parse(snapshotData.snapshot.analysis_json) : null;
   const stamp = snapshotData?.snapshot?.created_at ? new Date(snapshotData.snapshot.created_at).toLocaleString() : null;
+  
+  // Check if analysis is mock data (contains "Mock analysis:")
+  const isMockData = analysis?.narrative?.includes('Mock analysis:');
 
   return (
     <GlassCard className="p-0 overflow-hidden">
@@ -26,7 +34,7 @@ export default function WeeklyInsightCard() {
       <div className="p-6">
         <div className="text-sm opacity-70">This week</div>
         
-        {analysis ? (
+        {analysis && !isMockData ? (
           <div className="mt-2 space-y-3">
             {/* Top Opportunity */}
             {analysis.top_opportunities?.[0] && (
@@ -53,6 +61,30 @@ export default function WeeklyInsightCard() {
                 Updated {new Date(snapshotData.snapshot.created_at).toLocaleDateString()}
               </div>
             )}
+          </div>
+        ) : kpiData?.kpis ? (
+          <div className="mt-2 space-y-3">
+            {/* Real Data from KPIs */}
+            <div>
+              <div className="text-lg font-semibold text-blue-300">
+                Live Store Data
+              </div>
+              <div className="text-sm opacity-80">
+                ${kpiData.kpis.totalMiss?.toLocaleString?.()} total impact
+              </div>
+            </div>
+            
+            <div className="text-sm">
+              <span className="opacity-70">Status:</span> {kpiData.kpis.totalFeedbacks} feedback entries received
+            </div>
+            
+            <div className="text-sm">
+              <span className="opacity-70">Mood Index:</span> {(kpiData.kpis.mood * 100).toFixed(0)}%
+            </div>
+            
+            <div className="text-xs opacity-60">
+              Real-time data • AI analysis pending
+            </div>
           </div>
         ) : (
           <div className="mt-2 space-y-2">
