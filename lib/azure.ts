@@ -1,14 +1,14 @@
 export async function callAzureJSON(messages: any[], options: { timeout?: number; maxRetries?: number } = {}) {
   const ep = process.env.AZURE_OPENAI_ENDPOINT?.trim();
   const key = process.env.AZURE_OPENAI_API_KEY?.trim();
-  const dep = process.env.AZURE_OPENAI_DEPLOYMENT?.trim();
+  const dep = process.env.AZURE_OPENAI_DEPLOYMENT_GPT5?.trim();
   const v = process.env.AZURE_OPENAI_API_VERSION?.trim() || '2024-10-01-preview';
   const timeout = options.timeout || parseInt(process.env.AZURE_OPENAI_TIMEOUT || '25000'); // 25 seconds default
   const maxRetries = options.maxRetries || parseInt(process.env.AZURE_OPENAI_MAX_RETRIES || '2');
   
   if (!ep || !key || !dep) {
     console.error('❌ Missing Azure OpenAI configuration');
-    throw new Error('Missing Azure OpenAI configuration: AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_KEY, and AZURE_OPENAI_DEPLOYMENT required');
+    throw new Error('Missing Azure OpenAI configuration: AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_KEY, and AZURE_OPENAI_DEPLOYMENT_GPT5 required');
   }
   
   const url = `${ep}openai/deployments/${dep}/chat/completions?api-version=${v}`;
