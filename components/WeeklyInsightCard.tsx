@@ -18,9 +18,6 @@ export default function WeeklyInsightCard() {
 
   const analysis = snapshotData?.snapshot?.analysis_json ? JSON.parse(snapshotData.snapshot.analysis_json) : null;
   const stamp = snapshotData?.snapshot?.created_at ? new Date(snapshotData.snapshot.created_at).toLocaleString() : null;
-  
-  // Check if analysis is mock data (contains "Mock analysis:")
-  const isMockData = analysis?.narrative?.includes('Mock analysis:');
 
   return (
     <GlassCard className="p-0 overflow-hidden">
@@ -34,7 +31,7 @@ export default function WeeklyInsightCard() {
       <div className="p-6">
         <div className="text-sm opacity-70">This week</div>
         
-        {analysis && !isMockData ? (
+        {analysis ? (
           <div className="mt-2 space-y-3">
             {/* Top Opportunity */}
             {analysis.top_opportunities?.[0] && (

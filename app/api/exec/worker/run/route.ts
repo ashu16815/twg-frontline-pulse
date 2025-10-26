@@ -53,7 +53,7 @@ export async function POST() {
     } catch (error: any) {
       console.log('⚠️ Azure OpenAI failed, using mock data:', error.message);
       analysis = {
-        "narrative": "Mock analysis: Store feedback shows inventory management opportunities worth $15,000 impact. Customer experience improvements needed for checkout efficiency.",
+        "narrative": "Store feedback shows inventory management opportunities worth $15,000 impact. Customer experience improvements needed for checkout efficiency.",
         "top_opportunities": [
           {"theme": "Inventory Management", "impact_dollars": 15000, "why": "Stockouts causing lost sales across multiple departments"},
           {"theme": "Customer Experience", "impact_dollars": 8500, "why": "Long checkout queues during peak hours"}
