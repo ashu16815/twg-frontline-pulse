@@ -50,32 +50,32 @@ create table dbo.store_feedback (
   variance_dollars float null,
   
   -- Positives & misses
-  top_positive nvarchar(400) null,
+  top_positive nvarchar(2000) null,
   top_positive_impact float null,
-  top_negative_1 nvarchar(400) null,
+  top_negative_1 nvarchar(2000) null,
   top_negative_1_impact float null,
-  top_negative_2 nvarchar(400) null,
+  top_negative_2 nvarchar(2000) null,
   top_negative_2_impact float null,
-  top_negative_3 nvarchar(400) null,
+  top_negative_3 nvarchar(2000) null,
   top_negative_3_impact float null,
   next_actions nvarchar(max) null,
   freeform_comments nvarchar(max) null,
   estimated_dollar_impact float null,
   
   -- Legacy issue fields (for compatibility)
-  miss1 nvarchar(400) null,
+  miss1 nvarchar(2000) null,
   miss1_dollars float null,
-  miss2 nvarchar(400) null,
+  miss2 nvarchar(2000) null,
   miss2_dollars float null,
-  miss3 nvarchar(400) null,
+  miss3 nvarchar(2000) null,
   miss3_dollars float null,
   
   -- Priorities
-  priority1 nvarchar(300) null,
+  priority1 nvarchar(1000) null,
   priority1_horizon nvarchar(40) null,
-  priority2 nvarchar(300) null,
+  priority2 nvarchar(1000) null,
   priority2_horizon nvarchar(40) null,
-  priority3 nvarchar(300) null,
+  priority3 nvarchar(1000) null,
   priority3_horizon nvarchar(40) null,
   
   -- AI
