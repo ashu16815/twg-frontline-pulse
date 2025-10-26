@@ -45,7 +45,22 @@ export default function DirectReportsPage() {
   }
 
   async function pollJob(jobId: string) {
+    const startTime = Date.now();
+    const maxDuration = 60000; // 60 seconds max
+    let pollCount = 0;
+    
     const interval = setInterval(async () => {
+      pollCount++;
+      const elapsed = Date.now() - startTime;
+      
+      // Timeout after 60 seconds
+      if (elapsed > maxDuration) {
+        clearInterval(interval);
+        setGenerating(false);
+        alert('Request timed out. The job may still be processing. Please refresh the page in a few moments.');
+        return;
+      }
+      
       try {
         const response = await fetch(`/api/exec/job?job_id=${jobId}`);
         const data = await response.json();
@@ -62,6 +77,11 @@ export default function DirectReportsPage() {
         setGenerating(false);
       }
     }, 2000);
+    
+    // Cleanup after max duration
+    setTimeout(() => {
+      clearInterval(interval);
+    }, maxDuration);
   }
 
   const analysis = snapshot?.analysis_json ? JSON.parse(snapshot.analysis_json) : null;
