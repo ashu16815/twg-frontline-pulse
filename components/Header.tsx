@@ -68,6 +68,9 @@ export default function Header() {
               <Link href='/admin/health' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
                 Health
               </Link>
+              <Link href='/admin/jobs' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
+                AI Jobs
+              </Link>
             </>
           )}
         </nav>
