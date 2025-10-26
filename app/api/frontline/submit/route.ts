@@ -88,9 +88,10 @@ export async function POST(req: Request) {
       INSERT INTO dbo.store_feedback (
         iso_week, store_id, store_code, store_name, region, region_code, banner, manager_email,
         top_positive, top_positive_impact,
-        top_positive_2, top_positive_2_impact,
-        top_positive_3, top_positive_3_impact,
-        miss1, miss1_dollars, miss2, miss2_dollars, miss3, miss3_dollars,
+        top_negative_1, top_negative_1_impact,
+        top_negative_2, top_negative_2_impact,
+        top_negative_3, top_negative_3_impact,
+        next_actions, freeform_comments, estimated_dollar_impact,
         overall_mood, themes, idempotency_key, submitted_by
       ) VALUES (
         ${isoWeek},
@@ -103,16 +104,15 @@ export async function POST(req: Request) {
         ${p.managerEmail || null},
         ${p.top_positive || null},
         ${toNum(p.top_positive_impact)},
-        ${p.top_positive_2 || null},
-        ${toNum(p.top_positive_2_impact)},
-        ${p.top_positive_3 || null},
-        ${toNum(p.top_positive_3_impact)},
         ${p.top_negative_1 || null},
         ${toNum(p.top_negative_1_impact)},
         ${p.top_negative_2 || null},
         ${toNum(p.top_negative_2_impact)},
         ${p.top_negative_3 || null},
         ${toNum(p.top_negative_3_impact)},
+        ${p.next_actions || null},
+        ${p.freeform_comments || null},
+        ${toNum(p.estimated_dollar_impact)},
         'neu', -- Default mood, will be updated by background AI
         'Pending Analysis', -- Default themes, will be updated by background AI
         ${idempotencyKey},
@@ -141,25 +141,25 @@ export async function POST(req: Request) {
           region: p.region,
           isoWeek,
           positive: p.top_positive ? {
-            text: p.top_positive.substring(0, 200), // Limit text length
+            text: p.top_positive.substring(0, 500), // Limit text length for AI context
             impact: p.top_positive_impact ? parseFloat(p.top_positive_impact) : 0
           } : null,
           negatives: [
             p.top_negative_1 ? {
-              text: p.top_negative_1.substring(0, 200), // Limit text length
+              text: p.top_negative_1.substring(0, 500), // Limit text length for AI context
               impact: p.top_negative_1_impact ? parseFloat(p.top_negative_1_impact) : 0
             } : null,
             p.top_negative_2 ? {
-              text: p.top_negative_2.substring(0, 200), // Limit text length
+              text: p.top_negative_2.substring(0, 500), // Limit text length for AI context
               impact: p.top_negative_2_impact ? parseFloat(p.top_negative_2_impact) : 0
             } : null,
             p.top_negative_3 ? {
-              text: p.top_negative_3.substring(0, 200), // Limit text length
+              text: p.top_negative_3.substring(0, 500), // Limit text length for AI context
               impact: p.top_negative_3_impact ? parseFloat(p.top_negative_3_impact) : 0
             } : null
           ].filter((item): item is { text: string; impact: number } => item !== null),
-          nextActions: (p.next_actions || '').substring(0, 200), // Limit text length
-          freeformComments: (p.freeform_comments || '').substring(0, 200), // Limit text length
+          nextActions: (p.next_actions || '').substring(0, 500), // Limit text length for AI context
+          freeformComments: (p.freeform_comments || '').substring(0, 1000), // Limit text length for AI context
           estimatedDollarImpact: p.estimated_dollar_impact ? parseFloat(p.estimated_dollar_impact) : 0
         };
 
