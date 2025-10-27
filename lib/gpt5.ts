@@ -152,27 +152,28 @@ export async function askCEOWithRAG(question: string, rows: any[], conversationH
   
   // Define output schema based on tone
   const schema = tone === 'narrative' 
-    ? `Return a short executive paragraph (≤120 words), then a brief action list:
+    ? `You MUST return this EXACT format (no deviations):
 
 **Summary**
-<single paragraph, ≤120 words>
+Write ONE paragraph of 80-120 words covering the key findings and implications from the data.
 
 **Next steps**
-- <action 1, ≤16 words>
-- <action 2, ≤16 words>
-- <action 3, ≤16 words>`
-    : `Return ONLY valid Markdown in this exact structure:
+- Write exactly 3 action bullets, each ≤16 words
+- Each bullet should be a specific, actionable step
+- No more, no less`
+
+    : `You MUST return this EXACT format (no deviations, no paragraph text):
 
 **Answer**
-- <bullet 1, ≤18 words>
-- <bullet 2, ≤18 words>
-- <bullet 3, ≤18 words>
-- <bullet 4, ≤18 words>
-- <bullet 5, ≤18 words>
-- <bullet 6, ≤18 words>
+- <bullet 1, exactly ≤18 words, no full sentences>
+- <bullet 2, exactly ≤18 words, no full sentences>
+- <bullet 3, exactly ≤18 words, no full sentences>
+- <bullet 4, exactly ≤18 words, no full sentences>
+- <bullet 5, exactly ≤18 words, no full sentences>
+- <bullet 6, exactly ≤18 words, no full sentences>
 
 **So what**
-- <one line, ≤20 words summarising the implication or next step>`;
+- <one bullet point, exactly ≤20 words>`;
   
   const user = {
     role: 'user',
@@ -180,8 +181,12 @@ export async function askCEOWithRAG(question: string, rows: any[], conversationH
 
 Feedback Data (Last 7 Days):\n${JSON.stringify(rows, null, 2)}
 
-Formatting contract:
-${schema}`
+CRITICAL: You MUST follow this format EXACTLY. ${tone === 'concise' ? 'DO NOT write paragraphs. ONLY write bullet points as shown.' : 'Write ONE paragraph in Summary, then 3 action bullets.'}
+
+Required format:
+${schema}
+
+Now answer the question following this format EXACTLY.`
   };
   
   const result = await callAzureJSON([system, user], { 
