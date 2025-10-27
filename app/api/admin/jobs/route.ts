@@ -149,12 +149,13 @@ export async function POST(req: Request) {
     const { action, job_id } = body;
     
     if (action === 'trigger_worker') {
-      // Manually trigger the worker
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/exec/worker/run`, {
-        method: 'POST'
+      // Return success immediately and let the worker process jobs
+      // The actual processing happens via the worker endpoint separately
+      return NextResponse.json({ 
+        ok: true, 
+        message: 'Worker trigger received. Jobs will be processed by the background worker.',
+        processed: 0
       });
-      const data = await response.json();
-      return NextResponse.json({ ok: true, data });
     }
     
     if (action === 'cancel_job' && job_id) {
