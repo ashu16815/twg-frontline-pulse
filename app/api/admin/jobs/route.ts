@@ -149,13 +149,35 @@ export async function POST(req: Request) {
     const { action, job_id } = body;
     
     if (action === 'trigger_worker') {
-      // Return success immediately and let the worker process jobs
-      // The actual processing happens via the worker endpoint separately
-      return NextResponse.json({ 
-        ok: true, 
-        message: 'Worker trigger received. Jobs will be processed by the background worker.',
-        processed: 0
-      });
+      // Actually call the worker endpoint
+      const baseUrl = req.headers.get('host') ? `https://${req.headers.get('host')}` : 'https://win-in-store.vercel.app';
+      
+      try {
+        const response = await fetch(`${baseUrl}/api/exec/worker/run`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Worker returned ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return NextResponse.json({ 
+          ok: true, 
+          message: `Worker processed ${data.processed || 0} jobs`,
+          ...data
+        });
+      } catch (error: any) {
+        console.error('Worker trigger error:', error);
+        return NextResponse.json({ 
+          ok: false, 
+          error: 'Failed to trigger worker: ' + error.message,
+          details: 'Try again or wait for the daily cron job at 2 AM'
+        }, { status: 500 });
+      }
     }
     
     if (action === 'cancel_job' && job_id) {
