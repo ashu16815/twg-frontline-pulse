@@ -5,7 +5,7 @@ export async function callAzureJSON(messages: any[], options: { timeout?: number
   const v = process.env.AZURE_OPENAI_API_VERSION?.trim() || '2024-10-01-preview';
   const timeout = options.timeout || parseInt(process.env.AZURE_OPENAI_TIMEOUT || '25000'); // 25 seconds default
   const maxRetries = options.maxRetries || parseInt(process.env.AZURE_OPENAI_MAX_RETRIES || '2');
-  const maxTokens = options.maxTokens || 2000;
+  const maxTokens = options.maxTokens || 4000; // Higher default to avoid truncation
   const temperature = options.temperature || 0.3;
   const responseFormat = options.responseFormat || 'json';
   
