@@ -65,8 +65,12 @@ export async function GET() {
       message = `${queuedCount} jobs queued - worker may not be running`;
     }
     
-    if (recentJobs.some(j => j.status === 'failed' && 
-        DATEDIFF(minute, j.created_at, GETDATE()) < 5)) {
+    if (recentJobs.some(j => {
+      const jobDate = new Date(j.created_at);
+      const now = new Date();
+      const diffMinutes = (now.getTime() - jobDate.getTime()) / (1000 * 60);
+      return j.status === 'failed' && diffMinutes < 5;
+    })) {
       health = 'error';
       message = 'Recent job failures detected - check Azure OpenAI configuration';
     }
