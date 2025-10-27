@@ -54,7 +54,10 @@ export default function Header() {
         
         {/* Navigation Links */}
         <nav className='flex items-center gap-1 ml-4'>
-          <Link href='/reports' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
+          <Link href='/feedback/raw' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
+            Feedback
+          </Link>
+          <Link href='/executive-reports' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
             Reports
           </Link>
           <Link href='/ceo' className='text-xs text-white/60 hover:text-white/90 px-3 py-1.5 rounded transition-colors'>
