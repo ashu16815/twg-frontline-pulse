@@ -23,8 +23,8 @@ export default function NavBar() {
           <Link href="/executive-reports" className="btn">
             Reports
           </Link>
-          <Link href="/ceo-demo" className="btn">
-            CEO Demo
+          <Link href="/feedback/raw" className="btn">
+            Raw Feedback
           </Link>
           <Link href="/ceo">
             <SheenButton>CEO Office</SheenButton>
