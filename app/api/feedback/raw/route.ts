@@ -67,8 +67,8 @@ export async function GET(req: Request) {
     
     // Order by
     const orderBy = order === 'impact_desc' 
-      ? 'ORDER BY (COALESCE(estimated_dollar_impact, 0) + COALESCE(miss1_dollars, 0) + COALESCE(miss2_dollars, 0) + COALESCE(miss3_dollars, 0)) DESC'
-      : 'ORDER BY created_at DESC';
+      ? '(COALESCE(estimated_dollar_impact, 0) + COALESCE(miss1_dollars, 0) + COALESCE(miss2_dollars, 0) + COALESCE(miss3_dollars, 0)) DESC'
+      : 'created_at DESC';
     
     // Get total count
     const countRequest = pool.request();
@@ -90,36 +90,54 @@ export async function GET(req: Request) {
     });
     
     const result = await request.query(`
-      SELECT TOP ${pageSize} 
+      SELECT 
         id,
         store_id,
         store_name,
         region_code,
         store_code,
         iso_week,
-        top_positive as what_worked,
-        top_negative_1 as what_didnt,
-        miss1 as actions_planned,
-        overall_mood as sentiment,
-        freeform_comments as comments,
-        estimated_dollar_impact as est_impact_dollars,
-        created_at as submitted_at,
-        submitted_by as author_name
-      FROM (
-        SELECT *, 
-          ROW_NUMBER() OVER (${orderBy.replace('ORDER BY', '')}) as rn
-        FROM dbo.store_feedback
-        WHERE ${whereClause}
-      ) AS ranked
-      WHERE rn > ${skip}
-      ${orderBy.replace('ORDER BY', '')}
+        top_positive,
+        top_negative_1,
+        top_negative_2,
+        top_negative_3,
+        miss1,
+        miss2,
+        miss3,
+        overall_mood,
+        freeform_comments,
+        estimated_dollar_impact,
+        created_at,
+        submitted_by
+      FROM dbo.store_feedback
+      WHERE ${whereClause}
+      ORDER BY ${orderBy}
+      OFFSET ${skip} ROWS
+      FETCH NEXT ${pageSize} ROWS ONLY
     `);
+    
+    const results = result.recordset.map((r: any) => ({
+      id: r.id,
+      store_id: r.store_id,
+      store_name: r.store_name,
+      region_code: r.region_code,
+      store_code: r.store_code,
+      iso_week: r.iso_week,
+      what_worked: r.top_positive,
+      what_didnt: r.top_negative_1,
+      actions_planned: r.miss1,
+      sentiment: r.overall_mood,
+      comments: r.freeform_comments,
+      est_impact_dollars: r.estimated_dollar_impact,
+      submitted_at: r.created_at,
+      author_name: r.submitted_by
+    }));
     
     return NextResponse.json({
       total,
       page,
       pageSize,
-      results: result.recordset
+      results
     });
     
   } catch (error: any) {

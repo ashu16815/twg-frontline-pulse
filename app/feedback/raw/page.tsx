@@ -185,7 +185,7 @@ function RawFeedbackContent() {
               <option value='impact_desc'>Highest impact</option>
             </select>
             <span className='px-2 py-1 rounded bg-red-600/20 text-red-300'>
-              {data.total.toLocaleString()} feedback entries
+              {(data.total || 0).toLocaleString()} feedback entries
             </span>
           </div>
         </div>
