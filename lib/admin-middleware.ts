@@ -21,7 +21,7 @@ export async function requireAdmin(req: Request) {
 
     return {
       error: null,
-      response: null,
+      response: undefined as any, // No error, proceed
       session
     };
   } catch (e: any) {

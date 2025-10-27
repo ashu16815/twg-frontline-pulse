@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 // PUT - Update store field
 export async function PUT(req: Request, { params }: { params: { store_id: string } }) {
   const authCheck = await requireAdmin(req);
-  if (authCheck.error) return authCheck.response;
+  if (authCheck.error) return authCheck.response!;
 
   try {
     const { store_id } = params;

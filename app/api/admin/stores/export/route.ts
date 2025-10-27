@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
   const authCheck = await requireAdmin(req);
-  if (authCheck.error) return authCheck.response;
+  if (authCheck.error) return authCheck.response!;
 
   try {
     const pool = await getDb();

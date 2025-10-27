@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 // GET - Fetch all stores with filters
 export async function GET(req: Request) {
   const authCheck = await requireAdmin(req);
-  if (authCheck.error) return authCheck.response;
+  if (authCheck.error) return authCheck.response!;
 
   try {
     const { searchParams } = new URL(req.url);
@@ -70,7 +70,7 @@ export async function GET(req: Request) {
 // POST - Create new store
 export async function POST(req: Request) {
   const authCheck = await requireAdmin(req);
-  if (authCheck.error) return authCheck.response;
+  if (authCheck.error) return authCheck.response!;
 
   try {
     const body = await req.json();
