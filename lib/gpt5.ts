@@ -184,11 +184,15 @@ Formatting contract:
 ${schema}`
   };
   
-  return callAzureJSON([system, user], { 
+  const result = await callAzureJSON([system, user], { 
     timeout: 20000, 
     maxRetries: 1,
-    maxTokens: tone === 'narrative' ? 400 : 220
+    maxTokens: tone === 'narrative' ? 400 : 220,
+    temperature: tone === 'narrative' ? 0.4 : 0.2,
+    responseFormat: 'text' // Return as text/markdown, not JSON
   });
+  
+  return result; // result.answer contains the markdown text
 }
 
 export async function analyzeFrontlineFeedback(payload: {
