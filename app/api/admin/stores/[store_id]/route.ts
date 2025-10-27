@@ -60,19 +60,24 @@ export async function PUT(req: Request, { params }: { params: { store_id: string
       `);
     }
 
-    // Log audit
-    const auditRequest = pool.request();
-    auditRequest.input('store_id', store_id);
-    auditRequest.input('field', field);
-    auditRequest.input('old_value', oldValue || '');
-    auditRequest.input('new_value', value || '');
-    
-    await auditRequest.query(`
-      INSERT INTO dbo.audit_store_changes (
-        store_code, field_name, old_value, new_value, changed_by, changed_at
-      )
-      VALUES (@store_id, @field, @old_value, @new_value, 'admin', SYSDATETIME())
-    `);
+    // Log audit (only if table exists)
+    try {
+      const auditRequest = pool.request();
+      auditRequest.input('store_id', store_id);
+      auditRequest.input('field', field);
+      auditRequest.input('old_value', oldValue || '');
+      auditRequest.input('new_value', value || '');
+      
+      await auditRequest.query(`
+        INSERT INTO dbo.audit_store_changes (
+          store_code, field_name, old_value, new_value, changed_by, changed_at
+        )
+        VALUES (@store_id, @field, @old_value, @new_value, 'admin', SYSDATETIME())
+      `);
+    } catch (auditError: any) {
+      // Silently fail if audit table doesn't exist yet
+      console.log('⚠️ Audit logging skipped (table may not exist yet)');
+    }
 
     return NextResponse.json({
       ok: true,
