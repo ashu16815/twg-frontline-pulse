@@ -192,7 +192,7 @@ Now answer the question following this format EXACTLY.`
   const result = await callAzureJSON([system, user], { 
     timeout: 20000, 
     maxRetries: 1,
-    maxTokens: tone === 'narrative' ? 400 : 220,
+    maxTokens: tone === 'narrative' ? 800 : 500,
     responseFormat: 'text' // Return as text/markdown, not JSON
   });
   
