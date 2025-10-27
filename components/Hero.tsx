@@ -26,11 +26,8 @@ export default function Hero() {
             <a className="btn bg-red-600 hover:bg-red-700 text-white" href="/frontline/submit">
               Submit Store Report
             </a>
-            <a className="btn" href="/reports">
+            <a className="btn" href="/executive-reports">
               View Reports
-            </a>
-            <a className="btn bg-blue-600 hover:bg-blue-700 text-white" href="/exec-report">
-              Executive Report
             </a>
             <SheenButton>
               <a href="/ceo">Ask Questions</a>

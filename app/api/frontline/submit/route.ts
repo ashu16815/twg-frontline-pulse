@@ -79,7 +79,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ 
         success: true, 
         message: 'Submission already received',
-        redirect: '/reports'
+        redirect: '/executive-reports'
       });
     }
 
@@ -189,7 +189,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ 
       success: true, 
       message: 'Feedback submitted successfully! AI analysis will be completed in the background.',
-      redirect: '/reports',
+      redirect: '/executive-reports',
       idempotencyKey
     });
 

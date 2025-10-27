@@ -6,18 +6,13 @@ import useSWR from 'swr';
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export default function WeeklyInsightCard() {
-  const { data: snapshotData } = useSWR('/api/exec/snapshot?scope_type=network', fetcher, { 
+  const { data: insightData } = useSWR('/api/reports/executive-summary', fetcher, { 
     revalidateOnFocus: false,
-    refreshInterval: 30000 // Refresh every 30 seconds
-  });
-  
-  const { data: kpiData } = useSWR('/api/exec/kpis?scope_type=network', fetcher, { 
-    revalidateOnFocus: false,
-    refreshInterval: 30000 // Refresh every 30 seconds
+    refreshInterval: 60000 // Refresh every minute
   });
 
-  const analysis = snapshotData?.snapshot?.analysis_json ? JSON.parse(snapshotData.snapshot.analysis_json) : null;
-  const stamp = snapshotData?.snapshot?.created_at ? new Date(snapshotData.snapshot.created_at).toLocaleString() : null;
+  const insight = insightData?.insight;
+  const timestamp = insightData?.timestamp;
 
   return (
     <GlassCard className="p-0 overflow-hidden">
@@ -31,63 +26,39 @@ export default function WeeklyInsightCard() {
       <div className="p-6">
         <div className="text-sm opacity-70">This week</div>
         
-        {analysis ? (
+        {insight ? (
           <div className="mt-2 space-y-3">
-            {/* Top Opportunity */}
-            {analysis.top_opportunities?.[0] && (
+            {/* Top Opportunity/Pain Point */}
+            {insight.title && (
               <div>
                 <div className="text-lg font-semibold text-blue-300">
-                  {analysis.top_opportunities[0].theme}
+                  {insight.title}
                 </div>
                 <div className="text-sm opacity-80">
-                  ${analysis.top_opportunities[0].impact_dollars?.toLocaleString?.()} impact
+                  ${insight.impact?.toLocaleString?.()} impact
                 </div>
               </div>
             )}
             
-            {/* Top Action */}
-            {analysis.top_actions?.[0] && (
+            {/* Next Action */}
+            {insight.next_action && (
               <div className="text-sm">
-                <span className="opacity-70">Next Action:</span> {analysis.top_actions[0].action}
+                <span className="opacity-70">Next Action:</span> {insight.next_action}
               </div>
             )}
             
             {/* Timestamp */}
-            {stamp && (
+            {timestamp && (
               <div className="text-xs opacity-60">
-                Updated {new Date(snapshotData.snapshot.created_at).toLocaleDateString()}
+                Updated {new Date(timestamp).toLocaleDateString('en-NZ')}
               </div>
             )}
           </div>
-        ) : kpiData?.kpis ? (
-          <div className="mt-2 space-y-3">
-            {/* Real Data from KPIs */}
-            <div>
-              <div className="text-lg font-semibold text-blue-300">
-                Live Store Data
-              </div>
-              <div className="text-sm opacity-80">
-                ${kpiData.kpis.totalMiss?.toLocaleString?.()} total impact
-              </div>
-            </div>
-            
-            <div className="text-sm">
-              <span className="opacity-70">Status:</span> {kpiData.kpis.totalFeedbacks} feedback entries received
-            </div>
-            
-            <div className="text-sm">
-              <span className="opacity-70">Mood Index:</span> {(kpiData.kpis.mood * 100).toFixed(0)}%
-            </div>
-            
-            <div className="text-xs opacity-60">
-              Real-time data • AI analysis pending
-            </div>
-          </div>
         ) : (
           <div className="mt-2 space-y-2">
-            <div className="text-lg">Store insights coming soon</div>
+            <div className="text-lg">Store insights loading...</div>
             <div className="opacity-80 text-sm">
-              Submit feedback to see real-time data
+              Generating AI summary from last 7 days feedback
             </div>
           </div>
         )}

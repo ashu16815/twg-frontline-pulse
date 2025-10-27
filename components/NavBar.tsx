@@ -20,7 +20,7 @@ export default function NavBar() {
           <Link href="/weekly/submit" className="btn">
             Performance Check-in
           </Link>
-          <Link href="/reports" className="btn">
+          <Link href="/executive-reports" className="btn">
             Reports
           </Link>
           <Link href="/ceo-demo" className="btn">
