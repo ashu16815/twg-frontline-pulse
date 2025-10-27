@@ -154,6 +154,30 @@ export default function ExecutiveReportSimple() {
             </div>
           )}
 
+          {/* What's Not Working */}
+          {report.report?.what_is_not_working && report.report.what_is_not_working.length > 0 && (
+            <div className='card p-4'>
+              <h3 className='font-semibold mb-4 text-orange-300'>❌ What's Not Working</h3>
+              <div className='space-y-2'>
+                {report.report.what_is_not_working.map((item: any, i: number) => (
+                  <div key={i} className='bg-orange-500/10 border border-orange-500/20 p-3 rounded'>
+                    <div className='text-sm'>{item}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Additional Information */}
+          {report.report?.additional_information && (
+            <div className='card p-4'>
+              <h3 className='font-semibold mb-4 text-blue-300'>ℹ️ Additional Information</h3>
+              <div className='bg-blue-500/10 border border-blue-500/20 p-4 rounded'>
+                <div className='text-sm leading-relaxed'>{report.report.additional_information}</div>
+              </div>
+            </div>
+          )}
+
           {/* Grid: Top Opportunities & Pain Points */}
           <div className='grid md:grid-cols-2 gap-6'>
             {/* Top 3 Opportunities */}
@@ -242,10 +266,62 @@ export default function ExecutiveReportSimple() {
             <div className='card p-4 space-y-4'>
               <h3 className='font-semibold'>📊 Raw Feedback Data Analyzed</h3>
               
-              {report.raw_data.sample_feedbacks && (
+              {/* What's Working Well - Details */}
+              {report.raw_data.whats_working && report.raw_data.whats_working.length > 0 && (
                 <div>
-                  <h4 className='text-sm font-medium mb-2'>Sample Feedbacks ({report.raw_data.sample_feedbacks.length})</h4>
-                  <div className='space-y-2 max-h-96 overflow-y-auto'>
+                  <h4 className='text-sm font-medium mb-2 text-green-300'>✅ What's Working Well ({report.raw_data.whats_working.length})</h4>
+                  <div className='space-y-2 max-h-64 overflow-y-auto text-xs'>
+                    {report.raw_data.whats_working.map((item: any, i: number) => (
+                      <div key={i} className='bg-green-500/10 border border-green-500/20 p-2 rounded'>
+                        <div className='font-medium'>{item.theme}</div>
+                        <div className='text-xs opacity-70'>Store: {item.store_name || item.store_id} | Region: {item.region_code}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* What's Not Working - Details */}
+              {report.raw_data.whats_not_working && report.raw_data.whats_not_working.length > 0 && (
+                <div>
+                  <h4 className='text-sm font-medium mb-2 text-orange-300'>❌ What's Not Working ({report.raw_data.whats_not_working.length})</h4>
+                  <div className='space-y-2 max-h-64 overflow-y-auto text-xs'>
+                    {report.raw_data.whats_not_working.map((item: any, i: number) => (
+                      <div key={i} className='bg-orange-500/10 border border-orange-500/20 p-2 rounded'>
+                        <div className='flex justify-between'>
+                          <span className='font-medium'>{item.issue}</span>
+                          <span className='font-semibold text-red-300'>${item.impact?.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Additional Information - Details */}
+              {report.raw_data.additional_info && report.raw_data.additional_info.length > 0 && (
+                <div>
+                  <h4 className='text-sm font-medium mb-2 text-blue-300'>ℹ️ Additional Information ({report.raw_data.additional_info.length})</h4>
+                  <div className='space-y-2 max-h-64 overflow-y-auto text-xs'>
+                    {report.raw_data.additional_info.map((item: any, i: number) => (
+                      <div key={i} className='bg-blue-500/10 border border-blue-500/20 p-3 rounded'>
+                        <div className='grid grid-cols-3 gap-2 mb-2'>
+                          <div><span className='opacity-70'>Store:</span> {item.store_name || item.store_id}</div>
+                          <div><span className='opacity-70'>Region:</span> {item.region_code}</div>
+                          <div><span className='opacity-70'>Mood:</span> {item.overall_mood}</div>
+                        </div>
+                        <div className='text-sm'>{item.comment}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Detailed Feedbacks */}
+              {report.raw_data.sample_feedbacks && report.raw_data.sample_feedbacks.length > 0 && (
+                <div>
+                  <h4 className='text-sm font-medium mb-2'>📝 Detailed Feedback ({report.raw_data.sample_feedbacks.length})</h4>
+                  <div className='space-y-2 max-h-64 overflow-y-auto'>
                     {report.raw_data.sample_feedbacks.map((feedback: any, i: number) => (
                       <div key={i} className='bg-gray-500/10 border border-gray-500/20 p-3 rounded text-xs'>
                         <div className='grid grid-cols-4 gap-2 mb-2'>
@@ -260,22 +336,6 @@ export default function ExecutiveReportSimple() {
                           {feedback.top_negative_2 && <div className='text-red-300'>❌ {feedback.top_negative_2} (${feedback.miss2_dollars || 0})</div>}
                           {feedback.top_negative_3 && <div className='text-red-300'>❌ {feedback.top_negative_3} (${feedback.miss3_dollars || 0})</div>}
                           {feedback.freeform_comments && <div className='opacity-70 mt-2'>{feedback.freeform_comments}</div>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {report.raw_data.pain_points && report.raw_data.pain_points.length > 0 && (
-                <div>
-                  <h4 className='text-sm font-medium mb-2'>Pain Points by Impact</h4>
-                  <div className='space-y-1 text-xs'>
-                    {report.raw_data.pain_points.map((item: any, i: number) => (
-                      <div key={i} className='bg-red-500/10 border border-red-500/20 p-2 rounded'>
-                        <div className='flex justify-between'>
-                          <span>{item.issue}</span>
-                          <span className='font-semibold'>${item.impact?.toLocaleString()}</span>
                         </div>
                       </div>
                     ))}

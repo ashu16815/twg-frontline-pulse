@@ -48,13 +48,15 @@ export async function POST(req: Request) {
     console.log(`📊 Found ${feedbacks.length} feedback entries in last ${days} days`);
 
     if (feedbacks.length === 0) {
-      return NextResponse.json({
+        return NextResponse.json({
         ok: true,
         report: {
           executive_summary: `No feedback data available for the last ${days} days. Please encourage stores to submit feedback.`,
           top_opportunities: [],
           top_pain_points: [],
           what_is_working_well: [],
+          what_is_not_working: [],
+          additional_information: '',
           recommended_actions: []
         }
       });
@@ -69,6 +71,34 @@ export async function POST(req: Request) {
         { issue: f.top_negative_3, impact: Number(f.miss3_dollars) || 0 }
       ].filter(item => item.issue));
 
+    const whatsWorking = feedbacks
+      .filter((f: any) => f.top_positive)
+      .map((f: any) => ({
+        theme: f.top_positive,
+        store_id: f.store_id,
+        store_name: f.store_name,
+        region_code: f.region_code
+      }))
+      .slice(0, 20);
+
+    const whatsNotWorking = painPointsData
+      .map((item: any) => ({
+        issue: item.issue,
+        impact: item.impact
+      }))
+      .slice(0, 20);
+
+    const additionalInfo = feedbacks
+      .filter((f: any) => f.freeform_comments)
+      .map((f: any) => ({
+        store_id: f.store_id,
+        store_name: f.store_name,
+        region_code: f.region_code,
+        overall_mood: f.overall_mood,
+        comment: f.freeform_comments
+      }))
+      .slice(0, 15);
+
     const structuredData = {
       total_feedbacks: feedbacks.length,
       stores_with_feedback: [...new Set(feedbacks.map((f: any) => f.store_id))].length,
@@ -76,11 +106,9 @@ export async function POST(req: Request) {
         sum + (Number(f.estimated_dollar_impact) || 0) + (Number(f.miss1_dollars) || 0) + 
         (Number(f.miss2_dollars) || 0) + (Number(f.miss3_dollars) || 0), 0
       ),
-      positive_themes: feedbacks
-        .filter((f: any) => f.top_positive)
-        .map((f: any) => f.top_positive)
-        .slice(0, 20),
-      pain_points: painPointsData.slice(0, 30),
+      whats_working_well: whatsWorking,
+      whats_not_working: whatsNotWorking,
+      additional_information: additionalInfo,
       sample_comments: feedbacks
         .filter((f: any) => f.freeform_comments)
         .map((f: any) => f.freeform_comments)
@@ -90,15 +118,27 @@ export async function POST(req: Request) {
     // Create AI prompt
     const systemPrompt = {
       role: 'system',
-      content: `You are a senior retail operations executive analyst for The Warehouse Group.
+      content: `You are a Big Four retail operations analyst.
+
+You analyze weekly feedback from 250 stores of a national retailer.
+
+Your task is to produce a concise executive report that highlights the most important patterns, risks, and opportunities across stores, regions, and categories.
+
 Analyze the feedback data from the last ${days} days and provide a comprehensive executive report.
+
+The data includes:
+- What's Working Well: Positive feedback themes from stores
+- What's Not Working: Issues and pain points with impact estimates
+- Additional Information: Freeform comments and contextual details
 
 Return ONLY valid JSON with this structure:
 {
-  "executive_summary": "3-4 sentence overview",
+  "executive_summary": "4-5 sentence comprehensive overview of feedback trends",
   "top_opportunities": ["opportunity 1", "opportunity 2", "opportunity 3"],
   "top_pain_points": ["issue 1", "issue 2", "issue 3"],
-  "what_is_working_well": ["success 1", "success 2"],
+  "what_is_working_well": ["detailed success 1", "detailed success 2"],
+  "what_is_not_working": ["detailed issue 1", "detailed issue 2"],
+  "additional_information": "Summary of key comments and context",
   "recommended_actions": ["action 1", "action 2", "action 3"]
 }`
     };
@@ -129,6 +169,9 @@ Return ONLY valid JSON with this structure:
         store_filter: store_id || 'All'
       },
       raw_data: {
+        whats_working: whatsWorking.slice(0, 15),
+        whats_not_working: whatsNotWorking.slice(0, 15),
+        additional_info: additionalInfo,
         sample_feedbacks: feedbacks.slice(0, 20).map((f: any) => ({
           store_id: f.store_id,
           store_name: f.store_name,
@@ -142,8 +185,7 @@ Return ONLY valid JSON with this structure:
           miss2_dollars: f.miss2_dollars,
           miss3_dollars: f.miss3_dollars,
           freeform_comments: f.freeform_comments
-        })),
-        pain_points: painPointsData.slice(0, 20)
+        }))
       }
     });
 
@@ -153,13 +195,15 @@ Return ONLY valid JSON with this structure:
     // Return fallback report
     return NextResponse.json({
       ok: true,
-      report: {
-        executive_summary: 'Executive report generation encountered an issue. Please try again.',
-        top_opportunities: ['Review data manually', 'Contact stores for updates'],
-        top_pain_points: ['Unable to generate analysis'],
-        what_is_working_well: ['Data collection system operational'],
-        recommended_actions: ['Retry report generation', 'Check Azure OpenAI service']
-      }
+        report: {
+          executive_summary: 'Executive report generation encountered an issue. Please try again.',
+          top_opportunities: ['Review data manually', 'Contact stores for updates'],
+          top_pain_points: ['Unable to generate analysis'],
+          what_is_working_well: ['Data collection system operational'],
+          what_is_not_working: ['AI report generation temporarily unavailable'],
+          additional_information: 'Please check Azure OpenAI service status',
+          recommended_actions: ['Retry report generation', 'Check Azure OpenAI service']
+        }
     });
   }
 }
