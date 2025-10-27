@@ -20,6 +20,7 @@ export default function AdminStoresPage() {
   const router = useRouter();
   const [stores, setStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [regions, setRegions] = useState<any[]>([]);
   const [filters, setFilters] = useState({
@@ -82,6 +83,7 @@ export default function AdminStoresPage() {
   }
 
   async function updateField(store_id: string, field: string, value: any) {
+    setSaving(store_id);
     try {
       const res = await fetch(`/api/admin/stores/${store_id}`, {
         method: 'PUT',
@@ -90,10 +92,19 @@ export default function AdminStoresPage() {
       });
       
       if (res.ok) {
-        fetchStores(); // Refresh after update
+        // Update local state immediately for instant feedback
+        setStores(prev => prev.map(s => 
+          s.store_id === store_id ? { ...s, [field]: value } : s
+        ));
+        setTimeout(() => setSaving(null), 500); // Clear saving state
+      } else {
+        alert('Failed to update');
+        setSaving(null);
       }
     } catch (e) {
       console.error('Failed to update store:', e);
+      alert('Error updating store');
+      setSaving(null);
     }
   }
 
@@ -231,6 +242,7 @@ export default function AdminStoresPage() {
                   <th className='text-left p-3'>Manager Email</th>
                   <th className='text-left p-3'>Banner</th>
                   <th className='text-center p-3'>Active</th>
+                  <th className='text-left p-3'>Status</th>
                   <th className='text-left p-3'>Last Updated</th>
                 </tr>
               </thead>
@@ -240,7 +252,7 @@ export default function AdminStoresPage() {
                     <td className='p-3 font-mono text-xs'>{store.store_id}</td>
                     <td className='p-3'>
                       <input
-                        className='input w-20 bg-transparent'
+                        className='input w-20 bg-transparent border border-transparent hover:border-gray-600 focus:border-blue-500'
                         defaultValue={store.store_code || ''}
                         onBlur={e => {
                           const val = e.target.value ? parseInt(e.target.value) : null;
@@ -252,7 +264,7 @@ export default function AdminStoresPage() {
                     </td>
                     <td className='p-3'>
                       <input
-                        className='input bg-transparent w-full'
+                        className='input bg-transparent w-full border border-transparent hover:border-gray-600 focus:border-blue-500'
                         defaultValue={store.store_name}
                         onBlur={e => {
                           if (e.target.value !== store.store_name) {
@@ -263,7 +275,7 @@ export default function AdminStoresPage() {
                     </td>
                     <td className='p-3'>
                       <input
-                        className='input bg-transparent w-32'
+                        className='input bg-transparent w-32 border border-transparent hover:border-gray-600 focus:border-blue-500'
                         defaultValue={store.region}
                         onBlur={e => {
                           if (e.target.value !== store.region) {
@@ -274,7 +286,7 @@ export default function AdminStoresPage() {
                     </td>
                     <td className='p-3'>
                       <input
-                        className='input bg-transparent w-20 text-center'
+                        className='input bg-transparent w-20 text-center border border-transparent hover:border-gray-600 focus:border-blue-500'
                         defaultValue={store.region_code}
                         onBlur={e => {
                           if (e.target.value !== store.region_code) {
@@ -285,7 +297,7 @@ export default function AdminStoresPage() {
                     </td>
                     <td className='p-3'>
                       <input
-                        className='input bg-transparent w-full'
+                        className='input bg-transparent w-full border border-transparent hover:border-gray-600 focus:border-blue-500'
                         type='email'
                         defaultValue={store.manager_email || ''}
                         onBlur={e => {
@@ -297,7 +309,7 @@ export default function AdminStoresPage() {
                     </td>
                     <td className='p-3'>
                       <input
-                        className='input bg-transparent w-24'
+                        className='input bg-transparent w-24 border border-transparent hover:border-gray-600 focus:border-blue-500'
                         defaultValue={store.banner || ''}
                         onBlur={e => {
                           if (e.target.value !== (store.banner || '')) {
@@ -308,7 +320,7 @@ export default function AdminStoresPage() {
                     </td>
                     <td className='p-3 text-center'>
                       <select
-                        className='input bg-transparent px-2'
+                        className='input bg-transparent px-2 border border-transparent hover:border-gray-600'
                         defaultValue={store.active ? 'true' : 'false'}
                         onChange={e => {
                           const val = e.target.value === 'true';
@@ -320,6 +332,13 @@ export default function AdminStoresPage() {
                         <option value='true'>✓ Active</option>
                         <option value='false'>✗ Inactive</option>
                       </select>
+                    </td>
+                    <td className='p-3 text-center'>
+                      {saving === store.store_id ? (
+                        <span className='text-yellow-400 text-xs'>💾 Saving...</span>
+                      ) : (
+                        <span className='text-green-400 text-xs'>✓ Saved</span>
+                      )}
                     </td>
                     <td className='p-3 text-xs opacity-70'>
                       {new Date(store.updated_at).toLocaleDateString()}
