@@ -37,6 +37,7 @@ interface Message {
 
 export default function CEOChat() {
   const [q, setQ] = useState('What are the top risks in Auckland based stores?');
+  const [tone, setTone] = useState<'concise' | 'narrative'>('concise');
   const [conversation, setConversation] = useState<Message[]>([]);
   const [feedbackData, setFeedbackData] = useState<CEOResponse | null>(null);
   const [showDrillDown, setShowDrillDown] = useState(false);
@@ -66,6 +67,7 @@ export default function CEOChat() {
         body: JSON.stringify({ 
           question: q,
           conversationHistory: updatedConversation.slice(0, -1), // Send previous messages
+          tone,
           timestamp: Date.now() 
         })
       });
@@ -96,15 +98,24 @@ export default function CEOChat() {
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2 items-center flex-wrap">
         <input
           value={q}
           onChange={e => setQ(e.target.value)}
           onKeyPress={e => e.key === 'Enter' && !loading && q.trim() && ask()}
-          className="input"
+          className="input flex-1"
           placeholder="Ask about themes, risks, stores…"
           disabled={loading}
         />
+        <select
+          value={tone}
+          onChange={e => setTone(e.target.value as 'concise' | 'narrative')}
+          className="btn text-xs"
+          disabled={loading}
+        >
+          <option value="concise">🎯 Concise</option>
+          <option value="narrative">📝 Narrative</option>
+        </select>
         <button 
           className="btn-primary sheen" 
           onClick={ask}
@@ -130,7 +141,7 @@ export default function CEOChat() {
               <div className="text-xs font-semibold mb-1 opacity-70">
                 {msg.role === 'user' ? '👤 You' : '🤖 Assistant'}
               </div>
-              <div className="text-sm">{msg.content}</div>
+              <div className="text-sm whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: formatMarkdown(msg.content) }} />
             </div>
           ))}
           {loading && (
@@ -247,4 +258,13 @@ export default function CEOChat() {
       </div>
     </div>
   );
+}
+
+// Format markdown for display
+function formatMarkdown(md: string) {
+  return md
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^\- (.+)$/gm, '<div class="ml-4">• $1</div>')
+    .replace(/^# (.+)$/gm, '<div class="font-bold text-lg">$1</div>')
+    .replace(/^## (.+)$/gm, '<div class="font-bold">$1</div>');
 }

@@ -134,25 +134,15 @@ export async function askCEO(question: string, isoWeek: string, rows: any[], sum
   return callAzureJSON([system, user], { timeout: 15000, maxRetries: 1 });
 }
 
-export async function askCEOWithRAG(question: string, rows: any[], conversationHistory: any[] = []) {
+export async function askCEOWithRAG(question: string, rows: any[], conversationHistory: any[] = [], tone: 'concise' | 'narrative' = 'concise') {
+  // System prompt for Retail Expert (Big 4 caliber)
   const system = {
     role: 'system',
-    content: `You are a retail operations analyst for The Warehouse Group having a conversational Q&A session with the CEO.
-
-You are answering questions about feedback data from the last 7 days across multiple stores and regions.
-
-Return ONLY valid JSON: {answer:string}
-
-Guidelines:
-- Be specific and data-driven
-- Include store names, regions, and dollar amounts when available
-- Reference specific feedback entries when relevant
-- Keep answers concise but conversational (150 words max for follow-ups)
-- If specific information isn't in the data, say so clearly
-- Focus on actionable insights and patterns
-- For follow-up questions, maintain context from the previous conversation
-- Build on previous answers naturally
-- Can refer back to earlier topics when relevant`
+    content: `You are a Senior Retail Operations Expert (Big 4 caliber) advising a large multi-store retailer (The Warehouse Group).
+    
+    Principles: be concise, decision-oriented, and action-focused. Prefer bullet points over paragraphs.
+    Never invent data; if uncertain, say what you would check. Use consistent retail vocabulary (availability, conversion, UPT, ATV, sell-through, stock-on-hand, pallets out, roster gaps).
+    Always format outputs as instructed by the selected tone schema.`
   };
   
   // Build conversation context
@@ -160,14 +150,45 @@ Guidelines:
     ? `\n\nPrevious conversation:\n${conversationHistory.map(m => `${m.role === 'user' ? 'CEO' : 'You'}: ${m.content}`).join('\n')}\n\n`
     : '';
   
+  // Define output schema based on tone
+  const schema = tone === 'narrative' 
+    ? `Return a short executive paragraph (≤120 words), then a brief action list:
+
+**Summary**
+<single paragraph, ≤120 words>
+
+**Next steps**
+- <action 1, ≤16 words>
+- <action 2, ≤16 words>
+- <action 3, ≤16 words>`
+    : `Return ONLY valid Markdown in this exact structure:
+
+**Answer**
+- <bullet 1, ≤18 words>
+- <bullet 2, ≤18 words>
+- <bullet 3, ≤18 words>
+- <bullet 4, ≤18 words>
+- <bullet 5, ≤18 words>
+- <bullet 6, ≤18 words>
+
+**So what**
+- <one line, ≤20 words summarising the implication or next step>`;
+  
   const user = {
     role: 'user',
     content: `${conversationContext}Current question: ${question}
 
-Feedback Data (Last 7 Days):\n${JSON.stringify(rows, null, 2)}`
+Feedback Data (Last 7 Days):\n${JSON.stringify(rows, null, 2)}
+
+Formatting contract:
+${schema}`
   };
   
-  return callAzureJSON([system, user], { timeout: 20000, maxRetries: 1 });
+  return callAzureJSON([system, user], { 
+    timeout: 20000, 
+    maxRetries: 1,
+    maxTokens: tone === 'narrative' ? 400 : 220
+  });
 }
 
 export async function analyzeFrontlineFeedback(payload: {
