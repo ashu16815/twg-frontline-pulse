@@ -43,6 +43,11 @@ export default function CEOChat() {
   const [loading, setLoading] = useState(false);
 
   async function ask() {
+    // Don't allow empty questions
+    if (!q.trim()) {
+      return;
+    }
+    
     setLoading(true);
     
     // Add user message to conversation
@@ -95,7 +100,7 @@ export default function CEOChat() {
         <input
           value={q}
           onChange={e => setQ(e.target.value)}
-          onKeyPress={e => e.key === 'Enter' && !loading && ask()}
+          onKeyPress={e => e.key === 'Enter' && !loading && q.trim() && ask()}
           className="input"
           placeholder="Ask about themes, risks, stores…"
           disabled={loading}
@@ -103,7 +108,7 @@ export default function CEOChat() {
         <button 
           className="btn-primary sheen" 
           onClick={ask}
-          disabled={loading}
+          disabled={loading || !q.trim()}
         >
           {loading ? '⏳' : 'Ask'}
         </button>
