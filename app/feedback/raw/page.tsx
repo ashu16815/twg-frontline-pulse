@@ -34,6 +34,7 @@ function RawFeedbackContent() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>({ total: 0, page: 1, pageSize: 25, results: [] });
   const [regions, setRegions] = useState<any[]>([]);
+  const [stores, setStores] = useState<any[]>([]);
   
   // Get filter params from URL
   const filters = {
@@ -50,6 +51,7 @@ function RawFeedbackContent() {
 
   useEffect(() => {
     fetchRegions();
+    fetchStores();
     fetchData();
   }, [searchParams]);
 
@@ -62,6 +64,18 @@ function RawFeedbackContent() {
       }
     } catch (e) {
       console.error('Failed to fetch regions:', e);
+    }
+  }
+
+  async function fetchStores() {
+    try {
+      const res = await fetch('/api/reports/lookups');
+      const json = await res.json();
+      if (json.ok) {
+        setStores([{ id: 'all', label: 'All Stores' }, ...(json.stores || [])]);
+      }
+    } catch (e) {
+      console.error('Failed to fetch stores:', e);
     }
   }
 
@@ -143,12 +157,15 @@ function RawFeedbackContent() {
             </div>
             <div>
               <label className='text-sm opacity-80 block mb-1'>Store</label>
-              <input 
-                placeholder='Store ID' 
+              <select 
                 className='input w-full' 
-                value={filters.store_id === 'all' ? '' : filters.store_id} 
-                onChange={e => updateQuery({ store_id: e.target.value || 'all' })}
-              />
+                value={filters.store_id} 
+                onChange={e => updateQuery({ store_id: e.target.value })}
+              >
+                {stores.map(s => (
+                  <option key={s.id} value={s.id}>{s.label}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className='text-sm opacity-80 block mb-1'>Sentiment</label>
