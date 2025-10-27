@@ -36,7 +36,7 @@ interface Message {
 }
 
 export default function CEOChat() {
-  const [q, setQ] = useState('What are the top risks in Region North this week?');
+  const [q, setQ] = useState('What are the top risks in Auckland based stores?');
   const [conversation, setConversation] = useState<Message[]>([]);
   const [feedbackData, setFeedbackData] = useState<CEOResponse | null>(null);
   const [showDrillDown, setShowDrillDown] = useState(false);
