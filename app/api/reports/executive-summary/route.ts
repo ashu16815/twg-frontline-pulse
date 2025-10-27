@@ -63,9 +63,11 @@ export async function GET() {
       .slice(0, 10);
 
     // Build structured data for AI
+    const uniqueStores = Array.from(new Set(feedbacks.map((f: any) => f.store_id)));
+    
     const structuredData = {
       total_feedbacks: feedbacks.length,
-      stores_with_feedback: [...new Set(feedbacks.map((f: any) => f.store_id))].length,
+      stores_with_feedback: uniqueStores.length,
       total_impact: totalImpact,
       top_pain_points: painPoints.slice(0, 3),
       top_opportunities: opportunities.slice(0, 5),
