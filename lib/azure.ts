@@ -43,7 +43,8 @@ export async function callAzureJSON(messages: any[], options: { timeout?: number
           messages,
           ...(responseFormat === 'json' ? { response_format: { type: 'json_object' } } : {}),
           max_completion_tokens: maxTokens,
-          temperature: temperature
+          // Temperature only if it's not the default (1)
+          ...(temperature !== 1 && temperature !== 0.3 ? { temperature: temperature } : {})
         }),
         signal: controller.signal
       });

@@ -193,7 +193,6 @@ Now answer the question following this format EXACTLY.`
     timeout: 20000, 
     maxRetries: 1,
     maxTokens: tone === 'narrative' ? 400 : 220,
-    temperature: tone === 'narrative' ? 0.4 : 0.2,
     responseFormat: 'text' // Return as text/markdown, not JSON
   });
   
