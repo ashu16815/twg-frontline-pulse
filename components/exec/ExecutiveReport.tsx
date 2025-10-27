@@ -36,7 +36,15 @@ export default function ExecutiveReport(){
   async function generate(){
     setBusy(true);
     const r = await fetch('/api/exec/job',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ scope_type, scope_key: scope_key||null, iso_week: iso_week||null, month_key: month_key||null }) });
-    const j = await r.json(); setJob(j.job); poll(j.job.job_id);
+    const j = await r.json(); 
+    setJob(j.job); 
+    
+    // Trigger worker in background (non-blocking)
+    fetch('/api/exec/worker/run', { method: 'POST' }).catch(err => {
+      console.log('Worker triggered in background');
+    });
+    
+    poll(j.job.job_id);
   }
   function poll(id:string){
     const i = setInterval(async()=>{
