@@ -18,11 +18,15 @@ interface CEOResponse {
   feedbackDrillDown: FeedbackEntry[];
   summary: {
     totalEntries: number;
+    totalStores: number;
+    totalRegions: number;
     totalImpact: number;
+    positiveImpact: number;
+    negativeImpact: number;
     positiveCount: number;
     negativeCount: number;
     neutralCount: number;
-    week: string;
+    daysPeriod: string;
   };
 }
 
@@ -89,13 +93,17 @@ export default function CEOChat() {
               </button>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs">
               <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded">
-                <div className="font-medium text-gray-900 dark:text-gray-100">Total Entries</div>
-                <div className="text-lg text-gray-900 dark:text-gray-100">{feedbackData.summary.totalEntries}</div>
+                <div className="font-medium text-gray-900 dark:text-gray-100">Stores</div>
+                <div className="text-lg text-gray-900 dark:text-gray-100">{feedbackData.summary.totalStores}</div>
               </div>
               <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded">
-                <div className="font-medium text-gray-900 dark:text-gray-100">Total Impact</div>
+                <div className="font-medium text-gray-900 dark:text-gray-100">Regions</div>
+                <div className="text-lg text-gray-900 dark:text-gray-100">{feedbackData.summary.totalRegions}</div>
+              </div>
+              <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded">
+                <div className="font-medium text-gray-900 dark:text-gray-100">Impact</div>
                 <div className="text-lg text-gray-900 dark:text-gray-100">${feedbackData.summary.totalImpact.toLocaleString()}</div>
               </div>
               <div className="bg-green-100 dark:bg-green-900 p-2 rounded">

@@ -58,6 +58,15 @@ export async function POST(req: Request) {
       };
     }
     
+    // Calculate stores with feedback and unique regions
+    const storesWithFeedback = new Set(rows.map(r => r.store_id));
+    const regionsWithFeedback = new Set(rows.map(r => r.region_code).filter(Boolean));
+    
+    // Calculate breakdowns
+    const totalImpact = rows.reduce((sum, r) => sum + (r.miss1_dollars || 0) + (r.miss2_dollars || 0) + (r.miss3_dollars || 0), 0);
+    const positiveImpact = rows.filter(r => r.overall_mood === 'pos').reduce((sum, r) => sum + (r.miss1_dollars || 0) + (r.miss2_dollars || 0) + (r.miss3_dollars || 0), 0);
+    const negativeImpact = rows.filter(r => r.overall_mood === 'neg').reduce((sum, r) => sum + (r.miss1_dollars || 0) + (r.miss2_dollars || 0) + (r.miss3_dollars || 0), 0);
+    
     // Create detailed feedback drill-down for executives
     const feedbackDrillDown = rows.map((row, index) => ({
       id: index + 1,
@@ -83,7 +92,11 @@ export async function POST(req: Request) {
       feedbackDrillDown: feedbackDrillDown,
       summary: {
         totalEntries: rows.length,
-        totalImpact: rows.reduce((sum, r) => sum + (r.miss1_dollars || 0) + (r.miss2_dollars || 0) + (r.miss3_dollars || 0), 0),
+        totalStores: storesWithFeedback.size,
+        totalRegions: regionsWithFeedback.size,
+        totalImpact: totalImpact,
+        positiveImpact: positiveImpact,
+        negativeImpact: negativeImpact,
         positiveCount: rows.filter(r => r.overall_mood === 'pos').length,
         negativeCount: rows.filter(r => r.overall_mood === 'neg').length,
         neutralCount: rows.filter(r => r.overall_mood === 'neu').length,
