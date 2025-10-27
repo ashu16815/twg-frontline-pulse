@@ -1,36 +1,50 @@
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
-import { weekKey, askCEO } from '@/lib/gpt5';
-import sql from 'mssql';
+import { askCEOWithRAG } from '@/lib/gpt5';
 
 export async function POST(req: Request) {
   try {
     const { question } = await req.json();
-    const isoWeek = weekKey(new Date());
     
     const pool = await getDb();
     
-    // Fetch data from Azure SQL (limit to recent data to avoid large payloads)
-    // Use a more dynamic query based on the question context
-    const limit = question.toLowerCase().includes('month') ? 50 : 20; // More data for monthly questions
-    const [feedbackResult, summaryResult] = await Promise.all([
-      pool.request()
-        .input('week', sql.NVarChar(10), isoWeek)
-        .query(`SELECT TOP ${limit} store_id, region_code, iso_week, top_positive, miss1, miss1_dollars, miss2, miss2_dollars, miss3, miss3_dollars, overall_mood, freeform_comments FROM dbo.store_feedback WHERE iso_week = @week ORDER BY NEWID()`),
-      pool.request()
-        .input('week', sql.NVarChar(10), isoWeek)
-        .query('SELECT TOP 10 * FROM dbo.weekly_summary WHERE iso_week = @week ORDER BY created_at DESC')
-    ]);
+    // Fetch last 7 days of feedback with full context for RAG mode
+    const feedbackResult = await pool.request().query(`
+      SELECT TOP 100
+        store_id, 
+        store_name,
+        store_code,
+        region_code, 
+        region,
+        iso_week,
+        top_positive, 
+        top_negative_1,
+        top_negative_2,
+        top_negative_3,
+        miss1, 
+        miss1_dollars, 
+        miss2, 
+        miss2_dollars, 
+        miss3, 
+        miss3_dollars,
+        overall_mood, 
+        freeform_comments,
+        estimated_dollar_impact,
+        submitted_by,
+        created_at
+      FROM dbo.store_feedback 
+      WHERE created_at >= DATEADD(day, -7, GETDATE())
+      ORDER BY created_at DESC
+    `);
     
     const rows = feedbackResult.recordset || [];
-    const summ = summaryResult.recordset || [];
     
     console.log(`🤔 CEO Question: "${question}"`);
-    console.log(`📊 Data: ${rows.length} feedback rows, ${summ.length} summaries`);
+    console.log(`📊 Data: ${rows.length} feedback entries from last 7 days`);
     
     let ans;
     try {
-      ans = await askCEO(question, isoWeek, rows, summ);
+      ans = await askCEOWithRAG(question, rows);
       console.log(`✅ Answer generated:`, ans.answer?.substring(0, 100));
     } catch (error: any) {
       console.log('⚠️ CEO AI failed, using fallback:', error.message);
@@ -40,7 +54,7 @@ export async function POST(req: Request) {
       const negativeCount = rows.filter(r => r.overall_mood === 'neg').length;
       
       ans = {
-        answer: `Based on ${rows.length} feedback entries for ${isoWeek}: Total impact $${totalImpact.toLocaleString()}, ${positiveCount} positive, ${negativeCount} negative responses. Key themes: ${rows.slice(0, 3).map(r => r.miss1 || r.top_positive).filter(Boolean).join(', ')}.`
+        answer: `Based on ${rows.length} feedback entries from last 7 days: Total impact $${totalImpact.toLocaleString()}, ${positiveCount} positive, ${negativeCount} negative responses. Key themes: ${rows.slice(0, 3).map(r => r.miss1 || r.top_positive).filter(Boolean).join(', ')}.`
       };
     }
     
@@ -48,16 +62,20 @@ export async function POST(req: Request) {
     const feedbackDrillDown = rows.map((row, index) => ({
       id: index + 1,
       store_id: row.store_id,
+      store_name: row.store_name,
+      store_code: row.store_code,
       region_code: row.region_code,
+      region: row.region,
       mood: row.overall_mood,
       positive: row.top_positive,
       issues: [
-        row.miss1 ? { text: row.miss1, dollars: row.miss1_dollars } : null,
-        row.miss2 ? { text: row.miss2, dollars: row.miss2_dollars } : null,
-        row.miss3 ? { text: row.miss3, dollars: row.miss3_dollars } : null
+        row.top_negative_1 ? { text: row.top_negative_1, dollars: row.miss1_dollars } : null,
+        row.top_negative_2 ? { text: row.top_negative_2, dollars: row.miss2_dollars } : null,
+        row.top_negative_3 ? { text: row.top_negative_3, dollars: row.miss3_dollars } : null
       ].filter(Boolean),
       comments: row.freeform_comments,
-      totalImpact: (row.miss1_dollars || 0) + (row.miss2_dollars || 0) + (row.miss3_dollars || 0)
+      totalImpact: (row.miss1_dollars || 0) + (row.miss2_dollars || 0) + (row.miss3_dollars || 0),
+      created_at: row.created_at
     }));
     
     return NextResponse.json({ 
@@ -69,7 +87,7 @@ export async function POST(req: Request) {
         positiveCount: rows.filter(r => r.overall_mood === 'pos').length,
         negativeCount: rows.filter(r => r.overall_mood === 'neg').length,
         neutralCount: rows.filter(r => r.overall_mood === 'neu').length,
-        week: isoWeek
+        daysPeriod: 'Last 7 days'
       }
     });
   } catch (e: any) {
