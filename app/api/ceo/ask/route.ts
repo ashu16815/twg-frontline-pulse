@@ -4,7 +4,7 @@ import { askCEOWithRAG } from '@/lib/gpt5';
 
 export async function POST(req: Request) {
   try {
-    const { question, conversationHistory = [] } = await req.json();
+    const { question, conversationHistory = [], tone = 'concise' } = await req.json();
     
     const pool = await getDb();
     
@@ -44,8 +44,13 @@ export async function POST(req: Request) {
     
     let ans;
     try {
-      ans = await askCEOWithRAG(question, rows, conversationHistory);
+      ans = await askCEOWithRAG(question, rows, conversationHistory, tone);
       console.log(`✅ Answer generated:`, ans.answer?.substring(0, 100));
+      
+      // Sanitize output for concise mode (max 6 bullets)
+      if (tone === 'concise') {
+        ans.answer = sanitizeMarkdown(ans.answer);
+      }
     } catch (error: any) {
       console.log('⚠️ CEO AI failed, using fallback:', error.message);
       // Provide a fallback answer based on the data
@@ -122,4 +127,55 @@ export async function POST(req: Request) {
       error: e.message 
     }, { status: 500 });
   }
+}
+
+// Sanitize markdown to ensure max 6 bullets in Answer section
+function sanitizeMarkdown(md: string): string {
+  if (!md) return md;
+  
+  const lines = md.split('\n');
+  const output: string[] = [];
+  let bullets = 0;
+  let inAnswer = false;
+  let inSoWhat = false;
+  
+  for (const line of lines) {
+    // Detect Answer header
+    if (/^\*\*Answer\*\*/i.test(line)) {
+      inAnswer = true;
+      inSoWhat = false;
+      output.push('**Answer**');
+      continue;
+    }
+    
+    // Detect So what header
+    if (/^\*\*So what\*\*/i.test(line)) {
+      inSoWhat = true;
+      inAnswer = false;
+      output.push('**So what**');
+      continue;
+    }
+    
+    // Collect bullets in Answer section (max 6)
+    if (inAnswer && line.trim().startsWith('- ')) {
+      if (bullets < 6) {
+        output.push(line.length > 120 ? line.slice(0, 117) + '…' : line);
+        bullets++;
+      }
+      continue;
+    }
+    
+    // Collect first bullet in So what section
+    if (inSoWhat && line.trim().startsWith('- ')) {
+      output.push(line.length > 120 ? line.slice(0, 117) + '…' : line);
+      break; // Only take first So what item
+    }
+    
+    // Allow other lines if we're not in special sections
+    if (!inAnswer && !inSoWhat) {
+      output.push(line);
+    }
+  }
+  
+  return output.join('\n');
 }

@@ -1,10 +1,13 @@
-export async function callAzureJSON(messages: any[], options: { timeout?: number; maxRetries?: number } = {}) {
+export async function callAzureJSON(messages: any[], options: { timeout?: number; maxRetries?: number; maxTokens?: number; temperature?: number; responseFormat?: 'json' | 'text' } = {}) {
   const ep = process.env.AZURE_OPENAI_ENDPOINT?.trim();
   const key = process.env.AZURE_OPENAI_API_KEY?.trim();
   const dep = process.env.AZURE_OPENAI_DEPLOYMENT_GPT5?.trim();
   const v = process.env.AZURE_OPENAI_API_VERSION?.trim() || '2024-10-01-preview';
   const timeout = options.timeout || parseInt(process.env.AZURE_OPENAI_TIMEOUT || '25000'); // 25 seconds default
   const maxRetries = options.maxRetries || parseInt(process.env.AZURE_OPENAI_MAX_RETRIES || '2');
+  const maxTokens = options.maxTokens || 4000; // Higher default to avoid truncation
+  const temperature = options.temperature || 0.3;
+  const responseFormat = options.responseFormat || 'json';
   
   if (!ep || !key || !dep) {
     console.error('❌ Missing Azure OpenAI configuration');
@@ -38,8 +41,10 @@ export async function callAzureJSON(messages: any[], options: { timeout?: number
         },
         body: JSON.stringify({
           messages,
-          response_format: { type: 'json_object' },
-          max_completion_tokens: 2000
+          ...(responseFormat === 'json' ? { response_format: { type: 'json_object' } } : {}),
+          max_completion_tokens: maxTokens,
+          // Temperature only if it's not the default (1)
+          ...(temperature !== 1 && temperature !== 0.3 ? { temperature: temperature } : {})
         }),
         signal: controller.signal
       });
@@ -78,18 +83,23 @@ export async function callAzureJSON(messages: any[], options: { timeout?: number
         throw new Error('Empty response from Azure OpenAI after all retries');
       }
       
-      try {
-        const parsed = JSON.parse(text);
-        console.log('✅ Parsed JSON response:', Object.keys(parsed));
-        return parsed;
-      } catch (e) {
-        console.error(`❌ Failed to parse AI response as JSON (attempt ${attempt}):`, text.substring(0, 200));
-        if (attempt < maxRetries) {
-          console.log(`⏳ Retrying in ${attempt * 1000}ms...`);
-          await new Promise(resolve => setTimeout(resolve, attempt * 1000));
-          continue;
+      if (responseFormat === 'json') {
+        try {
+          const parsed = JSON.parse(text);
+          console.log('✅ Parsed JSON response:', Object.keys(parsed));
+          return parsed;
+        } catch (e) {
+          console.error(`❌ Failed to parse AI response as JSON (attempt ${attempt}):`, text.substring(0, 200));
+          if (attempt < maxRetries) {
+            console.log(`⏳ Retrying in ${attempt * 1000}ms...`);
+            await new Promise(resolve => setTimeout(resolve, attempt * 1000));
+            continue;
+          }
+          throw new Error(`Failed to parse AI response as JSON after all retries: ${text.substring(0, 200)}`);
         }
-        throw new Error(`Failed to parse AI response as JSON after all retries: ${text.substring(0, 200)}`);
+      } else {
+        // Return text directly for non-JSON responses
+        return { answer: text };
       }
       
     } catch (error: any) {

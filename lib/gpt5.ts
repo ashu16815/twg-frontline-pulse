@@ -134,25 +134,15 @@ export async function askCEO(question: string, isoWeek: string, rows: any[], sum
   return callAzureJSON([system, user], { timeout: 15000, maxRetries: 1 });
 }
 
-export async function askCEOWithRAG(question: string, rows: any[], conversationHistory: any[] = []) {
+export async function askCEOWithRAG(question: string, rows: any[], conversationHistory: any[] = [], tone: 'concise' | 'narrative' = 'concise') {
+  // System prompt for Retail Expert (Big 4 caliber)
   const system = {
     role: 'system',
-    content: `You are a retail operations analyst for The Warehouse Group having a conversational Q&A session with the CEO.
-
-You are answering questions about feedback data from the last 7 days across multiple stores and regions.
-
-Return ONLY valid JSON: {answer:string}
-
-Guidelines:
-- Be specific and data-driven
-- Include store names, regions, and dollar amounts when available
-- Reference specific feedback entries when relevant
-- Keep answers concise but conversational (150 words max for follow-ups)
-- If specific information isn't in the data, say so clearly
-- Focus on actionable insights and patterns
-- For follow-up questions, maintain context from the previous conversation
-- Build on previous answers naturally
-- Can refer back to earlier topics when relevant`
+    content: `You are a Senior Retail Operations Expert (Big 4 caliber) advising a large multi-store retailer (The Warehouse Group).
+    
+    Principles: be concise, decision-oriented, and action-focused. Prefer bullet points over paragraphs.
+    Never invent data; if uncertain, say what you would check. Use consistent retail vocabulary (availability, conversion, UPT, ATV, sell-through, stock-on-hand, pallets out, roster gaps).
+    Always format outputs as instructed by the selected tone schema.`
   };
   
   // Build conversation context
@@ -160,14 +150,52 @@ Guidelines:
     ? `\n\nPrevious conversation:\n${conversationHistory.map(m => `${m.role === 'user' ? 'CEO' : 'You'}: ${m.content}`).join('\n')}\n\n`
     : '';
   
+  // Define output schema based on tone
+  const schema = tone === 'narrative' 
+    ? `You MUST return this EXACT format (no deviations):
+
+**Summary**
+Write ONE paragraph of 80-120 words covering the key findings and implications from the data.
+
+**Next steps**
+- Write exactly 3 action bullets, each ≤16 words
+- Each bullet should be a specific, actionable step
+- No more, no less`
+
+    : `You MUST return this EXACT format (no deviations, no paragraph text):
+
+**Answer**
+- <bullet 1, exactly ≤18 words, no full sentences>
+- <bullet 2, exactly ≤18 words, no full sentences>
+- <bullet 3, exactly ≤18 words, no full sentences>
+- <bullet 4, exactly ≤18 words, no full sentences>
+- <bullet 5, exactly ≤18 words, no full sentences>
+- <bullet 6, exactly ≤18 words, no full sentences>
+
+**So what**
+- <one bullet point, exactly ≤20 words>`;
+  
   const user = {
     role: 'user',
     content: `${conversationContext}Current question: ${question}
 
-Feedback Data (Last 7 Days):\n${JSON.stringify(rows, null, 2)}`
+Feedback Data (Last 7 Days):\n${JSON.stringify(rows, null, 2)}
+
+CRITICAL: You MUST follow this format EXACTLY. ${tone === 'concise' ? 'DO NOT write paragraphs. ONLY write bullet points as shown.' : 'Write ONE paragraph in Summary, then 3 action bullets.'}
+
+Required format:
+${schema}
+
+Now answer the question following this format EXACTLY.`
   };
   
-  return callAzureJSON([system, user], { timeout: 20000, maxRetries: 1 });
+  const result = await callAzureJSON([system, user], { 
+    timeout: 20000, 
+    maxRetries: 1,
+    responseFormat: 'text' // Return as text/markdown, not JSON
+  });
+  
+  return result; // result.answer contains the markdown text
 }
 
 export async function analyzeFrontlineFeedback(payload: {
