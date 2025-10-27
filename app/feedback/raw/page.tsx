@@ -107,7 +107,7 @@ function RawFeedbackContent() {
     <div className='min-h-screen bg-black text-white p-6'>
       <div className='mx-auto max-w-7xl'>
         <header className='flex items-center justify-between gap-4 flex-wrap mb-6'>
-          <h1 className='text-2xl font-semibold'>Detail Store Feedback</h1>
+          <h1 className='text-2xl font-semibold'>Detailed Store Feedback</h1>
           <div className='flex gap-2'>
             <button 
               className='btn bg-red-600 hover:bg-red-700 text-white'
@@ -126,7 +126,7 @@ function RawFeedbackContent() {
           {/* Quick Date Presets */}
           <div className='flex flex-wrap gap-2 mb-4'>
             <button
-              className='text-xs px-3 py-1.5 rounded bg-red-600/20 text-red-300 hover:bg-red-600/30'
+              className='text-xs px-3 py-1.5 rounded bg-gray-800 hover:bg-gray-700'
               onClick={() => {
                 const end = formatDate(new Date());
                 updateQuery({ start: getDaysAgo(7), end });
