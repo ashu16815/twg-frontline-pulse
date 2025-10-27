@@ -107,7 +107,7 @@ function RawFeedbackContent() {
     <div className='min-h-screen bg-black text-white p-6'>
       <div className='mx-auto max-w-7xl'>
         <header className='flex items-center justify-between gap-4 flex-wrap mb-6'>
-          <h1 className='text-2xl font-semibold'>Raw Store Feedback Ledger</h1>
+          <h1 className='text-2xl font-semibold'>Detail Store Feedback</h1>
           <div className='flex gap-2'>
             <button 
               className='btn bg-red-600 hover:bg-red-700 text-white'
