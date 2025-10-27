@@ -17,14 +17,11 @@ export default function NavBar() {
           <Link href="/frontline/submit" className="btn bg-red-600 hover:bg-red-700 text-white">
             Submit Store Report
           </Link>
-          <Link href="/weekly/submit" className="btn">
-            Performance Check-in
+          <Link href="/feedback/raw" className="btn">
+            Feedback
           </Link>
           <Link href="/executive-reports" className="btn">
             Reports
-          </Link>
-          <Link href="/feedback/raw" className="btn">
-            Raw Feedback
           </Link>
           <Link href="/ceo">
             <SheenButton>CEO Office</SheenButton>

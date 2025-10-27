@@ -233,7 +233,7 @@ function RawFeedbackContent() {
                       <SentimentIcon s={f.sentiment} />
                       {f.est_impact_dollars && (
                         <span className='px-2 py-1 rounded text-xs bg-red-600/20 text-red-300 font-semibold'>
-                          ${Number(f.est_impact_dollars).toLocaleString()}
+                          ${Number(f.est_impact_dollars || 0).toLocaleString()}
                         </span>
                       )}
                     </div>
@@ -260,7 +260,7 @@ function RawFeedbackContent() {
             {/* Pagination */}
             <div className='mt-6 flex items-center justify-between'>
               <div className='text-sm opacity-70'>
-                Page {data.page} of {Math.max(1, Math.ceil(data.total / Math.max(1, data.pageSize)))}
+                Page {data.page || 1} of {Math.max(1, Math.ceil((data.total || 0) / Math.max(1, data.pageSize || 25)))}
               </div>
               <div className='flex gap-2'>
                 <button
@@ -272,7 +272,7 @@ function RawFeedbackContent() {
                 </button>
                 <button
                   className='btn'
-                  disabled={filters.page >= Math.ceil(data.total / filters.pageSize) || loading}
+                  disabled={(filters.page >= Math.ceil((data.total || 0) / Math.max(1, data.pageSize || 25))) || loading}
                   onClick={() => updateQuery({ page: filters.page + 1 })}
                 >
                   Next →
