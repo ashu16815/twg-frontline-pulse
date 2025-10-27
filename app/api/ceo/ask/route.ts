@@ -4,7 +4,7 @@ import { askCEOWithRAG } from '@/lib/gpt5';
 
 export async function POST(req: Request) {
   try {
-    const { question } = await req.json();
+    const { question, conversationHistory = [] } = await req.json();
     
     const pool = await getDb();
     
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     
     let ans;
     try {
-      ans = await askCEOWithRAG(question, rows);
+      ans = await askCEOWithRAG(question, rows, conversationHistory);
       console.log(`✅ Answer generated:`, ans.answer?.substring(0, 100));
     } catch (error: any) {
       console.log('⚠️ CEO AI failed, using fallback:', error.message);

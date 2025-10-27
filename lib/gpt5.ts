@@ -134,10 +134,12 @@ export async function askCEO(question: string, isoWeek: string, rows: any[], sum
   return callAzureJSON([system, user], { timeout: 15000, maxRetries: 1 });
 }
 
-export async function askCEOWithRAG(question: string, rows: any[]) {
+export async function askCEOWithRAG(question: string, rows: any[], conversationHistory: any[] = []) {
   const system = {
     role: 'system',
-    content: `You are a retail operations analyst for The Warehouse Group. Answer CEO questions using the provided feedback data from the last 7 days.
+    content: `You are a retail operations analyst for The Warehouse Group having a conversational Q&A session with the CEO.
+
+You are answering questions about feedback data from the last 7 days across multiple stores and regions.
 
 Return ONLY valid JSON: {answer:string}
 
@@ -145,14 +147,24 @@ Guidelines:
 - Be specific and data-driven
 - Include store names, regions, and dollar amounts when available
 - Reference specific feedback entries when relevant
-- Keep answers concise (120 words max)
+- Keep answers concise but conversational (150 words max for follow-ups)
 - If specific information isn't in the data, say so clearly
-- Focus on actionable insights and patterns`
+- Focus on actionable insights and patterns
+- For follow-up questions, maintain context from the previous conversation
+- Build on previous answers naturally
+- Can refer back to earlier topics when relevant`
   };
+  
+  // Build conversation context
+  const conversationContext = conversationHistory.length > 0 
+    ? `\n\nPrevious conversation:\n${conversationHistory.map(m => `${m.role === 'user' ? 'CEO' : 'You'}: ${m.content}`).join('\n')}\n\n`
+    : '';
   
   const user = {
     role: 'user',
-    content: `Question: ${question}\n\nFeedback Data (Last 7 Days):\n${JSON.stringify(rows, null, 2)}`
+    content: `${conversationContext}Current question: ${question}
+
+Feedback Data (Last 7 Days):\n${JSON.stringify(rows, null, 2)}`
   };
   
   return callAzureJSON([system, user], { timeout: 20000, maxRetries: 1 });

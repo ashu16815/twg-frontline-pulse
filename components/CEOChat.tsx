@@ -30,15 +30,25 @@ interface CEOResponse {
   };
 }
 
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 export default function CEOChat() {
   const [q, setQ] = useState('What are the top risks in Region North this week?');
-  const [a, setA] = useState('');
+  const [conversation, setConversation] = useState<Message[]>([]);
   const [feedbackData, setFeedbackData] = useState<CEOResponse | null>(null);
   const [showDrillDown, setShowDrillDown] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   async function ask() {
-    setA('Thinking…');
-    setFeedbackData(null);
+    setLoading(true);
+    
+    // Add user message to conversation
+    const userMessage: Message = { role: 'user', content: q };
+    const updatedConversation = [...conversation, userMessage];
+    setConversation(updatedConversation);
     
     try {
       const r = await fetch('/api/ceo/ask', {
@@ -48,7 +58,11 @@ export default function CEOChat() {
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
         },
-        body: JSON.stringify({ question: q, timestamp: Date.now() })
+        body: JSON.stringify({ 
+          question: q,
+          conversationHistory: updatedConversation.slice(0, -1), // Send previous messages
+          timestamp: Date.now() 
+        })
       });
       
       if (!r.ok) {
@@ -56,30 +70,78 @@ export default function CEOChat() {
       }
       
       const j = await r.json();
-      setA(j.answer || j.error || 'No response received');
+      const assistantMessage: Message = { role: 'assistant', content: j.answer || j.error || 'No response received' };
+      setConversation([...updatedConversation, assistantMessage]);
       setFeedbackData(j);
     } catch (error) {
       console.error('Error asking question:', error);
-      setA('Sorry, I cannot answer questions right now. Please check the system status and try again later.');
+      const errorMessage: Message = { role: 'assistant', content: 'Sorry, I cannot answer questions right now. Please check the system status and try again later.' };
+      setConversation([...updatedConversation, errorMessage]);
+    } finally {
+      setLoading(false);
+      setQ(''); // Clear input
     }
+  }
+
+  function clearConversation() {
+    setConversation([]);
+    setFeedbackData(null);
+    setShowDrillDown(false);
   }
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-2">
+      <div className="flex gap-2 items-center">
         <input
           value={q}
           onChange={e => setQ(e.target.value)}
+          onKeyPress={e => e.key === 'Enter' && !loading && ask()}
           className="input"
           placeholder="Ask about themes, risks, stores…"
+          disabled={loading}
         />
-        <button className="btn-primary sheen" onClick={ask}>
-          Ask
+        <button 
+          className="btn-primary sheen" 
+          onClick={ask}
+          disabled={loading}
+        >
+          {loading ? '⏳' : 'Ask'}
         </button>
+        {conversation.length > 0 && (
+          <button 
+            className="btn text-xs px-3 py-2"
+            onClick={clearConversation}
+          >
+            Clear Chat
+          </button>
+        )}
       </div>
       
+      {/* Conversation History */}
+      {conversation.length > 0 && (
+        <div className="card p-4 space-y-4 max-h-96 overflow-y-auto">
+          {conversation.map((msg, idx) => (
+            <div key={idx} className={`${msg.role === 'user' ? 'bg-blue-500/10 border-blue-500/20' : 'bg-gray-500/10 border-gray-500/20'} border rounded-lg p-3`}>
+              <div className="text-xs font-semibold mb-1 opacity-70">
+                {msg.role === 'user' ? '👤 You' : '🤖 Assistant'}
+              </div>
+              <div className="text-sm">{msg.content}</div>
+            </div>
+          ))}
+          {loading && (
+            <div className="bg-gray-500/10 border-gray-500/20 border rounded-lg p-3">
+              <div className="text-xs font-semibold mb-1 opacity-70">🤖 Assistant</div>
+              <div className="text-sm">Thinking…</div>
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* Show feedback data summary for the latest answer */}
       <div className="card p-4">
-        {a || ' '}
+        {conversation.length === 0 && !loading && (
+          <div className="text-xs opacity-70 italic">Ask a question to start the conversation...</div>
+        )}
         
         {feedbackData && (
           <div className="mt-4 pt-4 border-t border-gray-200">
