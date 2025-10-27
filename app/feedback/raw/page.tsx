@@ -2,7 +2,28 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import dayjs from 'dayjs';
+
+// Date helper functions
+function formatDate(date: Date): string {
+  return date.toISOString().split('T')[0];
+}
+
+function getDaysAgo(days: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  return formatDate(date);
+}
+
+function formatDateTime(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { 
+    day: '2-digit', 
+    month: 'short', 
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
 
 export default function RawFeedbackPage() {
   const router = useRouter();
@@ -14,8 +35,8 @@ export default function RawFeedbackPage() {
   
   // Get filter params from URL
   const filters = {
-    start: searchParams.get('start') || dayjs().subtract(7, 'day').format('YYYY-MM-DD'),
-    end: searchParams.get('end') || dayjs().format('YYYY-MM-DD'),
+    start: searchParams.get('start') || getDaysAgo(7),
+    end: searchParams.get('end') || formatDate(new Date()),
     region: searchParams.get('region') || 'all',
     store_id: searchParams.get('store_id') || 'all',
     sentiment: searchParams.get('sentiment') || 'all',
@@ -202,7 +223,7 @@ export default function RawFeedbackPage() {
                         )}
                       </div>
                       <div className='text-sm opacity-70 mt-1'>
-                        {dayjs(f.submitted_at).format('DD MMM YYYY HH:mm')} • 
+                        {formatDateTime(f.submitted_at)} • 
                         by {f.author_name || 'Store'}
                       </div>
                     </div>
