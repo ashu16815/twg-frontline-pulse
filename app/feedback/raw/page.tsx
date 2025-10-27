@@ -123,6 +123,58 @@ function RawFeedbackContent() {
 
         {/* Filters */}
         <div className='card p-4 mb-6'>
+          {/* Quick Date Presets */}
+          <div className='flex flex-wrap gap-2 mb-4'>
+            <button
+              className='text-xs px-3 py-1.5 rounded bg-red-600/20 text-red-300 hover:bg-red-600/30'
+              onClick={() => {
+                const end = formatDate(new Date());
+                updateQuery({ start: getDaysAgo(7), end });
+              }}
+            >
+              Last 7 Days
+            </button>
+            <button
+              className='text-xs px-3 py-1.5 rounded bg-gray-800 hover:bg-gray-700'
+              onClick={() => {
+                const end = formatDate(new Date());
+                updateQuery({ start: getDaysAgo(14), end });
+              }}
+            >
+              Last 14 Days
+            </button>
+            <button
+              className='text-xs px-3 py-1.5 rounded bg-gray-800 hover:bg-gray-700'
+              onClick={() => {
+                const end = formatDate(new Date());
+                updateQuery({ start: getDaysAgo(30), end });
+              }}
+            >
+              Last 30 Days
+            </button>
+            <button
+              className='text-xs px-3 py-1.5 rounded bg-gray-800 hover:bg-gray-700'
+              onClick={() => {
+                const today = new Date();
+                const startOfWeek = new Date(today);
+                startOfWeek.setDate(today.getDate() - today.getDay());
+                updateQuery({ start: formatDate(startOfWeek), end: formatDate(today) });
+              }}
+            >
+              This Week
+            </button>
+            <button
+              className='text-xs px-3 py-1.5 rounded bg-gray-800 hover:bg-gray-700'
+              onClick={() => {
+                const today = new Date();
+                const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                updateQuery({ start: formatDate(startOfMonth), end: formatDate(today) });
+              }}
+            >
+              This Month
+            </button>
+          </div>
+          
           <div className='grid grid-cols-1 md:grid-cols-6 gap-3'>
             <div>
               <label className='text-sm opacity-80 block mb-1'>Start Date</label>
