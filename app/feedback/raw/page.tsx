@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+
+export const dynamic = 'force-dynamic';
 
 // Date helper functions
 function formatDate(date: Date): string {
@@ -25,7 +27,7 @@ function formatDateTime(dateString: string): string {
   });
 }
 
-export default function RawFeedbackPage() {
+function RawFeedbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -281,6 +283,14 @@ export default function RawFeedbackPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function RawFeedbackPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black text-white p-6"><div className="card p-8 text-center">Loading...</div></div>}>
+      <RawFeedbackContent />
+    </Suspense>
   );
 }
 
