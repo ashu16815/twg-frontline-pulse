@@ -13,18 +13,31 @@ A secure, admin-only management console for maintaining store master data (regio
 ✅ **CSV Export** - Export store data for bulk management
 ✅ **Filtering** - Search by name, region, or status
 
-## Database Setup
+## Database Setup (⚠️ REQUIRED)
 
-Run the following SQL script to create the audit table and indexes:
+**You MUST run this migration before using the admin console!**
 
+### Option 1: Using Azure Portal
+1. Go to Azure Portal → Your SQL Database
+2. Click "Query editor" or "Query editor (preview)"
+3. Copy and paste the contents of `scripts/setup-admin-audit.sql`
+4. Click "Run"
+
+### Option 2: Using sqlcmd (Local)
 ```bash
-# Apply database migration
-sqlcmd -S your-server -d your-database -i db/admin-store-console.sql
+# Connect to your database and run:
+sqlcmd -S tcp:redpulse.database.windows.net,1433 \
+  -d redpulse \
+  -U redpulseadmin \
+  -P "your-password" \
+  -i scripts/setup-admin-audit.sql
 ```
 
 This will create:
 - `audit_store_changes` table for tracking changes
 - Indexes on `store_master` for performance
+
+**Without this table, you'll get: "Invalid object name 'dbo.audit_store_changes' error"**
 
 ## Files Created
 
