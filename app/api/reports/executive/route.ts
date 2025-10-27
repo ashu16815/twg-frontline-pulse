@@ -99,9 +99,11 @@ export async function POST(req: Request) {
       }))
       .slice(0, 15);
 
+    const uniqueStores = Array.from(new Set(feedbacks.map((f: any) => f.store_id)));
+    
     const structuredData = {
       total_feedbacks: feedbacks.length,
-      stores_with_feedback: [...new Set(feedbacks.map((f: any) => f.store_id))].length,
+      stores_with_feedback: uniqueStores.length,
       total_estimated_impact: feedbacks.reduce((sum: number, f: any) => 
         sum + (Number(f.estimated_dollar_impact) || 0) + (Number(f.miss1_dollars) || 0) + 
         (Number(f.miss2_dollars) || 0) + (Number(f.miss3_dollars) || 0), 0
