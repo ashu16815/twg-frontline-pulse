@@ -26,6 +26,9 @@ export default function NavBar() {
           <Link href="/ceo">
             <SheenButton>CEO Office</SheenButton>
           </Link>
+          <Link href="/admin/stores" className="btn opacity-60 hover:opacity-100">
+            🔧 Admin
+          </Link>
         </div>
       </div>
     </div>
