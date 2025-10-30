@@ -53,14 +53,22 @@ export default function ExecutiveReportSimple() {
           days: parseInt(daysFilter)
         })
       });
-      
+      // Be resilient to non-JSON error bodies (e.g., HTML error page or plain text)
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const text = await response.text();
+        setError(text?.slice(0, 200) || 'Unexpected non-JSON response');
+        setReport(null);
+        return;
+      }
+
       const result = await response.json();
-      
-      if (result.ok && result.report) {
+
+      if (response.ok && result?.ok && result.report) {
         setReport(result);
         console.log('📊 Report generated:', result);
       } else {
-        setError('Failed to generate report');
+        setError(result?.error || 'Failed to generate report');
       }
     } catch (err: any) {
       setError(err.message);
